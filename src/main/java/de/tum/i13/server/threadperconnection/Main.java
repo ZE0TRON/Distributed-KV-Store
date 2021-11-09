@@ -1,6 +1,10 @@
 package de.tum.i13.server.threadperconnection;
 
 import de.tum.i13.server.echo.EchoLogic;
+import de.tum.i13.server.kv.KVCommandProcessor;
+import de.tum.i13.server.kv.KVStoreImpl;
+import de.tum.i13.server.storageManagment.CacheManager;
+import de.tum.i13.server.storageManagment.DiskManager;
 import de.tum.i13.shared.CommandProcessor;
 import de.tum.i13.shared.Config;
 
@@ -40,7 +44,10 @@ public class Main {
 
         //Replace with your Key value server logic.
         // If you use multithreading you need locking
-        CommandProcessor logic = new EchoLogic();
+        CommandProcessor logic = new KVCommandProcessor(new KVStoreImpl());
+        
+        DiskManager.init(cfg.dataDir);
+        CacheManager.init(cfg.cacheSize, cfg.cacheDisplacementStrategy);
 
         while (true) {
             Socket clientSocket = serverSocket.accept();
