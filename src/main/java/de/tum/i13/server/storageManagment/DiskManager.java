@@ -49,10 +49,12 @@ public class DiskManager implements DataManager {
 	 * 
 	 * @param key
 	 * @param value
+	 * @return true if key value pair is inserted, if value for key is updated, return false
 	 */
 	@Override
-	synchronized public void put(String key, String value) {
+	synchronized public boolean put(String key, String value) {
 		properties.setProperty(key, value);
+		return false;
 	}
 
 	/**

@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 
+import de.tum.i13.server.storageManagment.CacheDisplacementStrategy;
 import picocli.CommandLine;
 
 public class Config {
@@ -31,7 +32,7 @@ public class Config {
     public int cacheSize;
     
     @CommandLine.Option(names = "-s", description = "Cache displacement strategy,", defaultValue = "FIFO")
-    public String cacheDisplacementStrategy;
+    public CacheDisplacementStrategy cacheDisplacementStrategy;
 
     @CommandLine.Option(names = "-h", description = "Displays help", usageHelp = true)
     public boolean usagehelp;

@@ -13,16 +13,22 @@ public class KVStoreImpl implements KVStore {
 	public KVMessage put(String key, String value) throws Exception {
 		if (value != null) {
 			try {
-				CacheManager.getInstance().put(key, value);
-				return new KVMessageImpl(key, value, StatusType.PUT_SUCCESS);
+				if (CacheManager.getInstance().put(key, value)) {
+					return new KVMessageImpl(key, value, StatusType.PUT_SUCCESS);
+				} else {
+					return new KVMessageImpl(key, value, StatusType.PUT_UPDATE);
+				}
 			} catch (Exception e) {
 				LOGGER.throwing("KVStoreImpl", "put", e); // FIXME think about it again
 				return new KVMessageImpl(key, value, StatusType.PUT_ERROR);
 			}
 		} else {
 			try {
-				CacheManager.getInstance().delete(key);
-				return new KVMessageImpl(key, value, StatusType.DELETE_SUCCESS);
+				if (CacheManager.getInstance().delete(key)) {
+					return new KVMessageImpl(key, value, StatusType.DELETE_SUCCESS);
+				} else {
+					return new KVMessageImpl(key, value, StatusType.DELETE_ERROR);
+				}
 			} catch (Exception e) {
 				LOGGER.throwing("KVStoreImpl", "put", e); // FIXME think about it again
 				return new KVMessageImpl(key, value, StatusType.DELETE_ERROR);
@@ -33,10 +39,14 @@ public class KVStoreImpl implements KVStore {
 	@Override
 	public KVMessage get(String key) throws Exception {
 		try {
-			CacheManager.getInstance().get(key);
-			return new KVMessageImpl(key, null, StatusType.GET_SUCCESS);
+			String value = CacheManager.getInstance().get(key);
+			if (value != null) {
+				return new KVMessageImpl(key, value, StatusType.GET_SUCCESS);
+			} else {
+				return new KVMessageImpl(key, null, StatusType.GET_ERROR);
+			}
 		} catch (Exception e) {
-			LOGGER.throwing("KVStoreImpl", "put", e); // FIXME think about it again
+			LOGGER.throwing("KVStoreImpl", "get", e); // FIXME think about it again
 			return new KVMessageImpl(key, null, StatusType.GET_ERROR);
 		}
 	}

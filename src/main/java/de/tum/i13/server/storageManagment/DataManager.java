@@ -6,7 +6,7 @@ interface DataManager {
 	 * Get data
 	 * 
 	 * @param key
-	 * @return
+	 * @return value for the given key, null if key not found
 	 */
 	String get(String key);
 
@@ -15,8 +15,9 @@ interface DataManager {
 	 * 
 	 * @param key
 	 * @param value
+	 * @return true if key value pair is inserted, if value for key is updated, return false
 	 */
-	void put(String key, String value);
+	boolean put(String key, String value);
 
 	/**
 	 * Delete data
