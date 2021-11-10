@@ -5,10 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class DiskManager  extends DataManager {
+public class DiskManager implements DataManager {
 
 	private static DiskManager instance;
-	
+
 	private Properties properties;
 
 	private DiskManager() {
@@ -35,6 +35,7 @@ public class DiskManager  extends DataManager {
 
 	/**
 	 * Get from the file
+	 * 
 	 * @param key
 	 * @return
 	 */
@@ -45,6 +46,7 @@ public class DiskManager  extends DataManager {
 
 	/**
 	 * Put to the file
+	 * 
 	 * @param key
 	 * @param value
 	 */
@@ -55,6 +57,7 @@ public class DiskManager  extends DataManager {
 
 	/**
 	 * Delete from the file
+	 * 
 	 * @param key
 	 * @return
 	 */

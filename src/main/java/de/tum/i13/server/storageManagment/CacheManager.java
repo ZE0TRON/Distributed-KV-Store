@@ -1,12 +1,12 @@
 package de.tum.i13.server.storageManagment;
 
-public class CacheManager extends DataManager {
+public class CacheManager implements DataManager {
 
 	private static CacheManager instance;
 
 	private int cacheSize;
 	private String cacheDisplacementStrategy;
-	
+
 	private CacheManager() {
 		// private constructor
 	}
@@ -18,9 +18,8 @@ public class CacheManager extends DataManager {
 			instance.cacheSize = cacheSize;
 			instance.cacheDisplacementStrategy = cacheDisplacementStrategy;
 		}
-		
-	}
 
+	}
 
 	public static CacheManager getInstance() {
 		if (instance == null) {
@@ -32,6 +31,7 @@ public class CacheManager extends DataManager {
 
 	/**
 	 * Get from the file
+	 * 
 	 * @param key
 	 * @return
 	 */
@@ -42,6 +42,7 @@ public class CacheManager extends DataManager {
 
 	/**
 	 * Put to the file
+	 * 
 	 * @param key
 	 * @param value
 	 */
@@ -52,6 +53,7 @@ public class CacheManager extends DataManager {
 
 	/**
 	 * Delete from the file
+	 * 
 	 * @param key
 	 * @return
 	 */
