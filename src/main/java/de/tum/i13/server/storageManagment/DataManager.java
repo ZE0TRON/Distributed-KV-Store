@@ -1,29 +1,34 @@
 package de.tum.i13.server.storageManagment;
 
+/**
+ * All classes representing a manager, which controls and executes operations on
+ * data, should implement this interface.
+ */
 interface DataManager {
 
 	/**
-	 * Get data
+	 * Searches the value for the given key and then gets it.
 	 * 
-	 * @param key
-	 * @return value for the given key, null if key not found
+	 * @param key the key, whose value we want to acquire.
+	 * @return value for this key, null if this key is not found.
 	 */
 	String get(String key);
 
 	/**
-	 * Put data with key
+	 * Puts the pair of key and value into the storage.
 	 * 
-	 * @param key
-	 * @param value
-	 * @return true if key value pair is inserted, if value for key is updated, return false
+	 * @param key,   the key of this pair.
+	 * @param value, the value of this pair.
+	 * @return true if this key and value pair is inserted, if the value for this
+	 *         key is updated, return false.
 	 */
 	boolean put(String key, String value);
 
 	/**
-	 * Delete data
-	 * 
-	 * @param key
-	 * @return
+	 * Deletes the data with this key.
+	 *
+	 * @param key, the key of the data we want to delete.
+	 * @return true
 	 */
 	boolean delete(String key);
 

@@ -1,6 +1,7 @@
 package de.tum.i13.server.storageManagment;
 
 import java.util.HashMap;
+
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -11,21 +12,32 @@ public class CacheManager implements DataManager {
 
 	private static CacheManager instance;
 
-	private int cacheSize;
+	protected int cacheSize;
 
-	private CacheDisplacementStrategy cds;
+	protected CacheDisplacementStrategy cds;
 
-	private HashMap<String, Value> map;
+	protected HashMap<String, Value> map;
 
-	// it is for implementation of FIFO
-	private LinkedList<String> keyList;
+	// It is for the implementation of FIFO strategy.
+	protected LinkedList<String> keyList;
 
+	/**
+	 * Constructs a {@code CacheManager} and initializes its map and list of keys.
+	 */
 	private CacheManager() {
 		// private constructor
 		map = new HashMap<>();
 		keyList = new LinkedList<>();
 	}
 
+	/**
+	 * Initializes this {@code CacheManager} with the given cache size and cache
+	 * displacement strategy if it is not already initialized.
+	 * 
+	 * @param cacheSize the cache size of this {@code CacheManager}
+	 * @param cds       the cache displacement strategy used by this
+	 *                  {@code CacheManager}
+	 */
 	synchronized public static void init(int cacheSize, CacheDisplacementStrategy cds) {
 		if (instance == null) {
 			LOGGER.fine("CacheManager is initialized with cache size:" + cacheSize
@@ -38,19 +50,26 @@ public class CacheManager implements DataManager {
 		}
 	}
 
+	/**
+	 * Gets the instance of this {@code CacheManager}.
+	 * 
+	 * @return this {@code CacheManager} if it is already initialized before.
+	 * @throws RuntimeException if this {@code CacheManager} is not already
+	 *                          initialized.
+	 */
 	public static CacheManager getInstance() {
 		if (instance == null) {
-			throw new RuntimeException("Initialize CacheManager first");
+			throw new RuntimeException("Initialize CacheManager first!");
 		}
 
 		return instance;
 	}
 
 	/**
-	 * Get from the file
+	 * Gets the value for the given key.
 	 * 
-	 * @param key
-	 * @return value for the given key, null if key not found
+	 * @param key the key whose value is wanted.
+	 * @return value for the given key, null if key is not found.
 	 */
 	synchronized public String get(String key) {
 		LOGGER.fine("Get operation executiong for key: " + key);
@@ -74,6 +93,12 @@ public class CacheManager implements DataManager {
 		return value;
 	}
 
+	/**
+	 * Updates the value for the given key according to displacement strategy of
+	 * this {@code CacheManager}.
+	 * 
+	 * @param key the key whose value should be updated.
+	 */
 	private void updateCache(String key) {
 		Value value = map.get(key);
 
@@ -93,6 +118,13 @@ public class CacheManager implements DataManager {
 		}
 	}
 
+	/**
+	 * Inserts the pair of key and value according to displacement strategy of this
+	 * {@code CacheManager} into the cache.
+	 * 
+	 * @param key   the key of this pair.
+	 * @param value the value of this pair.
+	 */
 	private void insertToCache(String key, String value) {
 		LOGGER.fine("The value :" + value + " for key: " + key
 				+ " is inserting to the cache, according to cache displacement strategy.");
@@ -120,8 +152,12 @@ public class CacheManager implements DataManager {
 
 	}
 
+	/**
+	 * Removes an item from the cache according to the cache displacement strategy
+	 * of this {@code CacheManager}.
+	 */
 	private void removeFromCache() {
-		LOGGER.fine("Removing an item from the cache, according to cache displacement strategy.");
+		LOGGER.fine("Removing an item from the cache, according to the cache displacement strategy.");
 
 		switch (cds) {
 		case FIFO:
@@ -134,11 +170,17 @@ public class CacheManager implements DataManager {
 		}
 	}
 
+	/**
+	 * Removes an item from the cache according to the FIFO strategy.
+	 */
 	private void removeForFIFO() {
 		String key = keyList.removeFirst();
 		map.remove(key);
 	}
 
+	/**
+	 * Removes an item from the cache according to the LRU or LFU strategy.
+	 */
 	private void removeForLRUOrLFU() {
 		String minKey = "";
 		long min = Long.MAX_VALUE;
@@ -155,12 +197,12 @@ public class CacheManager implements DataManager {
 	}
 
 	/**
-	 * Put to the file
+	 * Puts the given key and value pair.
 	 * 
-	 * @param key
-	 * @param value
-	 * @return true if key value pair is inserted, if value for key is updated,
-	 *         return false
+	 * @param key   the of this pair.
+	 * @param value the value of this pair.
+	 * @return true if key and value pair is inserted, false if value for key is
+	 *         updated,
 	 */
 	synchronized public boolean put(String key, String value) {
 		LOGGER.fine("Put operation executing on value :" + value + " for key: " + key);
@@ -186,10 +228,11 @@ public class CacheManager implements DataManager {
 	}
 
 	/**
-	 * Delete from the file
+	 * Deletes the item with the given key.
 	 * 
-	 * @param key
-	 * @return
+	 * @param key the key of the item to be deleted.
+	 * @return true if the item is deleted, false if it could not be deleted or not
+	 *         found.
 	 */
 	synchronized public boolean delete(String key) {
 		LOGGER.fine("Delete operation executing on key: " + key);
@@ -212,10 +255,20 @@ public class CacheManager implements DataManager {
 		return isRemoved;
 	}
 
+	/**
+	 * Represents the value used in key and value pairs.
+	 */
 	private static class Value {
 		String data;
 		long compareValue;
 
+		/**
+		 * Constructs a {@code Value} with the given data and value used for comparison.
+		 * 
+		 * @param data         the data of this {@code Value}.
+		 * @param compareValue the value of this {@code Value}, which is used for
+		 *                     comparison.
+		 */
 		public Value(String data, long compareValue) {
 			this.data = data;
 			this.compareValue = compareValue;

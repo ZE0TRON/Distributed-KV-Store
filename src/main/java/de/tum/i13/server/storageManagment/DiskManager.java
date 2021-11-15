@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class DiskManager implements DataManager {
 
-	private static DiskManager instance;
+	protected static DiskManager instance;
 
 	private Properties properties;
 
