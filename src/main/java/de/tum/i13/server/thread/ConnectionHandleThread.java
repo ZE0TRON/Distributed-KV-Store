@@ -21,6 +21,7 @@ public class ConnectionHandleThread extends Thread {
 
     // TODO put KV sync function
     // TODO put Persistent sync function
+    // TODO delete same
     @Override
     public void run() {
         try {
