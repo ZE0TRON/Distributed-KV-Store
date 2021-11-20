@@ -79,7 +79,9 @@ public class Milestone1Main {
             try {
                 EchoConnectionBuilder kvcb = new EchoConnectionBuilder(command[1], Integer.parseInt(command[2]));
                 ActiveConnection ac = kvcb.connect();
+                System.out.println("Waiting read");
                 String confirmation = ac.readline();
+                System.out.println("Confirmation passed");
                 printEchoLine(confirmation);
                 return ac;
             } catch (Exception e) {

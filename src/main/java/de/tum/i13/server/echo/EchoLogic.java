@@ -11,6 +11,7 @@ public class EchoLogic implements CommandProcessor {
 
     public String process(String command) {
 
+        System.out.println("received command: " + command.trim());
         logger.info("received command: " + command.trim());
 
         //Let the magic happen here

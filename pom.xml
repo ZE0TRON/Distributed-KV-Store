@@ -38,7 +38,7 @@
                             <appendAssemblyId>false</appendAssemblyId>
                             <archive>
                                 <manifest>
-                                    <mainClass>de.tum.i13.server.threadperconnection.Main</mainClass>
+                                    <mainClass>de.tum.i13.server.Main</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
