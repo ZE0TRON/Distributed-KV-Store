@@ -1,12 +1,13 @@
 package de.tum.i13.shared;
 
-import picocli.CommandLine;
-
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Level;
+
+import de.tum.i13.server.storageManagment.CacheDisplacementStrategy;
+import picocli.CommandLine;
 
 public class Config {
     @CommandLine.Option(names = "-p", description = "sets the port of the server", defaultValue = "5153")
@@ -23,6 +24,15 @@ public class Config {
 
     @CommandLine.Option(names = "-l", description = "Logfile", defaultValue = "echo.log")
     public Path logfile;
+    
+    @CommandLine.Option(names = "-ll", description = "LogLevel", defaultValue = "ALL")
+    public Level logLevel;
+    
+    @CommandLine.Option(names = "-c", description = "Size of the cache,", defaultValue = "100")
+    public int cacheSize;
+    
+    @CommandLine.Option(names = "-s", description = "Cache displacement strategy,", defaultValue = "FIFO")
+    public CacheDisplacementStrategy cacheDisplacementStrategy;
 
     @CommandLine.Option(names = "-h", description = "Displays help", usageHelp = true)
     public boolean usagehelp;

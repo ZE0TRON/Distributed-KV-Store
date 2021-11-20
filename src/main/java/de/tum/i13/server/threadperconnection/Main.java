@@ -1,16 +1,19 @@
 package de.tum.i13.server.threadperconnection;
 
-import de.tum.i13.server.echo.EchoLogic;
-import de.tum.i13.shared.CommandProcessor;
-import de.tum.i13.shared.Config;
+import static de.tum.i13.shared.Config.parseCommandlineArgs;
+import static de.tum.i13.shared.LogSetup.setupLogging;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static de.tum.i13.shared.Config.parseCommandlineArgs;
-import static de.tum.i13.shared.LogSetup.setupLogging;
+import de.tum.i13.server.kv.KVCommandProcessor;
+import de.tum.i13.server.kv.KVStoreImpl;
+import de.tum.i13.server.storageManagment.CacheManagerFactory;
+import de.tum.i13.server.storageManagment.DiskManager;
+import de.tum.i13.shared.CommandProcessor;
+import de.tum.i13.shared.Config;
 
 /**
  * Created by chris on 09.01.15.
@@ -40,7 +43,10 @@ public class Main {
 
         //Replace with your Key value server logic.
         // If you use multithreading you need locking
-        CommandProcessor logic = new EchoLogic();
+        CommandProcessor logic = new KVCommandProcessor(new KVStoreImpl());
+        
+        DiskManager.init(cfg.dataDir);
+        CacheManagerFactory.create(cfg.cacheSize, cfg.cacheDisplacementStrategy);
 
         while (true) {
             Socket clientSocket = serverSocket.accept();
