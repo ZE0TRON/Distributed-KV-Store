@@ -17,8 +17,10 @@ public class Milestone1Main {
             //System.out.print("command:");
             //System.out.println(line);
             switch (command[0]) {
-                case "connect": activeConnection = buildconnection(command); break;
-                case "send": sendmessage(activeConnection, command, line); break;
+                case "connect": activeConnection = buildConnection(command); break;
+//                case "send": sendMessage(activeConnection, command, line); break;
+                case "put" : sendPutRequest(activeConnection, command, line); break;
+                case "get" : sendGetRequest(activeConnection, command, line); break;
                 case "disconnect": closeConnection(activeConnection); break;
                 case "help": printHelp(); break;
                 case "quit": printEchoLine("Application exit!"); return;
@@ -26,6 +28,8 @@ public class Milestone1Main {
             }
         }
     }
+
+
 
     private static void printHelp() {
         System.out.println("Available commands:");
@@ -53,7 +57,7 @@ public class Milestone1Main {
         }
     }
 
-    private static void sendmessage(ActiveConnection activeConnection, String[] command, String line) {
+    private static void sendGetRequest(ActiveConnection activeConnection, String[] command, String line) {
         if(activeConnection == null) {
             printEchoLine("Error! Not connected!");
             return;
@@ -63,18 +67,20 @@ public class Milestone1Main {
             printEchoLine("Error! Nothing to send!");
             return;
         }
-
-        String cmd = line.substring(firstSpace + 1);
-        activeConnection.write(cmd);
+        activeConnection.write(line);
 
         try {
-            printEchoLine(activeConnection.readline());
+            String response = activeConnection.readline();
+            printEchoLine(response);
         } catch (IOException e) {
             printEchoLine("Error! Not connected!");
         }
     }
 
-    private static ActiveConnection buildconnection(String[] command) {
+    private static void sendPutRequest(ActiveConnection activeConnection, String[] command, String line) {
+    }
+
+    private static ActiveConnection buildConnection(String[] command) {
         if(command.length == 3){
             try {
                 EchoConnectionBuilder kvcb = new EchoConnectionBuilder(command[1], Integer.parseInt(command[2]));

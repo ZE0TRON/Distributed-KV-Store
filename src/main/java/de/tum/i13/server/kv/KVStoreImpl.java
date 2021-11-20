@@ -66,7 +66,7 @@ public class KVStoreImpl implements KVStore {
 				}
 				else {
 					LOGGER.fine("Get operation could not found value for key: " + key);
-					return new KVMessageImpl(key, null, StatusType.GET_ERROR);
+					return new KVMessageImpl(key, "", StatusType.GET_ERROR);
 				}
 			}
 		} catch (Exception e) {
