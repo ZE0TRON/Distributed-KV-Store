@@ -18,7 +18,6 @@ public class Milestone1Main {
             //System.out.println(line);
             switch (command[0]) {
                 case "connect": activeConnection = buildConnection(command); break;
-//                case "send": sendMessage(activeConnection, command, line); break;
                 case "put" : sendPutRequest(activeConnection, command, line); break;
                 case "get" : sendGetRequest(activeConnection, command, line); break;
                 case "disconnect": closeConnection(activeConnection); break;
@@ -77,7 +76,27 @@ public class Milestone1Main {
         }
     }
 
+    // This method replicates a lot of lines of the sendGetRequest method, to avoid line duplication we can put handle both
+    // of the requests in one func but it didn't felt like good practice (we should keep them separate I believe). Maybe
+    // we can generate helper funcs to check inputs or read/write to buffers. Would like feedbacks here. -cenk
     private static void sendPutRequest(ActiveConnection activeConnection, String[] command, String line) {
+        if(activeConnection == null) {
+            printEchoLine("Error! Not connected!");
+            return;
+        }
+        int firstSpace = line.indexOf(" ");
+        if (command.length > 3 || command.length == 1 || firstSpace == -1 ){
+            printEchoLine("Error! A put request must be like this: put <key> <value>.");
+            return;
+        }
+        activeConnection.write(line);
+
+        try {
+            String response = activeConnection.readline();
+            printEchoLine(response);
+        } catch (IOException e) {
+            printEchoLine("Error! Not connected!");
+        }
     }
 
     private static ActiveConnection buildConnection(String[] command) {
@@ -91,7 +110,7 @@ public class Milestone1Main {
                 printEchoLine(confirmation);
                 return ac;
             } catch (Exception e) {
-                //Todo: separate between could not connect, unknown host and invalid port
+                //TODO: separate between could not connect, unknown host, invalid port and no port
                 printEchoLine("Could not connect to server");
             }
         }
