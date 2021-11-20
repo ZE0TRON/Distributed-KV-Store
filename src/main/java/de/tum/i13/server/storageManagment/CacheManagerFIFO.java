@@ -1,5 +1,7 @@
 package de.tum.i13.server.storageManagment;
 
+import de.tum.i13.server.kv.KVItem;
+
 import java.util.LinkedList;
 import java.util.logging.Logger;
 
@@ -46,16 +48,15 @@ public class CacheManagerFIFO extends CacheManager {
 	 * Inserts the pair of key and value according to the FIFO strategy into the
 	 * cache.
 	 * 
-	 * @param key   the key of this pair.
-	 * @param value the value of this pair.
+	 * @param item the key, value pair.
 	 */
 	@Override
-	protected void insertToCache(String key, String value) {
-		super.insertToCache(key, value);
+	protected void insertToCache(KVItem item) {
+		super.insertToCache(item);
 
-		Value v = new Value(value, 0);
-		keyList.add(key);
-		map.put(key, v);
+		Value v = new Value(item.value, 0);
+		keyList.add(item.key);
+		map.put(item.key, v);
 
 	}
 

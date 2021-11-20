@@ -1,6 +1,7 @@
 package de.tum.i13.server;
 
 import de.tum.i13.server.echo.EchoLogic;
+import de.tum.i13.server.kv.KVPersist;
 import de.tum.i13.server.thread.ConnectionHandleThread;
 import de.tum.i13.shared.CommandProcessor;
 import de.tum.i13.shared.Config;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
 
 import de.tum.i13.server.kv.KVCommandProcessor;
 import de.tum.i13.server.kv.KVStoreImpl;
@@ -26,7 +28,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Config cfg = parseCommandlineArgs(args);  //Do not change this
-        setupLogging(cfg.logfile);
+        // TODO change to cfg.logLevel
+        setupLogging(cfg.logfile, Level.ALL);
 
         final ServerSocket serverSocket = new ServerSocket();
 
@@ -42,13 +45,20 @@ public class Main {
         //bind to localhost only
         serverSocket.bind(new InetSocketAddress(cfg.listenaddr, cfg.port));
 
-        //Replace with your Key value server logic.
+        try {
+            KVPersist.init(cfg.dataDir);
+            CacheManagerFactory.create(cfg.cacheSize, cfg.cacheDisplacementStrategy);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // If you use multithreading you need locking
         CommandProcessor logic = new KVCommandProcessor(new KVStoreImpl());
 
-        DiskManager.init(cfg.dataDir);
-        CacheManagerFactory.create(cfg.cacheSize, cfg.cacheDisplacementStrategy);
 
+
+        // TODO checkout help thing
         while (true) {
             Socket clientSocket = serverSocket.accept();
             //When we accept a connection, we start a new Thread for this connection

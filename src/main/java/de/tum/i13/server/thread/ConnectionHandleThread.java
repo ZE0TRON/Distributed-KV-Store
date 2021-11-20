@@ -6,8 +6,11 @@ import de.tum.i13.shared.CommandProcessor;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 public class ConnectionHandleThread extends Thread {
+    private static final Logger LOGGER = Logger.getLogger(ConnectionHandleThread.class.getName());
+
     private CommandProcessor cp;
     private Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
@@ -15,8 +18,6 @@ public class ConnectionHandleThread extends Thread {
     public ConnectionHandleThread(CommandProcessor commandProcessor, Socket clientSocket) {
         this.cp = commandProcessor;
         this.clientSocket = clientSocket;
-        System.out.println("Init Thread");
-
     }
 
     // TODO put KV sync function
@@ -27,19 +28,19 @@ public class ConnectionHandleThread extends Thread {
         try {
             this.connectionManager = new ConnectionManager(clientSocket);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            LOGGER.warning(e.getMessage());
         }
         try {
             String res = "Connection established";
             this.connectionManager.send(res);
-            System.out.println("Response sent");
+            LOGGER.info("Response sent");
             String recv;
             while ( (recv = connectionManager.receive()) != null) {
-                res = cp.process(recv);
+                res = cp.process(recv) + "\r\n";
                 this.connectionManager.send(res);
             }
         } catch(Exception ex) {
-            System.out.println(ex.getMessage());
+            LOGGER.warning(ex.getMessage());
             ex.printStackTrace();
         }
     }

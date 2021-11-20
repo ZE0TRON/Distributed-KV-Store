@@ -1,5 +1,9 @@
 package de.tum.i13.server.storageManagment;
 
+import de.tum.i13.server.kv.KVItem;
+import de.tum.i13.server.kv.KVPersist;
+
+import javax.xml.bind.JAXBException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -42,7 +46,7 @@ public abstract class CacheManager implements DataManager {
 	 * @param key the key whose value is wanted.
 	 * @return value for the given key, null if the key is not found.
 	 */
-	synchronized public String get(String key) {
+	synchronized public KVItem get(String key) {
 		LOGGER.fine("Get operation executing for key: " + key);
 
 		Value v = map.get(key);
@@ -50,49 +54,50 @@ public abstract class CacheManager implements DataManager {
 			LOGGER.fine("Get operation found value :" + v + " for key: " + key + " in cache.");
 
 			updateCache(key);
-			return v.data;
+			return new KVItem(key, v.data);
 		}
 
-		String value = DiskManager.getInstance().get(key);
-		if (value != null) {
-			LOGGER.fine(
-					"Get operation found value :" + value + " for key: " + key + "in disk and inserted into cache.");
+		return null;
+//		KVItem item = KVPersist.getInstance().get(key);
+//		if (item != null) {
+//			LOGGER.fine(
+//					"Get operation found value :" + item.value + " for key: " + item.key + "in disk and inserted into cache.");
+//
+//			insertToCache(item);
+//		}
 
-			insertToCache(key, value);
-		}
-
-		return value;
+	//	return item;
 	}
 
 	/**
 	 * Puts the given key and value pair.
 	 * 
-	 * @param key   the of this pair.
-	 * @param value the value of this pair.
+	 * @param item the key, value pair.
 	 * @return true if key and value pair is inserted, false if value for key is
 	 *         updated.
 	 */
-	synchronized public boolean put(String key, String value) {
-		LOGGER.fine("Put operation executing on value :" + value + " for key: " + key);
+	synchronized public PersistType put(KVItem item) throws Exception {
+//		LOGGER.fine("Put operation executing on value :" + item.value + " for key: " + item.key);
+//
+//		boolean isInsert = KVPersist.getInstance().put(item);
 
-		boolean isInsert = DiskManager.getInstance().put(key, value);
-
-		Value v = map.get(key);
+		Value v = map.get(item.key);
 		if (v != null) {
-			LOGGER.fine("Put operation found value :" + value + " for key: " + key + " in cache and updating it.");
+			LOGGER.fine("Put operation found value :" + item.value + " for key: " + item.key + " in cache and updating it.");
 
-			updateCache(key);
-			v.data = value;
-			map.put(key, v);
+			updateCache(item.key);
+			v.data = item.value;
+			map.put(item.key, v);
+			return PersistType.UPDATE;
 
 		} else {
-			LOGGER.fine("Put operation could not found value :" + value + " for key: " + key
+			LOGGER.fine("Put operation could not found value :" + item.value + " for key: " + item.key
 					+ " in cache and inserting it into cache.");
 
-			insertToCache(key, value);
+			insertToCache(item);
+			return PersistType.INSERT;
 		}
 
-		return isInsert;
 	}
 
 	/**
@@ -102,12 +107,11 @@ public abstract class CacheManager implements DataManager {
 	 * @return true if the item is deleted, false if it could not be deleted or not
 	 *         found.
 	 */
-	synchronized public boolean delete(String key) {
-		LOGGER.fine("Delete operation executing on key: " + key);
+	synchronized public PersistType delete(String key) {
+//		LOGGER.fine("Delete operation executing on key: " + key);
+//
+//		boolean isRemoved = DiskManager.getInstance().delete(key);
 
-		boolean isRemoved = DiskManager.getInstance().delete(key);
-
-		if (isRemoved) {
 			Value v = map.get(key);
 			if (v != null) {
 				LOGGER.fine("Delete operation found value: " + v + " for key: " + key + " and removing it.");
@@ -115,9 +119,8 @@ public abstract class CacheManager implements DataManager {
 				map.remove(key);
 				deleteInternal(key);
 			}
-		}
 
-		return isRemoved;
+		return PersistType.DELETE;
 	}
 
 	protected void deleteInternal(String key) {
@@ -136,11 +139,10 @@ public abstract class CacheManager implements DataManager {
 	 * Inserts the pair of key and value according to displacement strategy of this
 	 * {@code CacheManager} into the cache.
 	 * 
-	 * @param key   the key of this pair.
-	 * @param value the value of this pair.
+	 * @param item the key value of this pair.
 	 */
-	protected void insertToCache(String key, String value) {
-		LOGGER.fine("The value :" + value + " for key: " + key
+	protected void insertToCache(KVItem item) {
+		LOGGER.fine("The value :" + item.value + " for key: " + item.key
 				+ " is inserting into the cache, according to the cache displacement strategy.");
 
 		if (map.size() >= cacheSize) {

@@ -23,4 +23,6 @@ public interface KVStore {
      */
     public KVMessage get(String key) throws Exception;
 
+    public KVMessage commandNotFound(String command);
+
 }

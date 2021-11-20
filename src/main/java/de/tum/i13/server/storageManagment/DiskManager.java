@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class DiskManager implements DataManager {
+public class DiskManager {
 
 	protected static DiskManager instance;
 
@@ -39,7 +39,6 @@ public class DiskManager implements DataManager {
 	 * @param key
 	 * @return
 	 */
-	@Override
 	synchronized public String get(String key) {
 		return properties.getProperty(key);
 	}
@@ -51,7 +50,6 @@ public class DiskManager implements DataManager {
 	 * @param value
 	 * @return true if key value pair is inserted, if value for key is updated, return false
 	 */
-	@Override
 	synchronized public boolean put(String key, String value) {
 		properties.setProperty(key, value);
 		return false;
@@ -63,7 +61,6 @@ public class DiskManager implements DataManager {
 	 * @param key
 	 * @return
 	 */
-	@Override
 	synchronized public boolean delete(String key) {
 		String value = (String) properties.remove(key);
 		return value == null ? false : true;

@@ -1,5 +1,7 @@
 package de.tum.i13.server.kv;
 
+import java.util.Locale;
+
 public class KVMessageImpl implements KVMessage {
 	
 	private final String key;
@@ -30,4 +32,8 @@ public class KVMessageImpl implements KVMessage {
 		return status;
 	}
 
+	@Override
+	public String toString() {
+		return this.status + " " + this.key  + " " + this.value;
+	}
 }

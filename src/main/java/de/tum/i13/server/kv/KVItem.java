@@ -12,6 +12,14 @@ public class KVItem {
     @XmlElement(required = true)
     public String value;
 
+    public KVItem() {
+
+    }
+    public KVItem(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
     @Override
     public String toString() {
         return "KVitem{" +

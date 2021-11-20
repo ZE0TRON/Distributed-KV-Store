@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.logging.*;
 
 public class LogSetup {
-    public static void setupLogging(Path logfile) {
+    public static void setupLogging(Path logfile, Level logLevel) {
         Logger logger = LogManager.getLogManager().getLogger("");
         System.setProperty("java.util.logging.SimpleFormatter.format",
                 "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %4$-7s [%3$s] %5$s %6$s%n");
@@ -20,8 +20,17 @@ public class LogSetup {
         logger.addHandler(fileHandler);
 
         for (Handler h : logger.getHandlers()) {
-            h.setLevel(Level.ALL);
+            if(logLevel != null) {
+                h.setLevel(logLevel);
+            } else {
+                h.setLevel(Level.ALL);
+            }
         }
-        logger.setLevel(Level.ALL); //we want log everything
+
+        if(logLevel != null) {
+            logger.setLevel(logLevel);
+        } else {
+            logger.setLevel(Level.ALL);
+        }
     }
 }
