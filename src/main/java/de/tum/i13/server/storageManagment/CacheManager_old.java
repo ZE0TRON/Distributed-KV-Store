@@ -1,20 +1,52 @@
 package de.tum.i13.server.storageManagment;
 
 import java.util.HashMap;
+
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.logging.Logger;
 
-public abstract class CacheManager implements DataManager {
+public class CacheManager_old implements DataManager {
 
 	private static final Logger LOGGER = Logger.getLogger(CacheManager.class.getName());
 
-	protected static CacheManager instance;
+	protected static CacheManager_old instance;
 
 	protected int cacheSize;
 
+	protected CacheDisplacementStrategy cds;
+
 	protected HashMap<String, Value> map;
 
-	protected CacheManager() {
+	// It is for the implementation of FIFO strategy.
+	protected LinkedList<String> keyList;
+
+	/**
+	 * Constructs a {@code CacheManager} and initializes its map and list of keys.
+	 */
+	public CacheManager_old() {
+		// private constructor
 		map = new HashMap<>();
+		keyList = new LinkedList<>();
+	}
+
+	/**
+	 * Initialize this {@code CacheManager} with the given cache size and cache
+	 * displacement strategy if it is not already initialized.
+	 * 
+	 * @param cacheSize the cache size of this {@code CacheManager}
+	 * @param cds       the cache displacement strategy used by this
+	 *                  {@code CacheManager}
+	 */
+	synchronized public static void init(int cacheSize, CacheDisplacementStrategy cds) {
+		if (isInisialize()) {
+			LOGGER.fine("CacheManager is initialized with cache size:" + cacheSize
+					+ " and cache displacement strategy: " + cds);
+
+			instance = new CacheManager_old();
+			instance.cacheSize = cacheSize;
+			instance.cds = cds;
+		}
 	}
 
 	/**
@@ -24,15 +56,15 @@ public abstract class CacheManager implements DataManager {
 	 * @throws RuntimeException if this {@code CacheManager} is not already
 	 *                          initialized.
 	 */
-	public static CacheManager getInstance() {
-		if (!isInitialized()) {
+	public static CacheManager_old getInstance() {
+		if (!isInisialize()) {
 			throw new RuntimeException("Initialize CacheManager first!");
 		}
 
 		return instance;
 	}
 
-	public static boolean isInitialized() {
+	public static boolean isInisialize() {
 		return instance != null;
 	}
 
@@ -64,6 +96,8 @@ public abstract class CacheManager implements DataManager {
 		return value;
 	}
 
+	
+	
 	/**
 	 * Puts the given key and value pair.
 	 * 
@@ -113,25 +147,41 @@ public abstract class CacheManager implements DataManager {
 				LOGGER.fine("Delete operation found value: " + v + " for key: " + key + " and removing it.");
 
 				map.remove(key);
-				deleteInternal(key);
+				if (cds == CacheDisplacementStrategy.FIFO) {
+					keyList.remove(key); // O(n)
+				}
+
 			}
 		}
 
 		return isRemoved;
 	}
-
-	protected void deleteInternal(String key) {
-
-	}
-
+	
 	/**
 	 * Updates the value for the given key according to the displacement strategy of
 	 * this {@code CacheManager}.
 	 * 
 	 * @param key the key whose value should be updated.
 	 */
-	protected abstract void updateCache(String key);
+	protected void updateCache(String key) {
+		Value value = map.get(key);
 
+		LOGGER.fine(
+				"The value :" + value + " for key: " + key + " is updating according to cache displacement strategy.");
+
+		switch (cds) {
+		case LRU:
+			value.compareValue = System.currentTimeMillis();
+			break;
+		case LFU:
+			value.compareValue++;
+			break;
+		case FIFO:
+			// Do nothing
+			break;
+		}
+	}
+	
 	/**
 	 * Inserts the pair of key and value according to displacement strategy of this
 	 * {@code CacheManager} into the cache.
@@ -147,13 +197,68 @@ public abstract class CacheManager implements DataManager {
 			removeFromCache();
 		}
 
+		Value v = null;
+
+		switch (cds) {
+		case FIFO:
+			v = new Value(value, 0);
+			keyList.add(key);
+			break;
+		case LRU:
+			v = new Value(value, System.currentTimeMillis());
+			break;
+		case LFU:
+			v = new Value(value, 1);
+			break;
+		}
+
+		map.put(key, v);
+
 	}
 
 	/**
 	 * Removes an item from the cache according to the cache displacement strategy
 	 * of this {@code CacheManager}.
 	 */
-	protected abstract void removeFromCache();
+	protected void removeFromCache() {
+		LOGGER.fine("Removing an item from the cache, according to the cache displacement strategy.");
+
+		switch (cds) {
+		case FIFO:
+			removeForFIFO();
+			break;
+		case LRU:
+		case LFU:
+			removeForLRUOrLFU();
+			break;
+		}
+	}
+
+	/**
+	 * Removes an item from the cache according to the FIFO strategy.
+	 */
+	private void removeForFIFO() {
+		String key = keyList.removeFirst();
+		map.remove(key);
+	}
+
+	/**
+	 * Removes an item from the cache according to the LRU or LFU strategy.
+	 */
+	private void removeForLRUOrLFU() {
+		String minKey = "";
+		long min = Long.MAX_VALUE;
+
+		for (Map.Entry<String, Value> entry : map.entrySet()) {
+			if (entry.getValue().compareValue < min) {
+				minKey = entry.getKey();
+				min = entry.getValue().compareValue;
+			}
+		}
+
+		map.remove(minKey);
+
+	}
 
 	/**
 	 * Represents the value used in key and value pairs.
