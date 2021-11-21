@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Locale;
 import java.util.Objects;
 
 
@@ -19,7 +18,7 @@ public class Milestone1Main {
         ActiveConnection activeConnection = null;
         for(;;) {
             System.out.print("EchoClient> ");
-            String line = reader.readLine();
+            String line = reader.readLine().trim();
             String[] command = line.split(" ");
             switch (command[0]) {
                 case "connect": activeConnection = buildConnection(command); break;
