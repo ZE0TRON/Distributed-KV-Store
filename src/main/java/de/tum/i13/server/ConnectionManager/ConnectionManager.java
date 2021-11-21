@@ -4,9 +4,10 @@ import de.tum.i13.shared.Constants;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 public class ConnectionManager implements ConnectionManagerInterface{
-
+    private static final Logger LOGGER = Logger.getLogger(ConnectionManager.class.getName());
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
@@ -19,7 +20,8 @@ public class ConnectionManager implements ConnectionManagerInterface{
 
 
     public void send(String message) {
-        out.write(message+"\r\n");
+        LOGGER.info("sending message " + message + " to the client");
+        out.write(message + "\r\n");
         out.flush();
     }
 
