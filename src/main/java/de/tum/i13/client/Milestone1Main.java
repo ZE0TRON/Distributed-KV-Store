@@ -1,6 +1,7 @@
 package de.tum.i13.client;
 
 import de.tum.i13.client.exception.ConnectionException;
+import de.tum.i13.server.ConnectionManager.ConnectionManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,27 +10,50 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 
 public class Milestone1Main {
+    private static final Logger LOGGER = Logger.getLogger(Milestone1Main.class.getName());
     public static void main(String[] args) throws IOException {
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         ActiveConnection activeConnection = null;
         for(;;) {
             System.out.print("EchoClient> ");
             String line = reader.readLine().trim();
+            LOGGER.info("Client received command " + line);
             String[] command = line.split(" ");
             switch (command[0]) {
-                case "connect": activeConnection = buildConnection(command); break;
-                case "put" : sendPutRequest(activeConnection, command, line); break;
-                case "get" : sendGetRequest(activeConnection, command, line); break;
-                case "disconnect": closeConnection(activeConnection); break;
+                case "connect":
+                    activeConnection = buildConnection(command);
+                    LOGGER.info("Client connecting");
+                    break;
+                case "put" :
+                    sendPutRequest(activeConnection, command, line);
+                    LOGGER.info("Client connecting");
+                    break;
+                case "get" :
+                    sendGetRequest(activeConnection, command, line);
+                    LOGGER.info("Client requesting get");
+                    break;
+                case "disconnect":
+                    closeConnection(activeConnection);
+                    LOGGER.info("Client disconnecting");
+                    break;
                 case "help":
                 case "":
-                    printHelp(); break;
-                case "quit": printEchoLine("Application exit!"); return;
-                default: printEchoLine("Unknown command.");
+                    printHelp();
+                    LOGGER.info("Client printing help");
+                    break;
+                case "quit":
+                    printEchoLine("Application exit!");
+                    LOGGER.info("Client exiting");
+                    return;
+                default:
+                    printEchoLine("Unknown command.");
+                    LOGGER.info("Client unknown command");
             }
         }
     }
