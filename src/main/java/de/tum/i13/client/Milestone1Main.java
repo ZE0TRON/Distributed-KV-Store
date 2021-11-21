@@ -9,14 +9,20 @@ import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static de.tum.i13.shared.LogSetup.setupLogging;
 
 
 public class Milestone1Main {
-    private static final Logger LOGGER = Logger.getLogger(Milestone1Main.class.getName());
+    private static Logger LOGGER;
     public static void main(String[] args) throws IOException {
-
+       setupLogging(Paths.get("echo-client.log"), Level.ALL);
+       LOGGER = Logger.getLogger(Milestone1Main.class.getName());
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         ActiveConnection activeConnection = null;
