@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 
 public class Milestone1Main {
@@ -44,7 +45,15 @@ public class Milestone1Main {
     }
 
     private static void printEchoLine(String msg) {
-        System.out.println("EchoClient> " + msg);
+        String[] parts = msg.split(" ");
+        StringBuilder output = new StringBuilder();
+        for (String part : parts)  {
+            if (!Objects.equals(part, "null")) {
+               output.append(part).append(" ");
+            }
+        }
+        output.deleteCharAt(output.length() -1);
+        System.out.println("EchoClient> " + output);
     }
 
     private static void closeConnection(ActiveConnection ac) {

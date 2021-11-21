@@ -97,17 +97,17 @@ public class KVPersist implements DataManager {
         }
     }
 
-    public PersistType delete(String key) throws JAXBException {
+    public PersistType delete(String key) throws Exception {
         try {
             KVItemCollection storedItems = this.deserializeItem();
             boolean isRemoved = storedItems.parts.removeIf(item -> item.key.equals(key));
             this.serializeAndPersistItem(storedItems);
             if (isRemoved) {
                 LOGGER.info("Key has been deleted.");
-            } else {
-                LOGGER.info("Key could not be found.");
+                return PersistType.DELETE;
             }
-            return PersistType.DELETE;
+            LOGGER.info("Key could not be found.");
+            throw new Exception("The key not found");
         } catch (JAXBException exception) {
             //TODO
             throw exception;

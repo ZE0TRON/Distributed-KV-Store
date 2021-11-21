@@ -24,11 +24,16 @@ public class KVCommandProcessor implements CommandProcessor {
         try {
             switch (parts[0]) {
                 case "put":
-                    if (parts.length < 3) {
+                    if (parts.length < 2) {
                         kvMessage = kvStore.commandNotFound(command);
                         break;
                     }
-                    kvMessage = kvStore.put(parts[1], parts[2]);
+                    else if (parts.length == 2) {
+                        kvMessage = kvStore.put(parts[1], null);
+                    }
+                    else {
+                        kvMessage = kvStore.put(parts[1], parts[2]);
+                    }
                     break;
                 case "get":
                     if (parts.length < 2) {

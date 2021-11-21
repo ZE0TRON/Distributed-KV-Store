@@ -42,6 +42,9 @@ public class KVStoreImpl implements KVStore {
 					LOGGER.fine("Delete operation not successfully executed on key: " + key + " because of key could not found");
 					return new KVMessageImpl(key, value, StatusType.DELETE_ERROR);
 				}
+				finally {
+					cache.delete(key);
+				}
 			}
 		} catch (Exception e) {
 			LOGGER.throwing("KVStoreImpl", "put on tuple: (" + key + ", "  + value + ")", e);
