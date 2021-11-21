@@ -6,6 +6,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.logging.Logger;
 
+import static de.tum.i13.shared.Util.trimCRNL;
+
 public class ConnectionManager implements ConnectionManagerInterface{
     private static final Logger LOGGER = Logger.getLogger(ConnectionManager.class.getName());
     private Socket socket;
@@ -21,6 +23,8 @@ public class ConnectionManager implements ConnectionManagerInterface{
 
     public void send(String message) {
         LOGGER.info("sending message " + message + " to the client");
+        LOGGER.info(" Message length" + message.length());
+        message = trimCRNL(message);
         out.write(message + "\r\n");
         out.flush();
     }

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import static de.tum.i13.shared.Util.trimCRNL;
+
 /**
  * Created by chris on 19.10.15.
  */
@@ -21,6 +23,7 @@ public class ActiveConnection implements AutoCloseable {
     }
 
     public void write(String command) {
+        command = trimCRNL(command);
         output.write(command + "\r\n");
         output.flush();
     }
@@ -34,6 +37,8 @@ public class ActiveConnection implements AutoCloseable {
         input.close();
         socket.close();
     }
+
+
 
     public boolean isSocketClosed(){
         return this.socket.isClosed();
