@@ -50,9 +50,9 @@ public class Milestone1Main {
         StringBuilder output = new StringBuilder();
         for (int i=0; i < parts.length; i++)  {
             String part = parts[i];
-            if (i == 0) {
-              part = part.toLowerCase(Locale.ROOT);
-            }
+//            if (i == 0) {
+//              part = part.toLowerCase(Locale.ROOT);
+//            }
             if (!Objects.equals(part, "null")) {
                output.append(part).append(" ");
             }

@@ -34,6 +34,6 @@ public class KVMessageImpl implements KVMessage {
 
 	@Override
 	public String toString() {
-		return this.status + " " + this.key  + " " + this.value;
+		return this.status.toString().toLowerCase(Locale.ROOT) + " " + this.key  + " " + this.value;
 	}
 }
