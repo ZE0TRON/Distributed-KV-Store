@@ -132,7 +132,7 @@ public class Milestone1Main {
             return;
         }
         int firstSpace = line.indexOf(" ");
-        if (command.length > 3 || command.length == 1 || firstSpace == -1 ){
+        if (command.length == 1 || firstSpace == -1 ){
             printEchoLine("Error! A put request must be like this: put <key> <value>.");
             return;
         }

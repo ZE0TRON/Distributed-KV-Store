@@ -5,6 +5,7 @@ import de.tum.i13.shared.CommandProcessor;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class KVCommandProcessor implements CommandProcessor {
@@ -33,7 +34,9 @@ public class KVCommandProcessor implements CommandProcessor {
                         kvMessage = kvStore.put(parts[1], null);
                     }
                     else {
-                        kvMessage = kvStore.put(parts[1], parts[2]);
+                        String args = command.substring(command.indexOf(' ') + 1);
+                        String value = args.substring(args.indexOf(' ') + 1);
+                        kvMessage = kvStore.put(parts[1], value);
                     }
                     break;
                 case "get":
