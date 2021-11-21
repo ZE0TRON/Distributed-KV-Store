@@ -1,7 +1,6 @@
 package de.tum.i13.client;
 
 import de.tum.i13.client.exception.ConnectionException;
-import de.tum.i13.server.ConnectionManager.ConnectionManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +8,6 @@ import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -120,7 +118,6 @@ public class Milestone1Main {
         try {
             String response = activeConnection.readline();
             printEchoLine(response);
-            activeConnection.readline();
         } catch (IOException e) {
             printEchoLine("Error! Not connected!");
         }
@@ -144,7 +141,6 @@ public class Milestone1Main {
         try {
             String response = activeConnection.readline();
             printEchoLine(response);
-            activeConnection.readline();
         } catch (IOException e) {
             printEchoLine("Error! Not connected!");
         }
