@@ -28,19 +28,19 @@ public class Milestone1Main {
                 case "":
                     printHelp(); break;
                 case "quit": printEchoLine("Application exit!"); return;
-                default: printEchoLine("Unknown command");
+                default: printEchoLine("Unknown command.");
             }
         }
     }
 
     private static void printHelp() {
-        System.out.println("Available commands:");
-        System.out.println("connect <address> <port> - Tries to establish a TCP- connection to the echo server based on the given server address and the port number of the echo service.");
-        System.out.println("disconnect - Tries to disconnect from the connected server.");
-        System.out.println("send <message> - Sends a text message to the echo server according to the communication protocol.");
-        System.out.println("logLevel <level> - Sets the logger to the specified log level (ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF)");
-        System.out.println("help - Display this help");
-        System.out.println("quit - Tears down the active connection to the server and exits the program execution.");
+        System.out.println("\tAvailable commands:");
+        System.out.println("\t\tconnect <address> <port> - Tries to establish a TCP connection to the server.");
+        System.out.println("\t\tdisconnect - Tries to disconnect from the connected server.");
+        System.out.println("\t\tsend <message> - Sends a text message to the server according to the communication protocol.");
+        System.out.println("\t\tlogLevel <level> - Sets the logger to the specified log level (ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF)");
+        System.out.println("\t\thelp - Displays this help description.");
+        System.out.println("\t\tquit - Tears down the active connection to the server and exits the program execution.");
     }
 
     private static void printEchoLine(String msg) {
