@@ -21,6 +21,7 @@ public class KVCommandProcessor implements CommandProcessor {
         if (parts.length == 0) {
            parts = new String[]{"help"};
         }
+        LOGGER.info("received command " + command);
         try {
             switch (parts[0]) {
                 case "put":
@@ -50,6 +51,7 @@ public class KVCommandProcessor implements CommandProcessor {
                     kvMessage = kvStore.put(parts[1], null);
                     break;
                 default:
+                    LOGGER.info("command not found");
                     kvMessage = kvStore.commandNotFound(command);
             }
             return kvMessage.toString();
