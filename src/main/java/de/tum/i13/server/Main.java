@@ -28,8 +28,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Config cfg = parseCommandlineArgs(args);  //Do not change this
-        // TODO change to cfg.logLevel
-        setupLogging(cfg.logfile, Level.ALL);
+        setupLogging(cfg.logfile, cfg.logLevel);
 
         final ServerSocket serverSocket = new ServerSocket();
 

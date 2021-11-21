@@ -25,8 +25,8 @@ public class Config {
     @CommandLine.Option(names = "-l", description = "Logfile", defaultValue = "echo.log")
     public Path logfile;
     
-//    @CommandLine.Option(names = "-ll", description = "LogLevel", defaultValue = "ALL")
-//    public Level logLevel;
+    @CommandLine.Option(names = "-ll", description = "LogLevel", defaultValue = "ALL")
+    public Level logLevel;
     
     @CommandLine.Option(names = "-c", description = "Size of the cache,", defaultValue = "100")
     public int cacheSize;
@@ -39,9 +39,13 @@ public class Config {
 
     public static Config parseCommandlineArgs(String[] args) {
         Config cfg = new Config();
-        // TODO fix loglevel issue
-        CommandLine.ParseResult addressParseResult = new CommandLine(cfg).registerConverter(InetSocketAddress.class, new InetSocketAddressTypeConverter()).parseArgs(args);
-        //CommandLine.ParseResult logLevelParseResult = new CommandLine(cfg).registerConverter(Level.class, new LevelTypeConverter()).parseArgs(args);
+        try {
+            CommandLine.ParseResult parseResult = new CommandLine(cfg).registerConverter(InetSocketAddress.class, new InetSocketAddressTypeConverter()).registerConverter(Level.class, new LevelTypeConverter()).parseArgs(args);
+        } catch (CommandLine.ParameterException e){
+            e.printStackTrace();
+            CommandLine.usage(new Config(), System.out);
+            System.exit(-1);
+        }
 
         if(!Files.exists(cfg.dataDir)) {
             try {
@@ -52,23 +56,6 @@ public class Config {
                 System.exit(-1);
             }
         }
-        if(!addressParseResult.errors().isEmpty()) {
-            for(Exception ex : addressParseResult.errors()) {
-                ex.printStackTrace();
-            }
-
-            CommandLine.usage(new Config(), System.out);
-            System.exit(-1);
-        }
-//        if(!logLevelParseResult.errors().isEmpty()) {
-//            for(Exception ex : logLevelParseResult.errors()) {
-//                ex.printStackTrace();
-//            }
-//
-//            CommandLine.usage(new Config(), System.out);
-//            System.exit(-1);
-//        }
-
         return cfg;
     }
 
@@ -80,6 +67,7 @@ public class Config {
                 ", bootstrap=" + bootstrap +
                 ", dataDir=" + dataDir +
                 ", logfile=" + logfile +
+                ", logLevel=" + logLevel +
                 ", usagehelp=" + usagehelp +
                 '}';
     }

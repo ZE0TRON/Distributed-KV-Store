@@ -1,8 +1,13 @@
 package de.tum.i13.client;
 
+import de.tum.i13.client.exception.ConnectionException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 public class Milestone1Main {
@@ -14,21 +19,19 @@ public class Milestone1Main {
             System.out.print("EchoClient> ");
             String line = reader.readLine();
             String[] command = line.split(" ");
-            //System.out.print("command:");
-            //System.out.println(line);
             switch (command[0]) {
                 case "connect": activeConnection = buildConnection(command); break;
                 case "put" : sendPutRequest(activeConnection, command, line); break;
                 case "get" : sendGetRequest(activeConnection, command, line); break;
                 case "disconnect": closeConnection(activeConnection); break;
-                case "help": printHelp(); break;
+                case "help":
+                case "":
+                    printHelp(); break;
                 case "quit": printEchoLine("Application exit!"); return;
                 default: printEchoLine("Unknown command");
             }
         }
     }
-
-
 
     private static void printHelp() {
         System.out.println("Available commands:");
@@ -44,14 +47,17 @@ public class Milestone1Main {
         System.out.println("EchoClient> " + msg);
     }
 
-    private static void closeConnection(ActiveConnection activeConnection) {
-        if(activeConnection != null) {
+    private static void closeConnection(ActiveConnection ac) {
+        if (ac == null || !ac.isSocketInitiated() || !ac.isSocketConnected() || ac.isSocketClosed()) {
+            printEchoLine("Not connected.");
+        }
+        else {
             try {
-                activeConnection.close();
-            } catch (Exception e) {
-                //e.printStackTrace();
-                //TODO: handle gracefully
-                activeConnection = null;
+                String info = ac.getInfo();
+                ac.close();
+                printEchoLine("Connection with " + info  + " has been terminated.");
+            } catch (IOException e) {
+                throw new ConnectionException("Error while disconnecting ", e);
             }
         }
     }
@@ -71,6 +77,7 @@ public class Milestone1Main {
         try {
             String response = activeConnection.readline();
             printEchoLine(response);
+            activeConnection.readline();
         } catch (IOException e) {
             printEchoLine("Error! Not connected!");
         }
@@ -94,6 +101,7 @@ public class Milestone1Main {
         try {
             String response = activeConnection.readline();
             printEchoLine(response);
+            activeConnection.readline();
         } catch (IOException e) {
             printEchoLine("Error! Not connected!");
         }
@@ -102,18 +110,35 @@ public class Milestone1Main {
     private static ActiveConnection buildConnection(String[] command) {
         if(command.length == 3){
             try {
-                EchoConnectionBuilder kvcb = new EchoConnectionBuilder(command[1], Integer.parseInt(command[2]));
+                String host = command[1];
+                Milestone1Main.checkValidInternetAddress(host);
+                int port = Integer.parseInt(command[2]);
+                EchoConnectionBuilder kvcb = new EchoConnectionBuilder(host, port);
                 ActiveConnection ac = kvcb.connect();
-                System.out.println("Waiting read");
                 String confirmation = ac.readline();
-                System.out.println("Confirmation passed");
-                printEchoLine(confirmation);
+                printEchoLine(confirmation + " with " + ac.getInfo() + ".");
                 return ac;
+            } catch (NumberFormatException e) {
+                printEchoLine("Invalid port number for connect command!");
+            } catch (ConnectionException e) {
+                printEchoLine(e.getMessage());
+            } catch (ConnectException e) {
+                printEchoLine("Server is unreachable, connection refused.");
             } catch (Exception e) {
-                //TODO: separate between could not connect, unknown host, invalid port and no port
-                printEchoLine("Could not connect to server");
+                printEchoLine("Could not connect to server!");
             }
         }
+        else {
+            printEchoLine("Invalid number of arguments, the command must be in this format: connect <addr> <port>");
+        }
         return null;
+    }
+
+    private static void checkValidInternetAddress(String url) {
+        try {
+            InetAddress.getByName(url);
+        } catch (UnknownHostException ex) {
+            throw new ConnectionException("Invalid address for connect command!");
+        }
     }
 }

@@ -57,10 +57,10 @@ public class KVStoreImpl implements KVStore {
 				LOGGER.fine("Cache hit value :" + item.value + " for key: " + item.key );
 				return new KVMessageImpl(item.key, item.value, StatusType.GET_SUCCESS);
 			} else {
-				LOGGER.fine("Cache miss  for key: " + key );
+				LOGGER.fine("Cache miss for key " + key );
 				item = kvPersist.get(key);
 				if (item != null) {
-					LOGGER.fine("Disk hit value :" + item.value + " for key: " + item.key);
+					LOGGER.fine("Disk hit value " + item.value + " for key " + item.key);
 					cache.put(item);
 					return new KVMessageImpl(item.key, item.value, StatusType.GET_SUCCESS);
 				}

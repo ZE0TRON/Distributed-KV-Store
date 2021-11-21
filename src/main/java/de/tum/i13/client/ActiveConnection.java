@@ -29,13 +29,25 @@ public class ActiveConnection implements AutoCloseable {
         return input.readLine();
     }
 
-    public void close() throws Exception {
+    public void close() throws IOException {
         output.close();
         input.close();
         socket.close();
     }
 
+    public boolean isSocketClosed(){
+        return this.socket.isClosed();
+    }
+
+    public boolean isSocketInitiated(){
+        return this.socket != null;
+    }
+
+    public boolean isSocketConnected(){
+        return this.socket.isConnected();
+    }
+
     public String getInfo() {
-        return "/" + this.socket.getRemoteSocketAddress().toString();
+        return this.socket.getRemoteSocketAddress().toString();
     }
 }

@@ -47,11 +47,11 @@ public abstract class CacheManager implements DataManager {
 	 * @return value for the given key, null if the key is not found.
 	 */
 	synchronized public KVItem get(String key) {
-		LOGGER.fine("Get operation executing for key: " + key);
+		LOGGER.fine("Get operation executing for key " + key);
 
 		Value v = map.get(key);
 		if (v != null) {
-			LOGGER.fine("Get operation found value :" + v + " for key: " + key + " in cache.");
+			LOGGER.fine("Get operation found value " + v + " for key " + key + " in cache.");
 
 			updateCache(key);
 			return new KVItem(key, v.data);
@@ -83,7 +83,7 @@ public abstract class CacheManager implements DataManager {
 
 		Value v = map.get(item.key);
 		if (v != null) {
-			LOGGER.fine("Put operation found value :" + item.value + " for key: " + item.key + " in cache and updating it.");
+			LOGGER.fine("Put operation found value " + item.value + " for key " + item.key + " in cache and updating it.");
 
 			updateCache(item.key);
 			v.data = item.value;
@@ -91,7 +91,7 @@ public abstract class CacheManager implements DataManager {
 			return PersistType.UPDATE;
 
 		} else {
-			LOGGER.fine("Put operation could not found value :" + item.value + " for key: " + item.key
+			LOGGER.fine("Put operation could not found value " + item.value + " for key " + item.key
 					+ " in cache and inserting it into cache.");
 
 			insertToCache(item);
@@ -114,7 +114,7 @@ public abstract class CacheManager implements DataManager {
 
 			Value v = map.get(key);
 			if (v != null) {
-				LOGGER.fine("Delete operation found value: " + v + " for key: " + key + " and removing it.");
+				LOGGER.fine("Delete operation found value " + v + " for key " + key + " and removing it.");
 
 				map.remove(key);
 				deleteInternal(key);
@@ -142,7 +142,7 @@ public abstract class CacheManager implements DataManager {
 	 * @param item the key value of this pair.
 	 */
 	protected void insertToCache(KVItem item) {
-		LOGGER.fine("The value :" + item.value + " for key: " + item.key
+		LOGGER.fine("The value " + item.value + " for key " + item.key
 				+ " is inserting into the cache, according to the cache displacement strategy.");
 
 		if (map.size() >= cacheSize) {
