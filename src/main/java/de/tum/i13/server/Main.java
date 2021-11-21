@@ -1,6 +1,5 @@
 package de.tum.i13.server;
 
-import de.tum.i13.server.echo.EchoLogic;
 import de.tum.i13.server.kv.KVPersist;
 import de.tum.i13.server.thread.ConnectionHandleThread;
 import de.tum.i13.shared.CommandProcessor;
@@ -12,14 +11,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
 
 import de.tum.i13.server.kv.KVCommandProcessor;
 import de.tum.i13.server.kv.KVStoreImpl;
 import de.tum.i13.server.storageManagment.CacheManagerFactory;
-import de.tum.i13.server.storageManagment.DiskManager;
-import de.tum.i13.shared.CommandProcessor;
-import de.tum.i13.shared.Config;
 
 /**
  * Created by chris on 09.01.15.
