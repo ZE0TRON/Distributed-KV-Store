@@ -36,6 +36,11 @@ public abstract class CacheManager implements DataManager {
 		return instance;
 	}
 
+	/**
+	 * Checks if this {@code CacheManager} is already initialized.
+	 * 
+	 * @return true if initialized, false otherwise.
+	 */
 	public static boolean isInitialized() {
 		return instance != null;
 	}
@@ -43,8 +48,8 @@ public abstract class CacheManager implements DataManager {
 	/**
 	 * Gets the value for the given key.
 	 * 
-	 * @param key the key whose value is wanted.
-	 * @return value for the given key, null if the key is not found.
+	 * @param key the key of the wanted item.
+	 * @return KVItem with the given key, null if the key is not found.
 	 */
 	synchronized public KVItem get(String key) {
 		LOGGER.fine("Get operation executing for key " + key);
@@ -58,32 +63,20 @@ public abstract class CacheManager implements DataManager {
 		}
 
 		return null;
-//		KVItem item = KVPersist.getInstance().get(key);
-//		if (item != null) {
-//			LOGGER.fine(
-//					"Get operation found value :" + item.value + " for key: " + item.key + "in disk and inserted into cache.");
-//
-//			insertToCache(item);
-//		}
-
-	//	return item;
 	}
 
 	/**
-	 * Puts the given key and value pair.
+	 * Puts the given key-value item.
 	 * 
 	 * @param item the key, value pair.
-	 * @return true if key and value pair is inserted, false if value for key is
-	 *         updated.
+	 * @return PersistType.UPDATE if an item with the same key already exists,
+	 *         PersistType.INSERT otherwise.
 	 */
 	synchronized public PersistType put(KVItem item) throws Exception {
-//		LOGGER.fine("Put operation executing on value :" + item.value + " for key: " + item.key);
-//
-//		boolean isInsert = KVPersist.getInstance().put(item);
-
 		Value v = map.get(item.key);
 		if (v != null) {
-			LOGGER.fine("Put operation found value " + item.value + " for key " + item.key + " in cache and updating it.");
+			LOGGER.fine(
+					"Put operation found value " + item.value + " for key " + item.key + " in cache and updating it.");
 
 			updateCache(item.key);
 			v.data = item.value;
@@ -104,21 +97,16 @@ public abstract class CacheManager implements DataManager {
 	 * Deletes the item with the given key.
 	 * 
 	 * @param key the key of the item to be deleted.
-	 * @return true if the item is deleted, false if it could not be deleted or not
-	 *         found.
+	 * @return PersistType.DELETE after delete operation is completed.
 	 */
 	synchronized public PersistType delete(String key) {
-//		LOGGER.fine("Delete operation executing on key: " + key);
-//
-//		boolean isRemoved = DiskManager.getInstance().delete(key);
+		Value v = map.get(key);
+		if (v != null) {
+			LOGGER.fine("Delete operation found value " + v + " for key " + key + " and removing it.");
 
-			Value v = map.get(key);
-			if (v != null) {
-				LOGGER.fine("Delete operation found value " + v + " for key " + key + " and removing it.");
-
-				map.remove(key);
-				deleteInternal(key);
-			}
+			map.remove(key);
+			deleteInternal(key);
+		}
 
 		return PersistType.DELETE;
 	}
@@ -136,10 +124,10 @@ public abstract class CacheManager implements DataManager {
 	protected abstract void updateCache(String key);
 
 	/**
-	 * Inserts the pair of key and value according to displacement strategy of this
+	 * Inserts the given key-value item according to displacement strategy of this
 	 * {@code CacheManager} into the cache.
 	 * 
-	 * @param item the key value of this pair.
+	 * @param item the item that should be inserted into this cache.
 	 */
 	protected void insertToCache(KVItem item) {
 		LOGGER.fine("The value " + item.value + " for key " + item.key
