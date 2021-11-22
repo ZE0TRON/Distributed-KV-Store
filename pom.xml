@@ -110,17 +110,16 @@
                     </execution>
                 </executions>
             </plugin>
-<!--        Plugins for report generation-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-surefire-plugin</artifactId>-->
-<!--                <version>3.0.0-M5</version>-->
-<!--                <configuration>-->
-<!--                    <includes>-->
-<!--                        <include>**/*Test.java</include>-->
-<!--                    </includes>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
 <!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
 <!--                <artifactId>maven-surefire-report-plugin</artifactId>-->
@@ -191,7 +190,12 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>2.3.2</version>
         </dependency>
-<!--        Dependencies for report generation -->
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0-M5</version>
+                 </dependency>
+            <!--        Dependencies for report generation -->
 <!--        <dependency>-->
 <!--            <groupId>org.apache.maven.plugins</groupId>-->
 <!--            <artifactId>maven-surefire-report-plugin</artifactId>-->
@@ -201,11 +205,6 @@
 <!--            <groupId>org.apache.maven.plugins</groupId>-->
 <!--            <artifactId>maven-site-plugin</artifactId>-->
 <!--            <version>3.7.1</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.maven.plugins</groupId>-->
-<!--            <artifactId>maven-surefire-plugin</artifactId>-->
-<!--            <version>3.0.0-M5</version>-->
 <!--        </dependency>-->
     </dependencies>
 </project>
