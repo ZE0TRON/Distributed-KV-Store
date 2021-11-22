@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kvItemCollection>
+    <parts>
+        <key>abc</key>
+        <value>123</value>
+    </parts>
+    <parts>
+        <key>apple123@#</key>
+        <value>orange-@+$</value>
+    </parts>
+    <parts>
+        <key>dog</key>
+        <value>dog three cat</value>
+    </parts>
+</kvItemCollection>
