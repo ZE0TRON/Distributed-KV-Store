@@ -35,8 +35,8 @@ public class CacheManagerFIFOTest implements CMTest {
 		assertEquals("Initialize CacheManager first!", thrown.getMessage());
 	}
 
-	private CacheManagerFIFO create(int cahceSize) {
-		CacheManagerFactory.create(cahceSize, CacheDisplacementStrategy.FIFO);
+	private CacheManagerFIFO create(int cacheSize) {
+		CacheManagerFactory.create(cacheSize, CacheDisplacementStrategy.FIFO);
 
 		return (CacheManagerFIFO) CacheManager.getInstance();
 	}
@@ -122,10 +122,7 @@ public class CacheManagerFIFOTest implements CMTest {
 
 	}
 
-	// should delete method diskmanager be mocked?
-	// should map size be 9?
 	@Test
-	@DisplayName("Delete key not in the cache and not in disk for FIFO")
 	public void testDeleteKeyNotInCache() throws Exception {
 		CacheManagerFIFO instance = create(100);
 
@@ -180,6 +177,5 @@ public class CacheManagerFIFOTest implements CMTest {
 		assertEquals(3, instance.map.size());
 
 	}
-
 
 }

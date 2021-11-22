@@ -45,10 +45,10 @@ public class CacheManagerFIFO extends CacheManager {
 	}
 
 	/**
-	 * Inserts the pair of key and value according to the FIFO strategy into the
+	 * Inserts the given key-value item according to the FIFO strategy into the
 	 * cache.
 	 * 
-	 * @param item the key, value pair.
+	 * @param item the item that should be inserted into this cache.
 	 */
 	@Override
 	protected void insertToCache(KVItem item) {
