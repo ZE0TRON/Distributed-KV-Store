@@ -1,28 +1,23 @@
-package de.tum.i13.server;
+package de.tum.i13.ecs;
 
-import de.tum.i13.server.kv.KVPersist;
+import de.tum.i13.ecs.cs.ECS;
 import de.tum.i13.shared.ConnectionManager.ConnectionHandleThread;
 import de.tum.i13.shared.CommandProcessor;
-import de.tum.i13.shared.ServerConfig;
-import static de.tum.i13.shared.ServerConfig.parseCommandlineArgs;
-import static de.tum.i13.shared.LogSetup.setupLogging;
+import de.tum.i13.shared.ECSConfig;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import de.tum.i13.server.kv.KVCommandProcessor;
-import de.tum.i13.server.kv.KVStoreImpl;
-import de.tum.i13.server.storageManagment.CacheManagerFactory;
+import static de.tum.i13.shared.ECSConfig.parseCommandlineArgs;
+import static de.tum.i13.shared.LogSetup.setupLogging;
 
-/**
- * Created by chris on 09.01.15.
- */
 public class Main {
-
     public static void main(String[] args) throws IOException {
-        ServerConfig cfg = parseCommandlineArgs(args);  //Do not change this
+        // TODO setup config parser for ECS
+        ECSConfig cfg = parseCommandlineArgs(args);  //Do not change this
+        // TODO logging or not ?
         setupLogging(cfg.logfile, cfg.logLevel);
 
         final ServerSocket serverSocket = new ServerSocket();
@@ -40,23 +35,19 @@ public class Main {
         serverSocket.bind(new InetSocketAddress(cfg.listenaddr, cfg.port));
 
         try {
-            KVPersist.init(cfg.dataDir);
-            CacheManagerFactory.create(cfg.cacheSize, cfg.cacheDisplacementStrategy);
+            // TODO init services
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
         // If you use multithreading you need locking
-        CommandProcessor logic = new KVCommandProcessor(new KVStoreImpl());
-
-
-
+        CommandProcessor logic = new ECSCommandProcessor(new ECS());
         // TODO checkout help thing
         while (true) {
             Socket clientSocket = serverSocket.accept();
             //When we accept a connection, we start a new Thread for this connection
-            System.out.println("Client connected");
+            System.out.println("KV Server connected");
             Thread th = new ConnectionHandleThread(logic, clientSocket);
             th.start();
         }

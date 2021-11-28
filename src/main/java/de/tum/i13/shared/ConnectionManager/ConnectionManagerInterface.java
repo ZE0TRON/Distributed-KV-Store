@@ -1,4 +1,4 @@
-package de.tum.i13.server.ConnectionManager;
+package de.tum.i13.shared.ConnectionManager;
 
 import java.io.IOException;
 
