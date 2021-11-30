@@ -1,9 +1,6 @@
 package de.tum.i13.ecs;
 
-import de.tum.i13.ecs.cs.ConfigurationService;
-import de.tum.i13.server.kv.KVMessage;
-import de.tum.i13.server.kv.KVMessageImpl;
-import de.tum.i13.server.kv.KVStore;
+import de.tum.i13.ecs.keyring.ConfigurationService;
 import de.tum.i13.shared.CommandProcessor;
 
 import java.net.InetAddress;

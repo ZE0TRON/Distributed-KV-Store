@@ -42,7 +42,7 @@ public class Main {
         }
 
         // If you use multithreading you need locking
-        CommandProcessor logic = new ECSCommandProcessor(new ECS());
+        CommandProcessor logic = new ECSCommandProcessor(ECS.getInstance());
         // TODO checkout help thing
         while (true) {
             Socket clientSocket = serverSocket.accept();
