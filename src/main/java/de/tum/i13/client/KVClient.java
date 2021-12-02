@@ -3,7 +3,6 @@ package de.tum.i13.client;
 import static de.tum.i13.shared.LogSetup.setupLogging;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.Objects;
@@ -13,19 +12,19 @@ import java.util.logging.Logger;
 public class KVClient {
 	private static Logger LOGGER = Logger.getLogger(KVClient.class.getName());
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		setupLogging(Paths.get("echo-client.log"), Level.ALL);
 		
 		String host = args[0];
 		CommandSender.checkValidInternetAddress(host);
 		int port = Integer.parseInt(args[1]);
 		
-		KVStoreClientLibrary kvStore = new KVStoreClientLibrary(host, port);
+		LOGGER.fine("Initial server info host/post: " + host + "/" + port);
 		
+		KVStoreClientLibrary kvStore = new KVStoreClientLibrary(host, port);
+		 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
-		
-
 		while (true) {
 			try {
 				System.out.print("EchoClient> ");
@@ -34,14 +33,17 @@ public class KVClient {
 				String[] command = line.split(" ");
 				switch (command[0]) {
 				case "put":
-					printEchoLine(kvStore.sendPutRequest(command, line));
+					printEchoLine(kvStore.sendPutRequest(line));
 					LOGGER.info("Client connecting");
 					break;
 				case "get":
 					printEchoLine(kvStore.sendGetRequest(line));
 					LOGGER.info("Client requesting get");
 					break;
-					// TODO delete yazýlmalý
+				case "delete":
+					printEchoLine(kvStore.sendDeleteRequest(line));
+					LOGGER.info("Client requesting delete");
+					break;
 				case "help":
 				case "":
 					printHelp();
@@ -56,8 +58,8 @@ public class KVClient {
 					LOGGER.info("Client unknown command");
 				}
 			} catch (Exception e) {
-				printEchoLine("Unknown error.");
-				e.printStackTrace();
+				LOGGER.throwing("KVClient", "main", e);
+				printEchoLine("Error with message: " + e.getMessage());
 			}
 		}
 	}
