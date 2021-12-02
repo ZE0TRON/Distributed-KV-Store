@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 public class KVCommandProcessor implements CommandProcessor {
     private KVStore kvStore;
+    private KVServer kvServer;
     private static final Logger LOGGER = Logger.getLogger(KVCommandProcessor.class.getName());
     public KVCommandProcessor(KVStore kvStore) {
         this.kvStore = kvStore;
@@ -53,6 +54,12 @@ public class KVCommandProcessor implements CommandProcessor {
                     }
                     kvMessage = kvStore.put(parts[1], null);
                     break;
+                case "keyrange":
+                    if (parts.length != 1){
+                        kvMessage = kvStore.commandNotFound(command);
+                        break;
+                    }
+                    kvMessage = kvServer.keyrange();
                 default:
                     LOGGER.info("command not found");
                     kvMessage = kvStore.commandNotFound(command);
