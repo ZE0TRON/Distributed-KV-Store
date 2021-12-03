@@ -28,12 +28,12 @@ public class CommandSender {
 		LOGGER.fine("Sending the command: " + command);
 		activeConnection.write(command);
 
-		String responce = activeConnection.readline();
-		LOGGER.fine("Responce for the command: " + command + " responce: " + responce);
+		String response = activeConnection.readline();
+		LOGGER.fine("Response for the command: " + command + " response: " + response);
 
 		closeConnection(activeConnection);
 
-		return responce;
+		return response;
 	}
 
 	private ActiveConnection buildConnection(String host, int port) {
@@ -59,7 +59,7 @@ public class CommandSender {
 	}
 
 	private ActiveConnection connect(String host, int port) throws IOException {
-		LOGGER.fine("Connectiong to host/post: " + host + "/" + port);
+		LOGGER.fine("Connecting to host/port: " + host + "/" + port);
 		Socket s = new Socket(host, port);
 
 		PrintWriter output = new PrintWriter(new OutputStreamWriter(s.getOutputStream(), Constants.TELNET_ENCODING));
