@@ -18,6 +18,15 @@ public class CommandSender {
 
 	private static Logger LOGGER = Logger.getLogger(CommandSender.class.getName());
 
+	/**
+	 * connects to the server with the given address and port and sends the given
+	 * command
+	 * 
+	 * @param host    the address of the server to be connected
+	 * @param port    the port of the server to be connected
+	 * @param command the command to be sent to the server
+	 * @return response of the server
+	 */
 	public String sendCommandToServer(String host, int port, String command) throws IOException {
 		checkValidInternetAddress(host);
 
@@ -35,6 +44,21 @@ public class CommandSender {
 
 		return response;
 	}
+
+	/**
+	 * Builds the connection to the server with the given address and port with the
+	 * confirmations response of the server for logging and handles the exception
+	 * with further information.
+	 * 
+	 * @param host the address of the server
+	 * @param port the port of the server
+	 * @return {@code ActiveConnection} that represents this connection
+	 * @throws NumberFormatException if the given port number is in a false format
+	 * @throws ConnectionException   if an error occurs while connecting to the
+	 *                               server
+	 * @throws ConnectException      if the server does not accept the connection
+	 *                               request
+	 */
 
 	private ActiveConnection buildConnection(String host, int port) {
 		try {
@@ -58,6 +82,14 @@ public class CommandSender {
 		return null;
 	}
 
+	/**
+	 * Connects to the given host and port.
+	 * 
+	 * @param host the host to be connected.
+	 * @param port the port of the host to be connected.
+	 * @return {@code ActiveConnection} that represents this connection.
+	 * @throws IOException if an error occurs while connecting.
+	 */
 	private ActiveConnection connect(String host, int port) throws IOException {
 		LOGGER.fine("Connecting to host/port: " + host + "/" + port);
 		Socket s = new Socket(host, port);
@@ -68,6 +100,12 @@ public class CommandSender {
 		return new ActiveConnection(s, output, input);
 	}
 
+	/**
+	 * Closes the given {@code ActiveConnection}
+	 * 
+	 * @param activeConnection {@code ActiveConnection} to be closed.
+	 * @throws ConnectException if an error occurs while disconnecting.
+	 */
 	private void closeConnection(ActiveConnection activeConnection) {
 		if (activeConnection == null || !activeConnection.isSocketInitiated() || !activeConnection.isSocketConnected()
 				|| activeConnection.isSocketClosed()) {
@@ -83,6 +121,13 @@ public class CommandSender {
 		}
 	}
 
+	/**
+	 * Check if the given Internet address is valid.
+	 * 
+	 * @param url address to be checked.
+	 * @throws UnknownHostException if an invalid address is given.
+	 * 
+	 */
 	public static void checkValidInternetAddress(String url) {
 		try {
 			InetAddress.getByName(url);

@@ -21,8 +21,12 @@ public class KVClient {
 		
 		LOGGER.fine("Initial server info host/post: " + host + "/" + port);
 		
-		KVStoreClientLibrary kvStore = new KVStoreClientLibrary(host, port);
+		KVStoreClientLibrary kvStore = new KVStoreClientLibraryImpl(host, port);
 		 
+		CLI(kvStore);
+	}
+
+	public static void CLI(KVStoreClientLibrary kvStore) {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
 		while (true) {
