@@ -1,15 +1,21 @@
 package de.tum.i13.client;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import javax.xml.bind.DatatypeConverter;
+import de.tum.i13.ecs.keyring.ConsistentHashingService;
+import de.tum.i13.ecs.keyring.HashService;
+import de.tum.i13.shared.Constants;
 
 public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 
 	private ArrayList<KeyRange> metaData;
+	
+    private HashService hashService;
+    private static final String HASHING_ALGORITHM = "md5";
+    private static final int MAX_SLEEP_IN_MILLI_SECOND = 1000;
+    private static final int SLEEP_BASE_IN_MILLI_SECOND = 10;
 
 	/**
 	 * Constructs a {@code KVStoreClientLibraryImpl} with the given address and port
@@ -20,7 +26,14 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 */
 	public KVStoreClientLibraryImpl(String host, int port) {
 		metaData = new ArrayList<>();
-		metaData.add(new KeyRange(null, null, host, port)); // FIXME eksik
+		metaData.add(new KeyRange(null, null, host, port));
+		
+		try {
+            this.hashService = new ConsistentHashingService(HASHING_ALGORITHM);
+        } catch (NoSuchAlgorithmException e) {
+            // TODO Log here
+            e.printStackTrace();
+        }
 	}
 
 	/**
@@ -82,6 +95,9 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 */
 
 	private String sendRequest(String line) throws Exception {
+		return sendRequest(line, 0);
+	}
+	private String sendRequest(String line, int attempt) throws Exception {
 		String[] parts = line.split(" ");
 
 		CommandSender cs = new CommandSender();
@@ -95,22 +111,33 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 			updateKeyRanges(kr.host, kr.port);
 			return sendRequest(line);
 		case "server_stopped":
-			// FIXME implement according to
-			// https://aws.amazon.com/tr/blogs/architecture/exponential-backoff-and-jitter/
-			Thread.sleep(1000);
+			sleepBackoffAndJitter(attempt++);
 			return sendRequest(line);
 
 //		case "server_write_lock":
-//			// TODO ??????
-//			return response;
+//		case "get_success":
+//		case "get_error":
+//		case "put_success":
+//		case "put_update":
+//		case "put_error":
 //		case "delete_success":
 //		case "delete_error":
-//			return response;
-
-		// yeni key-range daðýlýmý yapýlýrken
 		default:
 			return response;
 		}
+	}
+
+	/**
+	 * FIXME Add JavaDoc
+	 * https://aws.amazon.com/tr/blogs/architecture/exponential-backoff-and-jitter/
+	 * 
+	 * @param attempt
+	 * @throws InterruptedException
+	 */
+	private void sleepBackoffAndJitter(int attempt) throws InterruptedException {
+		int sleep = Math.min(MAX_SLEEP_IN_MILLI_SECOND, SLEEP_BASE_IN_MILLI_SECOND * (int) Math.pow(2,  attempt));
+		sleep = (int) (Math.random() * sleep);
+		Thread.sleep(sleep);
 	}
 
 	/**
@@ -167,11 +194,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 *                                  available.
 	 */
 	private String findHash(String key) throws NoSuchAlgorithmException {
-		MessageDigest md = MessageDigest.getInstance("MD5");
-		md.update(key.getBytes());
-
-		byte[] digest = md.digest();
-		return DatatypeConverter.printHexBinary(digest).toUpperCase();
+		return new String(hashService.hash(key), Constants.STRING_CHARSET);
 	}
 
 	private class KeyRange {
