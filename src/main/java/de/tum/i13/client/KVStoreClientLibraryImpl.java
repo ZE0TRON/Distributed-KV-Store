@@ -11,11 +11,11 @@ import de.tum.i13.shared.Constants;
 public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 
 	private ArrayList<KeyRange> metaData;
-	
-    private HashService hashService;
-    private static final String HASHING_ALGORITHM = "md5";
-    private static final int MAX_SLEEP_IN_MILLI_SECOND = 1000;
-    private static final int SLEEP_BASE_IN_MILLI_SECOND = 10;
+
+	private HashService hashService;
+	private static final String HASHING_ALGORITHM = "md5";
+	private static final int MAX_SLEEP_IN_MILLI_SECOND = 1000;
+	private static final int SLEEP_BASE_IN_MILLI_SECOND = 10;
 
 	/**
 	 * Constructs a {@code KVStoreClientLibraryImpl} with the given address and port
@@ -27,13 +27,13 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	public KVStoreClientLibraryImpl(String host, int port) {
 		metaData = new ArrayList<>();
 		metaData.add(new KeyRange(null, null, host, port));
-		
+
 		try {
-            this.hashService = new ConsistentHashingService(HASHING_ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            // TODO Log here
-            e.printStackTrace();
-        }
+			this.hashService = new ConsistentHashingService(HASHING_ALGORITHM);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Log here
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -97,6 +97,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	private String sendRequest(String line) throws Exception {
 		return sendRequest(line, 0);
 	}
+
 	private String sendRequest(String line, int attempt) throws Exception {
 		String[] parts = line.split(" ");
 
@@ -128,25 +129,27 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	}
 
 	/**
-	 * FIXME Add JavaDoc
+	 * Causes the currently executing thread to sleep for the number of milliseconds
+	 * specified by "Full Jitter" algorithm explained in
 	 * https://aws.amazon.com/tr/blogs/architecture/exponential-backoff-and-jitter/
 	 * 
-	 * @param attempt
-	 * @throws InterruptedException
+	 * @param attempt number of attempts made by the client
+	 * @throws InterruptedException if any thread has interrupted the current
+	 *                              thread.
 	 */
 	private void sleepBackoffAndJitter(int attempt) throws InterruptedException {
-		int sleep = Math.min(MAX_SLEEP_IN_MILLI_SECOND, SLEEP_BASE_IN_MILLI_SECOND * (int) Math.pow(2,  attempt));
+		int sleep = Math.min(MAX_SLEEP_IN_MILLI_SECOND, SLEEP_BASE_IN_MILLI_SECOND * (int) Math.pow(2, attempt));
 		sleep = (int) (Math.random() * sleep);
 		Thread.sleep(sleep);
 	}
 
 	/**
-	 * Sends the keyrange command to the server and updates the key ranges according
-	 * to the response of the server.
+	 * Sends the "keyrange" command to the server and updates the key ranges
+	 * according to the response of the server.
 	 * 
 	 * @param host the address of the server.
 	 * @param port the port of the server.
-	 * @throws IOException      if an error occurs while sending the keyrange
+	 * @throws IOException      if an error occurs while sending the "keyrange"
 	 *                          command to the server.
 	 * @throws RuntimeException if the provided key ranges in the response of the
 	 *                          server are not in a valid form.
