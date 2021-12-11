@@ -32,6 +32,25 @@
                     </descriptorRefs>
                 </configuration>
                 <executions>
+	                <execution> <!--If we want to build multiple jar-with-dependencies, add multiple executions-->
+	                        <id>KVClient</id>
+	                        <configuration>
+	                            <appendAssemblyId>false</appendAssemblyId>
+	                            <archive>
+	                                <manifest>
+	                                    <mainClass>de.tum.i13.client.KVClient</mainClass>
+	                                </manifest>
+	                            </archive>
+	                            <descriptorRefs>
+	                                <descriptorRef>jar-with-dependencies</descriptorRef>
+	                            </descriptorRefs>
+	                            <finalName>KVClient</finalName>
+	                        </configuration>
+	                        <phase>package</phase>
+	                        <goals>
+	                            <goal>single</goal>
+	                        </goals>
+	                    </execution>
                     <execution>
                         <id>threadperconnection-echo</id>
                         <configuration>
