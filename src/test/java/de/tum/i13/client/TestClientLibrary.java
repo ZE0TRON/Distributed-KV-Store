@@ -65,26 +65,44 @@ public class TestClientLibrary {
 	@Test
 	public void testSendPutRequest() throws Exception {
 
-		String expected = "put_success key1";
-		when(commandSender.sendCommandToServer("localhost", 12345, "put key1")).thenReturn(expected);
-		String result = clientLibrary.sendGetRequest("put key1");
+		// put_success
+		String expectedSuccess = "put_success key1";
+		when(commandSender.sendCommandToServer("localhost", 12345, "put key1 value1")).thenReturn(expectedSuccess);
+		String resultSuccess = clientLibrary.sendPutRequest("put key1 value1");
 
-		assertEquals(expected, result);
+		assertEquals(expectedSuccess, resultSuccess);
 
-		// put_update <key>
-		// put_error <key> <value>
+		// put_update
+		String expectedUpdate = "put_update key1";
+		when(commandSender.sendCommandToServer("localhost", 12345, "put key1 value2")).thenReturn(expectedUpdate);
+		String resultUpdate = clientLibrary.sendPutRequest("put key1 value2");
+
+		assertEquals(expectedUpdate, resultUpdate);
+
+		// put_error
+		String expectedError = "put_error key1 value1";
+		when(commandSender.sendCommandToServer("localhost", 12345, "put key1 value1")).thenReturn(expectedError);
+		String resultError = clientLibrary.sendPutRequest("put key1 value1");
+
+		assertEquals(expectedError, resultError);
 	}
 
 	@Test
 	public void testDeletePutRequest() throws Exception {
 
-		String expected = "delete_success key1";
-		when(commandSender.sendCommandToServer("localhost", 12345, "delete key1")).thenReturn(expected);
-		String result = clientLibrary.sendGetRequest("delete key1");
+		// delete_success
+		String expectedSuccess = "delete_success key1";
+		when(commandSender.sendCommandToServer("localhost", 12345, "delete key1")).thenReturn(expectedSuccess);
+		String resultSuccess = clientLibrary.sendGetRequest("delete key1");
 
-		assertEquals(expected, result);
+		assertEquals(expectedSuccess, resultSuccess);
 
 		// delete_error
+		String expectedError = "delete_error key1";
+		when(commandSender.sendCommandToServer("localhost", 12345, "delete key1")).thenReturn(expectedError);
+		String resultError = clientLibrary.sendGetRequest("delete key1");
+
+		assertEquals(expectedError, resultError);
 	}
 
 	/*
@@ -176,14 +194,12 @@ public class TestClientLibrary {
 	 * client retries several times using exponential back-off with jitter.
 	 */
 
-	// nasýl test edicem metod private attempt private sleep private
-
 	// server_stopped
 	@Test
 	public void test_server_stopped() throws Exception {
 		String expected = "get_success key1 value1";
 		when(commandSender.sendCommandToServer("localhost", 12345, "get key1")).thenReturn("server_stopped");
-		
+
 		new Thread(() -> {
 			try {
 				Thread.sleep(2000);
@@ -192,7 +208,7 @@ public class TestClientLibrary {
 				e.printStackTrace();
 			}
 		}).start();
-		
+
 		String result = clientLibrary.sendGetRequest("get key1");
 		assertEquals(expected, result);
 	}
