@@ -9,6 +9,8 @@ import de.tum.i13.ecs.keyring.HashService;
 import de.tum.i13.shared.Constants;
 
 public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
+	
+	private CommandSender cs = new CommandSender();
 
 	private ArrayList<KeyRange> metaData;
 
@@ -23,10 +25,12 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 * 
 	 * @param host the address of this {@code KVStoreClientLibraryImpl}
 	 * @param port the port of this {@code KVStoreClientLibraryImpl}
+	 * @param commandSender 
 	 */
-	public KVStoreClientLibraryImpl(String host, int port) {
-		metaData = new ArrayList<>();
-		metaData.add(new KeyRange(null, null, host, port));
+	public KVStoreClientLibraryImpl(String host, int port, CommandSender commandSender) {
+		this.cs = commandSender;
+		this.metaData = new ArrayList<>();
+		this.metaData.add(new KeyRange(null, null, host, port));
 
 		try {
 			this.hashService = new ConsistentHashingService(HASHING_ALGORITHM);
@@ -101,7 +105,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	private String sendRequest(String line, int attempt) throws Exception {
 		String[] parts = line.split(" ");
 
-		CommandSender cs = new CommandSender();
+		
 		KeyRange kr = findCorrectKeyRange(parts[1]);
 		String response = cs.sendCommandToServer(kr.host, kr.port, line);
 
@@ -154,16 +158,31 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 * @throws RuntimeException if the provided key ranges in the response of the
 	 *                          server are not in a valid form.
 	 */
-	private void updateKeyRanges(String host, int port) throws IOException {
-		CommandSender cs = new CommandSender();
+	public void updateKeyRanges(String host, int port) throws IOException {
 		String response = cs.sendCommandToServer(host, port, "keyrange");
-		String[] keyRanges = response.split(";");
+		int index = response.indexOf("keyrange_success");
+		if (index == -1) {
+			if (response.contains("server_stopped")) {
+				// Do nothing. next request can handle the situation
+				return; 
+			} else {
+				throw new RuntimeException("Invalid key range: " + response);
+			}
+		}
+		String[] keyRanges = response.substring(index + "keyrange_success".length() + 1).split(";");
 		metaData = new ArrayList<>();
 		for (String v : keyRanges) {
 			String[] parts = v.split(",");
-			if (parts.length != 4)
-				throw new RuntimeException("Invalid key range");
-			metaData.add(new KeyRange(parts[0], parts[1], parts[2], Integer.parseInt(parts[3])));
+			if (parts.length != 3 || parts[2].indexOf(":") == -1)
+				throw new RuntimeException("Invalid key range: " + v);
+			
+			String from = parts[0];
+			String to = parts[1];
+			index = parts[2].indexOf(":");
+			String h = parts[2].substring(0, index);
+			int p = Integer.parseInt(parts[2].substring(index + 1));
+			
+			metaData.add(new KeyRange(from, to, h, p));
 		}
 
 	}
@@ -176,7 +195,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 * @throws NoSuchAlgorithmException if an error occurs while searching for the
 	 *                                  hash code of the key.
 	 */
-	private KeyRange findCorrectKeyRange(String key) throws NoSuchAlgorithmException {
+	public KeyRange findCorrectKeyRange(String key) throws NoSuchAlgorithmException {
 		if (metaData.size() == 1)
 			return metaData.get(0);
 
@@ -198,30 +217,6 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 */
 	private String findHash(String key) throws NoSuchAlgorithmException {
 		return new String(hashService.hash(key), Constants.STRING_CHARSET);
-	}
-
-	private class KeyRange {
-		String from;
-		String to;
-		String host;
-		int port;
-
-		/**
-		 * Constructs a {@code KeyRange} with the given beginning (from), end (to),
-		 * address of the server(host), and port of the server.
-		 * 
-		 * @param from the beginning of this {@code KeyRange}
-		 * @param to   the end of this {@code KeyRange}
-		 * @param host address of the server that this {@code KeyRange} belongs to.
-		 * @param port port of the server that this {@code KeyRange} belongs to.
-		 */
-		public KeyRange(String from, String to, String host, int port) {
-			this.from = from;
-			this.to = to;
-			this.host = host;
-			this.port = port;
-		}
-
 	}
 
 }

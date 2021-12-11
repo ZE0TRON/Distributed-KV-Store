@@ -45,6 +45,7 @@ public class CommandSender {
 		return response;
 	}
 
+	
 	/**
 	 * Builds the connection to the server with the given address and port with the
 	 * confirmations response of the server for logging and handles the exception

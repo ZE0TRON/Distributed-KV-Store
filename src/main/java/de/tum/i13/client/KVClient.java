@@ -21,19 +21,29 @@ public class KVClient {
 		
 		LOGGER.fine("Initial server info host/post: " + host + "/" + port);
 		
-		KVStoreClientLibrary kvStore = new KVStoreClientLibraryImpl(host, port);
+		KVStoreClientLibrary kvStore = new KVStoreClientLibraryImpl(host, port, new CommandSender());
 		 
 		CLI(kvStore);
 	}
 
 	public static void CLI(KVStoreClientLibrary kvStore) {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		BufferedReader reader =  new BufferedReader(new InputStreamReader(System.in));
 		
 		while (true) {
 			try {
 				System.out.print("EchoClient> ");
-				String line = reader.readLine().trim();
+				if (reader == null) {
+					System.out.println("line is null");
+					return;
+				}
+				String line = reader.readLine();
+				
+				if (line == null) {
+					System.out.println("line is null");
+					continue;
+				}
 				LOGGER.info("Client received command " + line);
+				
 				String[] command = line.split(" ");
 				switch (command[0]) {
 				case "put":
