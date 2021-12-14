@@ -1,4 +1,4 @@
-package de.tum.i13.ecs.keyring;
+package de.tum.i13.shared.keyring;
 
 
 /*
@@ -14,4 +14,5 @@ public interface KeyRangeService {
     RingItem get(String key);
     RingItem findPredecessor(String key);
     void delete(RingItem ringItem);
+    RingItem findSuccessor(String key);
 }

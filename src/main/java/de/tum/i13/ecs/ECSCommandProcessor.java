@@ -1,6 +1,8 @@
 package de.tum.i13.ecs;
 
-import de.tum.i13.ecs.keyring.ConfigurationService;
+import com.sun.tools.javac.util.Pair;
+import de.tum.i13.shared.Server;
+import de.tum.i13.ecs.cs.ConfigurationService;
 import de.tum.i13.shared.CommandProcessor;
 
 import java.net.InetAddress;
@@ -21,10 +23,20 @@ public class ECSCommandProcessor implements CommandProcessor {
         if (parts.length == 0) {
            parts = new String[]{"help"};
         }
+        Server server;
         LOGGER.info("received command " + command);
         try {
             switch (parts[0]) {
-                case "a":
+                case "add_server":
+                    server = new Server(parts[1], parts[2]);
+                    cs.addServer(server);
+                    break;
+                case "handover_complete":
+                    cs.handoverFinished(new Pair<>(parts[1], parts[2]));
+                    break;
+                case "shutdown":
+                    server = new Server(parts[1], parts[2]);
+                    cs.deleteServer(server);
                     break;
                 default:
                     LOGGER.info("command not found");

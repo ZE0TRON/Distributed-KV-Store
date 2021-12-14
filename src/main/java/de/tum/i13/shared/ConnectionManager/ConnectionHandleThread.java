@@ -4,11 +4,12 @@ import de.tum.i13.shared.CommandProcessor;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class ConnectionHandleThread extends Thread {
     private static final Logger LOGGER = Logger.getLogger(ConnectionHandleThread.class.getName());
-
+    public static HashMap<String, ConnectionManagerInterface> connections;
     private CommandProcessor cp;
     private Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
@@ -25,6 +26,7 @@ public class ConnectionHandleThread extends Thread {
     public void run() {
         try {
             this.connectionManager = new ConnectionManager(clientSocket);
+            connections.put(clientSocket.getInetAddress() + ":" + clientSocket.getPort(), this.connectionManager);
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
         }
