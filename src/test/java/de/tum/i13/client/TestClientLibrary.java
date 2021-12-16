@@ -71,7 +71,7 @@ public class TestClientLibrary {
 		String resultSuccess = clientLibrary.sendPutRequest("put key1 value1");
 
 		assertEquals(expectedSuccess, resultSuccess);
-		
+
 		// put_update
 		String expectedUpdate = "put_update key1";
 		when(commandSender.sendCommandToServer("localhost", 12345, "put key1 value2")).thenReturn(expectedUpdate);
