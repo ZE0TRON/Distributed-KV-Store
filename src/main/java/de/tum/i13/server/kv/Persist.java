@@ -14,16 +14,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
-public class KVPersist implements DataManager {
+public class Persist implements DataManager {
     private static final Logger LOGGER = Logger.getLogger(KVStoreImpl.class.getName());
 
     private final File storeFileName;
     private final Marshaller marshaller;
     private final Unmarshaller unmarshaller;
-    private static KVPersist instance;
+    private static Persist instance;
 
-    private KVPersist (Path dataDir) throws JAXBException, IOException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(KVItemCollection.class);
+    private Persist(Path dataDir) throws JAXBException, IOException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(PersistItemCollection.class);
 
         marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -34,33 +34,33 @@ public class KVPersist implements DataManager {
         storeFileName.createNewFile();
     }
 
-    public static KVPersist getInstance() {
+    public static Persist getInstance() {
         if (instance != null) {
             return instance;
         }
-        throw new RuntimeException("Initialize KVPersist first!");
+        throw new RuntimeException("Initialize Persist first!");
     }
 
-    public static KVPersist init(Path dataDir) throws Exception {
+    public static Persist init(Path dataDir) throws Exception {
         if (instance == null) {
-           instance = new KVPersist(dataDir);
+           instance = new Persist(dataDir);
         }
         return instance;
     }
 
-    public void serializeAndPersistItem(KVItemCollection kvItemCollection) throws JAXBException {
-        marshaller.marshal(kvItemCollection, storeFileName);
+    public void serializeAndPersistItem(PersistItemCollection persistItemCollection) throws JAXBException {
+        marshaller.marshal(persistItemCollection, storeFileName);
     }
 
-    public KVItemCollection deserializeItem() throws JAXBException {
-        return (KVItemCollection) unmarshaller.unmarshal(storeFileName);
+    public PersistItemCollection deserializeItem() throws JAXBException {
+        return (PersistItemCollection) unmarshaller.unmarshal(storeFileName);
     }
 
-    public PersistType put(KVItem putItem) throws JAXBException {
-        KVItemCollection storedItems = null;
+    public PersistType put(PersistItem putItem) throws JAXBException {
+        PersistItemCollection storedItems = null;
         try {
             storedItems = this.deserializeItem();
-            for (KVItem item : storedItems.parts){
+            for (PersistItem item : storedItems.parts){
                 if (item.key.equals(putItem.key)){
                     item.value = putItem.value;
                     this.serializeAndPersistItem(storedItems);
@@ -71,7 +71,7 @@ public class KVPersist implements DataManager {
         }
         // If it's the first item
         catch (Exception e) {
-            storedItems = new KVItemCollection();
+            storedItems = new PersistItemCollection();
         }
         storedItems.parts.add(putItem);
         this.serializeAndPersistItem(storedItems);
@@ -79,10 +79,10 @@ public class KVPersist implements DataManager {
         return PersistType.INSERT;
     }
 
-    public KVItem get(String key) {
+    public PersistItem get(String key) {
         try {
-            KVItemCollection storedItems = this.deserializeItem();
-            for (KVItem item : storedItems.parts){
+            PersistItemCollection storedItems = this.deserializeItem();
+            for (PersistItem item : storedItems.parts){
                 if (item.key.equals(key)){
                     LOGGER.info("Key found.");
                     return item;
@@ -99,7 +99,7 @@ public class KVPersist implements DataManager {
 
     public PersistType delete(String key) throws Exception {
         try {
-            KVItemCollection storedItems = this.deserializeItem();
+            PersistItemCollection storedItems = this.deserializeItem();
             boolean isRemoved = storedItems.parts.removeIf(item -> item.key.equals(key));
             this.serializeAndPersistItem(storedItems);
             if (isRemoved) {

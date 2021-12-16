@@ -7,14 +7,15 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-public class ConnectionHandleThread extends Thread {
-    private static final Logger LOGGER = Logger.getLogger(ConnectionHandleThread.class.getName());
+public class ClientConnectionThread extends Thread {
+    private static final Logger LOGGER = Logger.getLogger(ClientConnectionThread.class.getName());
     public static HashMap<String, ConnectionManagerInterface> connections;
+
     private CommandProcessor cp;
     private Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
 
-    public ConnectionHandleThread(CommandProcessor commandProcessor, Socket clientSocket) {
+    public ClientConnectionThread(CommandProcessor commandProcessor, Socket clientSocket) {
         this.cp = commandProcessor;
         this.clientSocket = clientSocket;
     }
@@ -36,7 +37,7 @@ public class ConnectionHandleThread extends Thread {
             LOGGER.info("Response sent");
             String recv;
             while ( (recv = connectionManager.receive()) != null) {
-                res = cp.process(recv) + "\r\n";
+                res = cp.processClientCommand(recv) + "\r\n";
                 this.connectionManager.send(res);
             }
         } catch(Exception ex) {

@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class KVItem {
+public class PersistItem {
 
     @XmlElement(required = true)
     public String key;
@@ -12,10 +12,10 @@ public class KVItem {
     @XmlElement(required = true)
     public String value;
 
-    public KVItem() {
+    public PersistItem() {
 
     }
-    public KVItem(String key, String value) {
+    public PersistItem(String key, String value) {
         this.key = key;
         this.value = value;
     }

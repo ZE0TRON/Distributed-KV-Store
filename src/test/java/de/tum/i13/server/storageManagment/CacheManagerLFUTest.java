@@ -4,11 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Field;
 
+import de.tum.i13.server.kv.PersistItem;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import de.tum.i13.server.kv.KVItem;
 
 public class CacheManagerLFUTest implements CMTest {
 
@@ -54,7 +53,7 @@ public class CacheManagerLFUTest implements CMTest {
 
 		assertEquals(0, instance.map.size());
 
-		KVItem valueReturnFromCache = instance.get(key);
+		PersistItem valueReturnFromCache = instance.get(key);
 
 		assertEquals(null, valueReturnFromCache);
 
@@ -68,11 +67,11 @@ public class CacheManagerLFUTest implements CMTest {
 		String key = "k";
 		String value = "v";
 
-		instance.put(new KVItem(key, value));
+		instance.put(new PersistItem(key, value));
 
 		assertEquals(1, instance.map.size());
 
-		KVItem valueReturnFromCache = instance.get(key);
+		PersistItem valueReturnFromCache = instance.get(key);
 
 		assertEquals(1, instance.map.size());
 
@@ -84,12 +83,12 @@ public class CacheManagerLFUTest implements CMTest {
 		CacheManagerLFU instance = create(100);
 
 		for (int i = 1; i <= 10; i++) {
-			instance.put(new KVItem("k" + i, "v" + i));
+			instance.put(new PersistItem("k" + i, "v" + i));
 		}
 
 		assertEquals(10, instance.map.size());
 
-		PersistType pt = instance.put(new KVItem("k", "v"));
+		PersistType pt = instance.put(new PersistItem("k", "v"));
 
 		assertEquals(11, instance.map.size());
 		assertEquals(PersistType.INSERT, pt);
@@ -101,12 +100,12 @@ public class CacheManagerLFUTest implements CMTest {
 		CacheManagerLFU instance = create(100);
 
 		for (int i = 1; i <= 10; i++) {
-			instance.put(new KVItem("k" + i, "v" + i));
+			instance.put(new PersistItem("k" + i, "v" + i));
 		}
 
 		assertEquals(10, instance.map.size());
 
-		PersistType pt = instance.put(new KVItem("k1", "vNew"));
+		PersistType pt = instance.put(new PersistItem("k1", "vNew"));
 
 		assertEquals(10, instance.map.size());
 		assertEquals(PersistType.UPDATE, pt);
@@ -118,7 +117,7 @@ public class CacheManagerLFUTest implements CMTest {
 		CacheManagerLFU instance = create(100);
 
 		for (int i = 1; i <= 10; i++) {
-			instance.put(new KVItem("k" + i, "v" + i));
+			instance.put(new PersistItem("k" + i, "v" + i));
 		}
 
 		assertEquals(10, instance.map.size());
@@ -134,7 +133,7 @@ public class CacheManagerLFUTest implements CMTest {
 		CacheManagerLFU instance = create(100);
 
 		for (int i = 1; i <= 10; i++) {
-			instance.put(new KVItem("k" + i, "v" + i));
+			instance.put(new PersistItem("k" + i, "v" + i));
 		}
 
 		assertEquals(10, instance.map.size());
@@ -152,7 +151,7 @@ public class CacheManagerLFUTest implements CMTest {
 
 		// put k1 k2 k3 -> k1(1) k2(1) k3(1)
 		for (int i = 1; i <= 3; i++) {
-			instance.put(new KVItem("k" + i, "v" + i));
+			instance.put(new PersistItem("k" + i, "v" + i));
 		}
 		assertEquals(1, instance.map.get("k1").compareValue);
 		assertEquals(1, instance.map.get("k2").compareValue);
@@ -166,14 +165,14 @@ public class CacheManagerLFUTest implements CMTest {
 		assertEquals(2, instance.map.get("k3").compareValue);
 
 		// put k4 -> k1(2) k3(2) k4(1)
-		instance.put(new KVItem("k4", "v4"));
+		instance.put(new PersistItem("k4", "v4"));
 		assertEquals(2, instance.map.get("k1").compareValue);
 		assertEquals(2, instance.map.get("k3").compareValue);
 		assertEquals(1, instance.map.get("k4").compareValue);
 		assertEquals(3, instance.map.size());
 
 		// put k5 -> k1(2) k3(2) k5(1)
-		instance.put(new KVItem("k5", "v5"));
+		instance.put(new PersistItem("k5", "v5"));
 		assertEquals(2, instance.map.get("k1").compareValue);
 		assertEquals(2, instance.map.get("k3").compareValue);
 		assertEquals(1, instance.map.get("k5").compareValue);
@@ -188,13 +187,13 @@ public class CacheManagerLFUTest implements CMTest {
 		assertEquals(3, instance.map.get("k5").compareValue);
 
 		// put k6 -> k1(4) k5(3) k6(1)
-		instance.put(new KVItem("k6", "v6"));
+		instance.put(new PersistItem("k6", "v6"));
 		assertEquals(4, instance.map.get("k1").compareValue);
 		assertEquals(3, instance.map.get("k5").compareValue);
 		assertEquals(1, instance.map.get("k6").compareValue);
 
 		// update k5 -> k1(4) k5(4) k6(1)
-		instance.put(new KVItem("k5", "v5"));
+		instance.put(new PersistItem("k5", "v5"));
 		assertEquals(4, instance.map.get("k1").compareValue);
 		assertEquals(4, instance.map.get("k5").compareValue);
 		assertEquals(1, instance.map.get("k6").compareValue);
@@ -206,14 +205,14 @@ public class CacheManagerLFUTest implements CMTest {
 		assertEquals(2, instance.map.size());
 
 		// put k7 -> k1(4) k6(1) k7(1)
-		instance.put(new KVItem("k7", "v7"));
+		instance.put(new PersistItem("k7", "v7"));
 		assertEquals(4, instance.map.get("k1").compareValue);
 		assertEquals(1, instance.map.get("k6").compareValue);
 		assertEquals(1, instance.map.get("k7").compareValue);
 		assertEquals(3, instance.map.size());
 
 		// put k8 -> k1(4) k7(1) k8(1)
-		instance.put(new KVItem("k8", "v8"));
+		instance.put(new PersistItem("k8", "v8"));
 		assertEquals(4, instance.map.get("k1").compareValue);
 		assertEquals(1, instance.map.get("k7").compareValue);
 		assertEquals(1, instance.map.get("k8").compareValue);

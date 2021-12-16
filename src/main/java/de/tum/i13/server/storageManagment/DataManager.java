@@ -1,6 +1,6 @@
 package de.tum.i13.server.storageManagment;
 
-import de.tum.i13.server.kv.KVItem;
+import de.tum.i13.server.kv.PersistItem;
 
 /**
  * All classes representing a manager, which controls and executes operations on
@@ -12,9 +12,9 @@ public interface DataManager {
 	 * Searches the value for the given key and then gets it.
 	 * 
 	 * @param key the key, whose item we want to acquire.
-	 * @return KVItem, null if this key is not found.
+	 * @return PersistItem, null if this key is not found.
 	 */
-	KVItem get(String key) throws Exception;
+	PersistItem get(String key) throws Exception;
 
 	/**
 	 * Puts the given key-value item.
@@ -23,7 +23,7 @@ public interface DataManager {
 	 * @return PersistType.UPDATE if an item with the same key already exists,
 	 *         PersistType.INSERT otherwise.
 	 */
-	PersistType put(KVItem kvItem) throws Exception;
+	PersistType put(PersistItem persistItem) throws Exception;
 
 	/**
 	 * Deletes the item with the given key.

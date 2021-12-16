@@ -1,6 +1,6 @@
 package de.tum.i13.server.storageManagment;
 
-import de.tum.i13.server.kv.KVItem;
+import de.tum.i13.server.kv.PersistItem;
 
 import java.util.LinkedList;
 import java.util.logging.Logger;
@@ -51,7 +51,7 @@ public class CacheManagerFIFO extends CacheManager {
 	 * @param item the item that should be inserted into this cache.
 	 */
 	@Override
-	protected void insertToCache(KVItem item) {
+	protected void insertToCache(PersistItem item) {
 		super.insertToCache(item);
 
 		Value v = new Value(item.value, 0);
