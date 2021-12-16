@@ -1,6 +1,6 @@
 package de.tum.i13.ecs;
 
-import com.sun.tools.javac.util.Pair;
+import de.tum.i13.shared.Pair;
 import de.tum.i13.shared.Server;
 import de.tum.i13.ecs.cs.ConfigurationService;
 import de.tum.i13.shared.CommandProcessor;
@@ -41,7 +41,7 @@ public class ECSCommandProcessor implements CommandProcessor {
                 default:
                     LOGGER.info("command not found");
             }
-            return ecsMessage.toString();
+            return ecsMessage != null ?  ecsMessage.toString() : null;
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,10 +1,10 @@
 package de.tum.i13.client;
 
 public class KeyRange {
-	String from;
-	String to;
-	String host;
-	int port;
+	public String from;
+	public String to;
+	public String host;
+	public int port;
 
 	/**
 	 * Constructs a {@code KeyRange} with the given beginning (from), end (to),

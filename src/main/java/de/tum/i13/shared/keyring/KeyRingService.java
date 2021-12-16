@@ -84,4 +84,7 @@ public class KeyRingService implements KeyRangeService{
        return keyRing.serializeKeyRanges();
     }
 
+    public int getCount() {
+        return this.keyRing.nodeCount();
+    }
 }

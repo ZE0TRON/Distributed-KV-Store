@@ -1,6 +1,6 @@
 package de.tum.i13.ecs.cs;
 
-import com.sun.tools.javac.util.Pair;
+import de.tum.i13.shared.Pair;
 import de.tum.i13.shared.Server;
 
 public class RebalanceOperation {

@@ -5,9 +5,7 @@ import java.net.InetSocketAddress;
 
 public interface CommandProcessor {
 
-    String processClientCommand(String command);
-
-    String processEcsCommand(String command);
+    String process(String command);
 
     String connectionAccepted(InetSocketAddress address, InetSocketAddress remoteAddress);
 

@@ -134,23 +134,33 @@ public class TestClientLibrary {
 		ArrayList<KeyRange> metaData = getMetaData();
 		assertEquals(1, metaData.size());
 
-		String expected = "keyrange_success 0,5,101.0.0.0:1001;6,10,102.0.0.0:1002";
+		String expected = "keyrange_success 9DE0BC202346026CAD3749DB215A2D43,411900A46428D02426F4951156382B7D,127.0.0.2:6870;" +
+				"411900A46428D02426F4951156382B7D,57A22CF84442B4B9D53444F145DEFF66,127.1.2.2:3213;" +
+				"57A22CF84442B4B9D53444F145DEFF66,587378D4ED623848E51B2779283FFDE8,127.1.0.2:3243;" +
+				"587378D4ED623848E51B2779283FFDE8,9049BBA9507A48D46D346AF2C9DC9FBB,127.0.0.1:6969;" +
+				"9049BBA9507A48D46D346AF2C9DC9FBB,9DE0BC202346026CAD3749DB215A2D43,127.1.0.4:3253";
 		when(commandSender.sendCommandToServer("localhost", 12345, "keyrange")).thenReturn(expected);
 
 		KeyRange kr = clientLibrary.findCorrectKeyRange("key1");
 		clientLibrary.updateKeyRanges(kr.host, kr.port);
 		metaData = getMetaData();
 
-		assertEquals(2, metaData.size());
-		assertEquals(metaData.get(0).from, "0");
-		assertEquals(metaData.get(0).to, "5");
-		assertEquals(metaData.get(0).host, "101.0.0.0");
-		assertEquals(metaData.get(0).port, 1001);
+		assertEquals(5, metaData.size());
+		assertEquals(metaData.get(0).from, "9DE0BC202346026CAD3749DB215A2D43");
+		assertEquals(metaData.get(0).to, "411900A46428D02426F4951156382B7D");
+		assertEquals(metaData.get(0).host, "127.0.0.2");
+		assertEquals(metaData.get(0).port, 6870);
 
-		assertEquals(metaData.get(1).from, "6");
-		assertEquals(metaData.get(1).to, "10");
-		assertEquals(metaData.get(1).host, "102.0.0.0");
-		assertEquals(metaData.get(1).port, 1002);
+		assertEquals(metaData.get(1).from, "411900A46428D02426F4951156382B7D");
+		assertEquals(metaData.get(1).to, "57A22CF84442B4B9D53444F145DEFF66");
+		assertEquals(metaData.get(1).host, "127.1.2.2");
+		assertEquals(metaData.get(1).port, 3213);
+		String key1 = "apple";
+		String key1Hash = clientLibrary.findHash(key1);
+		System.out.println(key1Hash);
+		KeyRange kr2 = clientLibrary.findCorrectKeyRange(key1);
+		System.out.println(kr2.host + " " +  kr2.from + " " +  kr2.to);
+
 
 	}
 

@@ -25,7 +25,7 @@ public class CommandProcessor implements de.tum.i13.shared.CommandProcessor {
     }
 
     @Override
-    public String processClientCommand(String command) {
+    public String process(String command) {
         KVClientMessage kvClientMessage;
         String[] parts = command.split(" ");
         if (parts.length == 0) {
@@ -79,34 +79,34 @@ public class CommandProcessor implements de.tum.i13.shared.CommandProcessor {
         return null;
     }
 
-    @Override
-    public String processEcsCommand(String command){
-        ServerMessage serverMessage = null;
-        String[] parts = command.split(" ");
-        if (parts.length == 0) {
-            parts = new String[]{"help"};
-        }
-        LOGGER.info("received command from ECS: " + command);
-
-        try {
-            switch (parts[0]) {
-                case "add_server":
-
-                    //serverMessage = new ServerMessageImpl(ServerMessage.StatusType.);
-                    break;
-                case "health_check":
-                    serverMessage = new ServerMessageImpl(ServerMessage.StatusType.HEALTHY);
-                    break;
-                default:
-                    serverMessage = new ServerMessageImpl(ServerMessage.StatusType.COMMAND_NOT_FOUND);
-                    LOGGER.info("command not found");
-            }
-            return serverMessage.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+//    @Override
+//    public String processEcsCommand(String command){
+//        ServerMessage serverMessage = null;
+//        String[] parts = command.split(" ");
+//        if (parts.length == 0) {
+//            parts = new String[]{"help"};
+//        }
+//        LOGGER.info("received command from ECS: " + command);
+//
+//        try {
+//            switch (parts[0]) {
+//                case "add_server":
+//
+//                    //serverMessage = new ServerMessageImpl(ServerMessage.StatusType.);
+//                    break;
+//                case "health_check":
+//                    serverMessage = new ServerMessageImpl(ServerMessage.StatusType.HEALTHY);
+//                    break;
+//                default:
+//                    serverMessage = new ServerMessageImpl(ServerMessage.StatusType.COMMAND_NOT_FOUND);
+//                    LOGGER.info("command not found");
+//            }
+//            return serverMessage.toString();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
     @Override
     public String connectionAccepted(InetSocketAddress address, InetSocketAddress remoteAddress) {

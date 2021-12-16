@@ -1,7 +1,7 @@
-package de.tum.i13.server.thread;
+package de.tum.i13.shared.ConnectionManager;
 
-import de.tum.i13.server.ConnectionManager.ConnectionManager;
-import de.tum.i13.server.ConnectionManager.ConnectionManagerInterface;
+import de.tum.i13.shared.ConnectionManager.ConnectionManager;
+import de.tum.i13.shared.ConnectionManager.ConnectionManagerInterface;
 import de.tum.i13.server.kv.*;
 
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class EcsConnectionThread extends Thread {
             LOGGER.warning(e.getMessage());
         }
         try {
-            String initConnection = "add_server " + ecsSocket.getInetAddress().toString().substring(1) + " " + ecsSocket.getPort();
+            String initConnection = "add_server " + ecsSocket.getLocalAddress().toString().substring(1) + " " + ecsSocket.getLocalPort();
             ecsConnManager.send(initConnection);
             cp.setEcsConnectionState(EcsConnectionState.WAITING_FOR_INITIALIZATION);
             LOGGER.info("add_server request sent to ECS.");

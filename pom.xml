@@ -55,25 +55,6 @@
 	                        </goals>
 	                    </execution>
                     <execution>
-                        <id>threadperconnection-echo</id>
-                        <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <archive>
-                                <manifest>
-                                    <mainClass>de.tum.i13.server.Main</mainClass>
-                                </manifest>
-                            </archive>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <finalName>threadperconnection-echo-server</finalName>
-                        </configuration>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>kv-server</id>
                         <configuration>
                             <appendAssemblyId>false</appendAssemblyId>
@@ -111,19 +92,19 @@
                             <goal>single</goal>
                         </goals>
                     </execution>
-                    <execution> <!--If we want to build multiple jar-with-dependencies, add multiple executions-->
-                        <id>nio-echo</id>
+                    <execution>
+                        <id>ecs-server</id>
                         <configuration>
                             <appendAssemblyId>false</appendAssemblyId>
                             <archive>
                                 <manifest>
-                                    <mainClass>de.tum.i13.server.nio.StartSimpleNioServer</mainClass>
+                                    <mainClass>de.tum.i13.ecs.Main</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>nio-echo-server</finalName>
+                            <finalName>ecs-server</finalName>
                         </configuration>
                         <phase>package</phase>
                         <goals>

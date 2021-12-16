@@ -1,7 +1,7 @@
 package de.tum.i13.ecs.cs;
 
-import com.sun.tools.javac.util.Pair;
-import de.tum.i13.shared.ConnectionManager.ClientConnectionThread;
+import de.tum.i13.shared.Pair;
+import de.tum.i13.shared.ConnectionManager.ServerConnectionThread;
 import de.tum.i13.shared.Server;
 import de.tum.i13.shared.keyring.*;
 import de.tum.i13.shared.ConnectionManager.ConnectionManagerInterface;
@@ -105,8 +105,9 @@ public class ECS implements ConfigurationService {
         onGoingRebalance = rebalanceOperation;
         if (onGoingRebalance.getRebalanceType() == RebalanceType.ADD) {
           Server server = rebalanceOperation.getReceiverServer();
-          ConnectionManagerInterface connectionManager = ClientConnectionThread.connections.get(server.toHashableString());
-          if(keyRingService.isKeyringEmpty()) {
+          ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toHashableString());
+          // Since the first noded added before handover process there should be 1 node in first case
+          if(keyRingService.getCount() == 1) {
               connectionManager.send("first_key_range");
           } else {
               connectionManager.send("init_key_range " +

@@ -1,10 +1,9 @@
 package de.tum.i13.server;
 
 import de.tum.i13.server.kv.*;
-import de.tum.i13.server.thread.ClientConnectionThread;
-import de.tum.i13.server.thread.EcsConnectionThread;
-import de.tum.i13.shared.Config;
-import static de.tum.i13.shared.Config.parseCommandlineArgs;
+import de.tum.i13.shared.ConnectionManager.ClientConnectionThread;
+import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
+import de.tum.i13.shared.ServerConfig;
 import static de.tum.i13.shared.LogSetup.setupLogging;
 
 import java.io.IOException;
@@ -12,7 +11,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import de.tum.i13.server.kv.KVCommandProcessor;
+import de.tum.i13.server.kv.CommandProcessor;
 import de.tum.i13.server.kv.KVStoreImpl;
 import de.tum.i13.server.storageManagment.CacheManagerFactory;
 
@@ -28,7 +27,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        ServerConfig cfg = parseCommandlineArgs(args);  //Do not change this
+        ServerConfig cfg = ServerConfig.parseCommandlineArgs(args);  //Do not change this
         setupLogging(cfg.logfile, cfg.logLevel);
 
         final ServerSocket kvServerSocket = new ServerSocket();
@@ -62,11 +61,14 @@ public class Main {
             e.printStackTrace();
         }
 
+        // Command Processorlari ayir(eminsen)
+
+        // Yeni Thread ac
+        // Threadin icinde whilela don kvserver bekle
+        // Kvserver connection gelicne yeni threadde handle et
+        // key aktarimi bitince connection kapaninca threadi kapa
 
         // Graceful shutdown here
-
-
-
         while (true) {
             Socket clientSocket = kvServerSocket.accept();
             // When client connection comes through, start a new Thread for this client
