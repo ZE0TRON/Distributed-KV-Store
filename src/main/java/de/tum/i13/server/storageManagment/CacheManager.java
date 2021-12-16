@@ -1,9 +1,7 @@
 package de.tum.i13.server.storageManagment;
 
-import de.tum.i13.server.kv.KVItem;
-import de.tum.i13.server.kv.KVPersist;
+import de.tum.i13.server.kv.PersistItem;
 
-import javax.xml.bind.JAXBException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -49,9 +47,9 @@ public abstract class CacheManager implements DataManager {
 	 * Gets the value for the given key.
 	 * 
 	 * @param key the key of the wanted item.
-	 * @return KVItem with the given key, null if the key is not found.
+	 * @return PersistItem with the given key, null if the key is not found.
 	 */
-	synchronized public KVItem get(String key) {
+	synchronized public PersistItem get(String key) {
 		LOGGER.fine("Get operation executing for key " + key);
 
 		Value v = map.get(key);
@@ -59,7 +57,7 @@ public abstract class CacheManager implements DataManager {
 			LOGGER.fine("Get operation found value " + v + " for key " + key + " in cache.");
 
 			updateCache(key);
-			return new KVItem(key, v.data);
+			return new PersistItem(key, v.data);
 		}
 
 		return null;
@@ -72,7 +70,7 @@ public abstract class CacheManager implements DataManager {
 	 * @return PersistType.UPDATE if an item with the same key already exists,
 	 *         PersistType.INSERT otherwise.
 	 */
-	synchronized public PersistType put(KVItem item) throws Exception {
+	synchronized public PersistType put(PersistItem item) throws Exception {
 		Value v = map.get(item.key);
 		if (v != null) {
 			LOGGER.fine(
@@ -129,7 +127,7 @@ public abstract class CacheManager implements DataManager {
 	 * 
 	 * @param item the item that should be inserted into this cache.
 	 */
-	protected void insertToCache(KVItem item) {
+	protected void insertToCache(PersistItem item) {
 		LOGGER.fine("The value " + item.value + " for key " + item.key
 				+ " is inserting into the cache, according to the cache displacement strategy.");
 

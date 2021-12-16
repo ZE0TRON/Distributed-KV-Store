@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement
-public class KVItemCollection  {
-    public List<KVItem> parts = new ArrayList<>();
+public class PersistItemCollection {
+    public List<PersistItem> parts = new ArrayList<>();
 
     @Override
     public String toString() {
-        return "KVItemCollection{" +
+        return "PersistItemCollection{" +
                 "parts=" + parts +
                 '}';
     }

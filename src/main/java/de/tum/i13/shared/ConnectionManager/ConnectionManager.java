@@ -22,8 +22,8 @@ public class ConnectionManager implements ConnectionManagerInterface{
 
 
     public void send(String message) {
-        LOGGER.info("sending message " + message + " to the client");
-        LOGGER.info(" Message length" + message.length());
+        LOGGER.info("Sending message " + message + " to the client.");
+        LOGGER.info(" Message length is " + message.length() + " characters.");
         message = trimCRNL(message);
         out.write(message + "\r\n");
         out.flush();

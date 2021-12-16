@@ -1,6 +1,6 @@
 package de.tum.i13.server.kv;
 
-public interface KVMessage {
+public interface KVClientMessage {
 
     public enum StatusType {
         GET, 			/* Get - request */

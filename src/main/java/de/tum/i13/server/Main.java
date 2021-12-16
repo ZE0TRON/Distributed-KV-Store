@@ -1,10 +1,10 @@
 package de.tum.i13.server;
 
-import de.tum.i13.server.kv.KVPersist;
-import de.tum.i13.shared.ConnectionManager.ConnectionHandleThread;
-import de.tum.i13.shared.CommandProcessor;
-import de.tum.i13.shared.ServerConfig;
-import static de.tum.i13.shared.ServerConfig.parseCommandlineArgs;
+import de.tum.i13.server.kv.*;
+import de.tum.i13.server.thread.ClientConnectionThread;
+import de.tum.i13.server.thread.EcsConnectionThread;
+import de.tum.i13.shared.Config;
+import static de.tum.i13.shared.Config.parseCommandlineArgs;
 import static de.tum.i13.shared.LogSetup.setupLogging;
 
 import java.io.IOException;
@@ -21,43 +21,57 @@ import de.tum.i13.server.storageManagment.CacheManagerFactory;
  */
 public class Main {
 
+    public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket) throws IOException {
+        // TODO: handout keys here
+        kvServerSocket.close();
+        ecsSocket.close();
+    }
+
     public static void main(String[] args) throws IOException {
         ServerConfig cfg = parseCommandlineArgs(args);  //Do not change this
         setupLogging(cfg.logfile, cfg.logLevel);
 
-        final ServerSocket serverSocket = new ServerSocket();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Closing thread per connection kv server");
-            try {
-                serverSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
-
-        //bind to localhost only
-        serverSocket.bind(new InetSocketAddress(cfg.listenaddr, cfg.port));
+        final ServerSocket kvServerSocket = new ServerSocket();
+        kvServerSocket.bind(new InetSocketAddress(cfg.listenaddr, cfg.port));
 
         try {
-            KVPersist.init(cfg.dataDir);
+            Persist.init(cfg.dataDir);
             CacheManagerFactory.create(cfg.cacheSize, cfg.cacheDisplacementStrategy);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
-        // If you use multithreading you need locking
-        CommandProcessor logic = new KVCommandProcessor(new KVStoreImpl());
+        CommandProcessor logic = new CommandProcessor(new KVStoreImpl());
+
+        try {
+            // Start ECS Thread
+            Socket ecsSocket = new Socket(cfg.bootstrap.getAddress(), cfg.bootstrap.getPort());
+            Thread ecsThread = new EcsConnectionThread(logic, ecsSocket);
+            ecsThread.start();
+//
+//            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//                System.out.println("Closing thread main kv server");
+//                try {
+//                    shutdownProcedure(kvServerSocket, ecsSocket);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        // Graceful shutdown here
 
 
 
-        // TODO checkout help thing
         while (true) {
-            Socket clientSocket = serverSocket.accept();
-            //When we accept a connection, we start a new Thread for this connection
+            Socket clientSocket = kvServerSocket.accept();
+            // When client connection comes through, start a new Thread for this client
             System.out.println("Client connected");
-            Thread th = new ConnectionHandleThread(logic, clientSocket);
+            Thread th = new ClientConnectionThread(logic, clientSocket);
             th.start();
         }
     }

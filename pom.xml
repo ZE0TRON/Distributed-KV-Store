@@ -6,6 +6,9 @@
 
     <groupId>msrg.in.tum.de</groupId>
     <artifactId>cdbms1</artifactId>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>

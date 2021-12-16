@@ -63,7 +63,7 @@ public class ServerConfig {
     public String toString() {
         return "Config{" +
                 "port=" + port +
-                ", listenaddr='" + listenaddr + '\'' +
+                ", listenaddr='" + listenaddr +
                 ", bootstrap=" + bootstrap +
                 ", dataDir=" + dataDir +
                 ", logfile=" + logfile +

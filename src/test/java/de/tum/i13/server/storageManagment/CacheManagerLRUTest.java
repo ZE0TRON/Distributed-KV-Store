@@ -6,11 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
 
+import de.tum.i13.server.kv.PersistItem;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import de.tum.i13.server.kv.KVItem;
 
 public class CacheManagerLRUTest implements CMTest {
 
@@ -60,7 +59,7 @@ public class CacheManagerLRUTest implements CMTest {
 
 		assertEquals(0, instance.map.size());
 
-		KVItem valueReturnFromCache = instance.get(key);
+		PersistItem valueReturnFromCache = instance.get(key);
 
 		assertEquals(null, valueReturnFromCache);
 
@@ -74,11 +73,11 @@ public class CacheManagerLRUTest implements CMTest {
 		String key = "k";
 		String value = "v";
 
-		instance.put(new KVItem(key, value));
+		instance.put(new PersistItem(key, value));
 
 		assertEquals(1, instance.map.size());
 
-		KVItem valueReturnFromCache = instance.get(key);
+		PersistItem valueReturnFromCache = instance.get(key);
 
 		assertEquals(1, instance.map.size());
 
@@ -90,12 +89,12 @@ public class CacheManagerLRUTest implements CMTest {
 		CacheManagerLRU instance = create(100);
 
 		for (int i = 1; i <= 10; i++) {
-			instance.put(new KVItem("k" + i, "v" + i));
+			instance.put(new PersistItem("k" + i, "v" + i));
 		}
 
 		assertEquals(10, instance.map.size());
 
-		PersistType pt = instance.put(new KVItem("k", "v"));
+		PersistType pt = instance.put(new PersistItem("k", "v"));
 
 		assertEquals(11, instance.map.size());
 		assertEquals(PersistType.INSERT, pt);
@@ -107,12 +106,12 @@ public class CacheManagerLRUTest implements CMTest {
 		CacheManagerLRU instance = create(100);
 
 		for (int i = 1; i <= 10; i++) {
-			instance.put(new KVItem("k" + i, "v" + i));
+			instance.put(new PersistItem("k" + i, "v" + i));
 		}
 
 		assertEquals(10, instance.map.size());
 
-		PersistType pt = instance.put(new KVItem("k1", "vNew"));
+		PersistType pt = instance.put(new PersistItem("k1", "vNew"));
 
 		assertEquals(10, instance.map.size());
 		assertEquals(PersistType.UPDATE, pt);
@@ -124,7 +123,7 @@ public class CacheManagerLRUTest implements CMTest {
 		CacheManagerLRU instance = create(100);
 
 		for (int i = 1; i <= 10; i++) {
-			instance.put(new KVItem("k" + i, "v" + i));
+			instance.put(new PersistItem("k" + i, "v" + i));
 		}
 
 		assertEquals(10, instance.map.size());
@@ -140,7 +139,7 @@ public class CacheManagerLRUTest implements CMTest {
 		CacheManagerLRU instance = create(100);
 
 		for (int i = 1; i <= 10; i++) {
-			instance.put(new KVItem("k" + i, "v" + i));
+			instance.put(new PersistItem("k" + i, "v" + i));
 		}
 
 		assertEquals(10, instance.map.size());
@@ -158,19 +157,19 @@ public class CacheManagerLRUTest implements CMTest {
 		CacheManagerLRU instance = create(3);
 
 		for (int i = 1; i <= 3; i++) {
-			instance.put(new KVItem("k" + i, "v" + i));
+			instance.put(new PersistItem("k" + i, "v" + i));
 			Thread.sleep(2);
 		}
 
 		instance.get("k1");
 
-		instance.put(new KVItem("k4", "v4"));
+		instance.put(new PersistItem("k4", "v4"));
 		assertFalse(instance.map.keySet().contains("k2"));
 		assertEquals(3, instance.map.size());
 
 		Thread.sleep(2);
 
-		instance.put(new KVItem("k5", "v5"));
+		instance.put(new PersistItem("k5", "v5"));
 		assertFalse(instance.map.keySet().contains("k3"));
 		assertEquals(3, instance.map.size());
 
@@ -181,13 +180,13 @@ public class CacheManagerLRUTest implements CMTest {
 
 		Thread.sleep(2);
 
-		instance.put(new KVItem("k6", "v6"));
+		instance.put(new PersistItem("k6", "v6"));
 		assertTrue(instance.map.keySet().contains("k1"));
 		assertEquals(3, instance.map.size());
 
 		Thread.sleep(2);
 
-		instance.put(new KVItem("k7", "v7"));
+		instance.put(new PersistItem("k7", "v7"));
 		assertFalse(instance.map.keySet().contains("k1"));
 		assertEquals(3, instance.map.size());
 		

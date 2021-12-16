@@ -2,7 +2,7 @@ package de.tum.i13.server.kv;
 
 import java.util.Locale;
 
-public class KVMessageImpl implements KVMessage {
+public class KVClientMessageImpl implements KVClientMessage {
 	
 	private final String key;
 	
@@ -11,7 +11,7 @@ public class KVMessageImpl implements KVMessage {
 	private final StatusType status;
 
 	
-	public KVMessageImpl(String key, String value, StatusType status) {
+	public KVClientMessageImpl(String key, String value, StatusType status) {
 		this.key = key;
 		this.value = value;
 		this.status = status;
