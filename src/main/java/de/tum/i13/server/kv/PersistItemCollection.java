@@ -6,7 +6,7 @@ import java.util.List;
 
 @XmlRootElement
 public class PersistItemCollection {
-    public List<PersistItem> parts = new ArrayList<>();
+    public ArrayList<PersistItem> parts = new ArrayList<>();
 
     @Override
     public String toString() {

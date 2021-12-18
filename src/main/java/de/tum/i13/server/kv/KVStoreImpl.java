@@ -15,8 +15,9 @@ public class KVStoreImpl implements KVStore {
 	private static final Logger LOGGER = Logger.getLogger(KVStoreImpl.class.getName());
 	public static String metaDataString;
 	public static ArrayList<KeyRange> metaData;
-	private final DataManager kvPersist;
-	private final DataManager cache;
+	private final Persist kvPersist;
+	private final CacheManager cache;
+
 	public KVStoreImpl() {
 		kvPersist = Persist.getInstance();
 		cache = CacheManager.getInstance();
@@ -83,14 +84,13 @@ public class KVStoreImpl implements KVStore {
 		}
 	}
 
+	@Override
+	public ArrayList<PersistItem> getAll() {
+		return kvPersist.deserializeItem().parts;
+	}
+
 	public KVClientMessage commandNotFound(String command) {
 		// TODO Implement return description
 		return new KVClientMessageImpl(null, null, StatusType.ERROR);
 	}
-
-	// TODO getAll
-	public ArrayList<PersistItem> getAll() {
-		return new ArrayList<>();
-	}
-
 }

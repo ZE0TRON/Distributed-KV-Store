@@ -3,10 +3,7 @@ package de.tum.i13.server.kv;
 import de.tum.i13.server.storageManagment.DataManager;
 import de.tum.i13.server.storageManagment.PersistType;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +19,7 @@ public class Persist implements DataManager {
     private final Unmarshaller unmarshaller;
     private static Persist instance;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private Persist(Path dataDir) throws JAXBException, IOException {
         JAXBContext jaxbContext = JAXBContext.newInstance(PersistItemCollection.class);
 
@@ -52,12 +50,19 @@ public class Persist implements DataManager {
         marshaller.marshal(persistItemCollection, storeFileName);
     }
 
-    public PersistItemCollection deserializeItem() throws JAXBException {
-        return (PersistItemCollection) unmarshaller.unmarshal(storeFileName);
+    public PersistItemCollection deserializeItem(){
+        PersistItemCollection result = null;
+        try {
+            result = (PersistItemCollection) unmarshaller.unmarshal(storeFileName);
+        } catch (JAXBException ex) {
+            LOGGER.severe("Exception thrown while reading the persistence file.");
+            LOGGER.severe(ex.getMessage());
+        }
+        return result;
     }
 
     public PersistType put(PersistItem putItem) throws JAXBException {
-        PersistItemCollection storedItems = null;
+        PersistItemCollection storedItems;
         try {
             storedItems = this.deserializeItem();
             for (PersistItem item : storedItems.parts){
@@ -80,39 +85,27 @@ public class Persist implements DataManager {
     }
 
     public PersistItem get(String key) {
-        try {
-            PersistItemCollection storedItems = this.deserializeItem();
-            for (PersistItem item : storedItems.parts){
-                if (item.key.equals(key)){
-                    LOGGER.info("Key found.");
-                    return item;
-                }
+        PersistItemCollection storedItems = this.deserializeItem();
+        for (PersistItem item : storedItems.parts){
+            if (item.key.equals(key)){
+                LOGGER.info("Key found.");
+                return item;
             }
-            LOGGER.info("Key: " + key + " could not found.");
-            return null;
         }
-        catch (JAXBException exception){
-            LOGGER.info("Data not found on disk.");
-            return null;
-        }
+        LOGGER.info("Key: " + key + " could not found.");
+        return null;
     }
 
     public PersistType delete(String key) throws Exception {
-        try {
-            PersistItemCollection storedItems = this.deserializeItem();
-            boolean isRemoved = storedItems.parts.removeIf(item -> item.key.equals(key));
-            this.serializeAndPersistItem(storedItems);
-            if (isRemoved) {
-                LOGGER.info("Key has been deleted.");
-                return PersistType.DELETE;
-            }
-            LOGGER.info("Key could not be found.");
-            throw new Exception("The key not found");
-        } catch (JAXBException exception) {
-            //TODO
-            throw exception;
+        PersistItemCollection storedItems = this.deserializeItem();
+        boolean isRemoved = storedItems.parts.removeIf(item -> item.key.equals(key));
+        this.serializeAndPersistItem(storedItems);
+        if (isRemoved) {
+            LOGGER.info("Key has been deleted.");
+            return PersistType.DELETE;
         }
-
+        LOGGER.info("Key could not be found.");
+        throw new Exception("The key not found");
     }
 
 }

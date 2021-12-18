@@ -1,5 +1,7 @@
 package de.tum.i13.server.kv;
 
+import java.util.ArrayList;
+
 public interface KVStore {
 
     /**
@@ -11,7 +13,7 @@ public interface KVStore {
      * @throws Exception if put command cannot be executed (e.g. not connected to any
      *                   KV server).
      */
-    public KVClientMessage put(String key, String value) throws Exception;
+    KVClientMessage put(String key, String value) throws Exception;
 
     /**
      * Retrieves the value for a given key from the KVServer.
@@ -21,8 +23,10 @@ public interface KVStore {
      * @throws Exception if put command cannot be executed (e.g. not connected to any
      *                   KV server).
      */
-    public KVClientMessage get(String key) throws Exception;
+    KVClientMessage get(String key) throws Exception;
 
-    public KVClientMessage commandNotFound(String command);
+    ArrayList<PersistItem> getAll();
+
+    KVClientMessage commandNotFound(String command);
 
 }
