@@ -14,21 +14,21 @@ public class KVClient {
 
 	public static void main(String[] args) {
 		setupLogging(Paths.get("echo-client.log"), Level.ALL);
-		
+
 		String host = args[0];
 		CommandSender.checkValidInternetAddress(host);
 		int port = Integer.parseInt(args[1]);
-		
+
 		LOGGER.fine("Initial server info host/post: " + host + "/" + port);
-		
+
 		KVStoreClientLibrary kvStore = new KVStoreClientLibraryImpl(host, port, new CommandSender());
-		 
+
 		CLI(kvStore);
 	}
 
 	public static void CLI(KVStoreClientLibrary kvStore) {
-		BufferedReader reader =  new BufferedReader(new InputStreamReader(System.in));
-		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
 		while (true) {
 			try {
 				System.out.print("EchoClient> ");
@@ -37,18 +37,18 @@ public class KVClient {
 					return;
 				}
 				String line = reader.readLine();
-				
+
 				if (line == null) {
 					System.out.println("line is null");
 					continue;
 				}
 				LOGGER.info("Client received command " + line);
-				
+
 				String[] command = line.split(" ");
 				switch (command[0]) {
 				case "put":
 					printEchoLine(kvStore.sendPutRequest(line));
-					LOGGER.info("Client connecting");
+					LOGGER.info("Client requesting put");
 					break;
 				case "get":
 					printEchoLine(kvStore.sendGetRequest(line));
@@ -82,10 +82,13 @@ public class KVClient {
 		System.out.println("\tAvailable commands:");
 		System.out.println("\t\tconnect <address> <port> - Tries to establish a TCP connection to the server.");
 		System.out.println("\t\tdisconnect - Tries to disconnect from the connected server.");
-		System.out.println("\t\tsend <message> - Sends a text message to the server according to the communication protocol.");
-		System.out.println("\t\tlogLevel <level> - Sets the logger to the specified log level (ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF)");
+		System.out.println(
+				"\t\tsend <message> - Sends a text message to the server according to the communication protocol.");
+		System.out.println(
+				"\t\tlogLevel <level> - Sets the logger to the specified log level (ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF)");
 		System.out.println("\t\thelp - Displays this help description.");
-		System.out.println("\t\tquit - Tears down the active connection to the server and exits the program execution.");
+		System.out
+				.println("\t\tquit - Tears down the active connection to the server and exits the program execution.");
 	}
 
 	private static void printEchoLine(String msg) {
@@ -93,7 +96,7 @@ public class KVClient {
 		StringBuilder output = new StringBuilder();
 		for (int i = 0; i < parts.length; i++) {
 			String part = parts[i];
-			
+
 			if (!Objects.equals(part, "null")) {
 				output.append(part).append(" ");
 			}
@@ -101,5 +104,5 @@ public class KVClient {
 		output.deleteCharAt(output.length() - 1);
 		System.out.println("EchoClient> " + output);
 	}
- 
+
 }
