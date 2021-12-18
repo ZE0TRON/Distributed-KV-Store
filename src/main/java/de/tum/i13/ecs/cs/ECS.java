@@ -9,10 +9,12 @@ import de.tum.i13.shared.Constants;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
+import java.util.logging.Logger;
 
 public class ECS implements ConfigurationService {
 
     private static ECS instance;
+    private static final Logger LOGGER = Logger.getLogger(ECS.class.getName());
     private final KeyRingService keyRingService;
     private HashService hashService;
 
@@ -77,15 +79,16 @@ public class ECS implements ConfigurationService {
     @Override
     public void updateMedata() {
         createNewMetaData();
-        // TODO send metadata to all servers
+        for (ConnectionManagerInterface connection : ServerConnectionThread.connections.values()) {
+           connection.send("update_metadata " + metadata);
+        }
     }
 
     @Override
     public void handoverFinished(Pair<String, String> keyRange){
         if (onGoingRebalance.getKeyRange() != keyRange) {
-            // TODO log here
+            LOGGER.warning("No re-balance operation on going with keyRange: " + keyRange.fst + "-" + keyRange.snd );
             return;
-            //throw new Exception("This rebalance is not in progress how can it be finished ??");
         }
         onGoingRebalance = null;
         updateMedata();
@@ -96,7 +99,7 @@ public class ECS implements ConfigurationService {
 
 
 
-    private void startHandoverProcess(RebalanceOperation rebalanceOperation) {
+    private synchronized void startHandoverProcess(RebalanceOperation rebalanceOperation) {
         if(onGoingRebalance != null) {
             // TODO log here
             return;
@@ -106,23 +109,28 @@ public class ECS implements ConfigurationService {
         if (onGoingRebalance.getRebalanceType() == RebalanceType.ADD) {
           Server server = rebalanceOperation.getReceiverServer();
           ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toHashableString());
-          // Since the first noded added before handover process there should be 1 node in first case
+          // Since the first node added before handover process there should be 1 node in first case
           if(keyRingService.getCount() == 1) {
               connectionManager.send("first_key_range");
           } else {
               connectionManager.send("init_key_range " +
                       rebalanceOperation.getKeyRange().fst + " " +
                       rebalanceOperation.getKeyRange().snd + " " +
-                      rebalanceOperation.getSenderServer());
+                      rebalanceOperation.getSenderServer().toHashableString());
           }
         }
         else if (onGoingRebalance.getRebalanceType() == RebalanceType.DELETE) {
-
+            Server server = rebalanceOperation.getSenderServer();
+            ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toHashableString());
+            connectionManager.send("handover_start " +
+                    rebalanceOperation.getKeyRange().fst + " " +
+                    rebalanceOperation.getKeyRange().snd + " " +
+                    rebalanceOperation.getReceiverServer().toHashableString());
         }
 
     }
 
-    private void queueHandoverProcess(RebalanceOperation rebalanceOperation) {
+    private synchronized void queueHandoverProcess(RebalanceOperation rebalanceOperation) {
         rebalanceQueue.addFirst(rebalanceOperation);
         if (onGoingRebalance == null) {
             startHandoverProcess(this.rebalanceQueue.poll());

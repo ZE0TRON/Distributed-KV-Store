@@ -64,7 +64,7 @@ public class BST {
         return null;
     }
 
-    public RingNode insert(RingNode node) {
+    public synchronized RingNode insert(RingNode node) {
         RingNode prev = null;
         RingNode current = root;
 
@@ -135,7 +135,7 @@ public class BST {
 
         return node;
     }
-    public void delete(RingNode ringNode) {
+    public synchronized void delete(RingNode ringNode) {
         root = deleteRec(root, ringNode.key);
 
     }
