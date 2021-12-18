@@ -11,12 +11,14 @@ public class ClientConnectionThread extends Thread {
     private static final Logger LOGGER = Logger.getLogger(ClientConnectionThread.class.getName());
 
     private CommandProcessor cp;
+    private KVCommandProcessor kvScp;
     private Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
 
-    public ClientConnectionThread(CommandProcessor commandProcessor, Socket clientSocket) {
+    public ClientConnectionThread(CommandProcessor commandProcessor, KVCommandProcessor kvCommandProcessor, Socket clientSocket) {
         this.cp = commandProcessor;
         this.clientSocket = clientSocket;
+        this.kvScp = kvCommandProcessor;
     }
 
     // TODO put KV sync function
