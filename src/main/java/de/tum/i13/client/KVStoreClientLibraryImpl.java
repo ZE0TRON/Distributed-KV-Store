@@ -200,9 +200,14 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 
 		String hashCode = findHash(key);
 		for (KeyRange keyRange : metaData) {
-			// TODO fix wrap around logic bug => Burak
-			if (keyRange.from.compareTo(hashCode) > 0 && keyRange.to.compareTo(hashCode) <= 0)
+			// Wrap around
+			if (keyRange.from.compareTo(keyRange.to) > 0) {
+				if (keyRange.from.compareTo(hashCode) < 0 || keyRange.to.compareTo(hashCode) > 0) {
+					return keyRange;
+				}
+			} else if (keyRange.from.compareTo(hashCode) > 0 && keyRange.to.compareTo(hashCode) <= 0) {
 				return keyRange;
+			}
 		}
 		return null;
 	}
