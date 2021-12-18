@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import de.tum.i13.shared.Util;
 import de.tum.i13.shared.keyring.ConsistentHashingService;
 import de.tum.i13.shared.keyring.HashService;
 
@@ -198,14 +199,10 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 		if (metaData.size() == 1)
 			return metaData.get(0);
 
-		String hashCode = findHash(key);
+		String hashCode = ConsistentHashingService.findHash(key);
 		for (KeyRange keyRange : metaData) {
 			// Wrap around
-			if (keyRange.from.compareTo(keyRange.to) > 0) {
-				if (keyRange.from.compareTo(hashCode) < 0 || keyRange.to.compareTo(hashCode) > 0) {
-					return keyRange;
-				}
-			} else if (keyRange.from.compareTo(hashCode) > 0 && keyRange.to.compareTo(hashCode) <= 0) {
+			if(Util.isKeyInRange(keyRange.from, keyRange.to, hashCode))	{
 				return keyRange;
 			}
 		}
@@ -220,8 +217,5 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 * @throws NoSuchAlgorithmException if the requested hash algorithm is not
 	 *                                  available.
 	 */
-	public String findHash(String key) throws NoSuchAlgorithmException {
-		return ConsistentHashingService.byteHashToStringHash(hashService.hash(key));
-	}
 
 }

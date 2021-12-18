@@ -1,7 +1,6 @@
 package de.tum.i13.ecs;
 
 import de.tum.i13.ecs.cs.ECS;
-import de.tum.i13.shared.ConnectionManager.ClientConnectionThread;
 import de.tum.i13.shared.CommandProcessor;
 import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
 import de.tum.i13.shared.ConnectionManager.ServerConnectionThread;

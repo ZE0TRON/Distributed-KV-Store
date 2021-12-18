@@ -32,5 +32,11 @@ public class ConsistentHashingService implements HashService{
         }
         return new String(hexChars, StandardCharsets.UTF_8);
     }
-
+    public static String findHash(String key) {
+        try {
+            return ConsistentHashingService.byteHashToStringHash((new ConsistentHashingService("md5")).hash(key));
+        } catch (NoSuchAlgorithmException e) {
+            return "";
+        }
+    }
 }

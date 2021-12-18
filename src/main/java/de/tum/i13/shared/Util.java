@@ -7,4 +7,22 @@ public class Util {
         }
         return str;
     }
+
+    public static boolean isKeyInRange(String from, String to, String key) {
+        if (from.compareTo(to) > 0) {
+            return from.compareTo(key) < 0 || to.compareTo(key) > 0;
+            // from =5
+            // key =12
+            // to = 20
+
+
+            // from = 25
+            // key = 3
+            // to = 5
+
+            // from = 25
+            // key = 27
+            // to = 5
+        } else return from.compareTo(key) < 0 && to.compareTo(key) >= 0;
+    }
 }

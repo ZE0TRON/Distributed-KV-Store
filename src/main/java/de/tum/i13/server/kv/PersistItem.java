@@ -22,9 +22,6 @@ public class PersistItem {
 
     @Override
     public String toString() {
-        return "KVitem{" +
-                "key='" + key + '\'' +
-                ", value='" + value + '\'' +
-                '}';
+        return key+"\t"+value;
     }
 }

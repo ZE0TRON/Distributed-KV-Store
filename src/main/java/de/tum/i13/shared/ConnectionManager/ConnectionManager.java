@@ -34,6 +34,16 @@ public class ConnectionManager implements ConnectionManagerInterface{
     }
 
     public void disconnect() {
-
+        try {
+            socket.close();
+        } catch (Exception e ) {
+            LOGGER.warning(e.getMessage());
+        }
+        socket = null;
     }
+
+    public Socket getSocket(){
+        return socket;
+    }
+
 }

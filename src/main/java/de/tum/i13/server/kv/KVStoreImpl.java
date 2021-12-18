@@ -1,15 +1,20 @@
 package de.tum.i13.server.kv;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import de.tum.i13.client.KeyRange;
 import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
 import de.tum.i13.server.storageManagment.DataManager;
 import de.tum.i13.server.storageManagment.PersistType;
+import de.tum.i13.shared.keyring.KeyRingService;
 
 public class KVStoreImpl implements KVStore {
 
 	private static final Logger LOGGER = Logger.getLogger(KVStoreImpl.class.getName());
+	public static String metaDataString;
+	public static ArrayList<KeyRange> metaData;
 	private final DataManager kvPersist;
 	private final DataManager cache;
 	public KVStoreImpl() {
@@ -82,4 +87,10 @@ public class KVStoreImpl implements KVStore {
 		// TODO Implement return description
 		return new KVClientMessageImpl(null, null, StatusType.ERROR);
 	}
+
+	// TODO getAll
+	public ArrayList<PersistItem> getAll() {
+		return new ArrayList<>();
+	}
+
 }

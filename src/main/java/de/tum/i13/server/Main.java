@@ -1,7 +1,7 @@
 package de.tum.i13.server;
 
 import de.tum.i13.server.kv.*;
-import de.tum.i13.shared.ConnectionManager.ClientConnectionThread;
+import de.tum.i13.shared.ConnectionManager.ConnectionThread;
 import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
 import de.tum.i13.shared.ServerConfig;
 import static de.tum.i13.shared.LogSetup.setupLogging;
@@ -42,11 +42,12 @@ public class Main {
         }
 
         CommandProcessor logic = new CommandProcessor(new KVStoreImpl());
+        KVCommandProcessor kvTransferLogic = new KVCommandProcessor(new KVTransferService(new KVStoreImpl()));
 
         try {
             // Start ECS Thread
             Socket ecsSocket = new Socket(cfg.bootstrap.getAddress(), cfg.bootstrap.getPort());
-            Thread ecsThread = new EcsConnectionThread(logic, ecsSocket);
+            Thread ecsThread = new EcsConnectionThread(logic, kvTransferLogic, ecsSocket);
             ecsThread.start();
 //
 //            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -73,7 +74,7 @@ public class Main {
             Socket clientSocket = kvServerSocket.accept();
             // When client connection comes through, start a new Thread for this client
             System.out.println("Client connected");
-            Thread th = new ClientConnectionThread(logic, clientSocket);
+            Thread th = new ConnectionThread(logic, kvTransferLogic, clientSocket, true);
             th.start();
         }
     }

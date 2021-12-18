@@ -14,7 +14,11 @@ public interface KVClientMessage {
         DELETE_SUCCESS, /* Delete - request successful */
         DELETE_ERROR, 	/* Delete - request successful */
         ERROR,
-        CONNECTION_ESTABLISHED
+        CONNECTION_ESTABLISHED,
+        SERVER_STOPPED,
+        SERVER_NOT_RESPONSIBLE,
+        SERVER_WRITE_LOCK,
+        KEYRANGE_SUCCESS,
     }
 
     /**
