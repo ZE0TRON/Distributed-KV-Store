@@ -43,18 +43,18 @@ public class EcsConnectionThread extends Thread {
                 LOGGER.info("Received command from ECS: " + command);
                 if (command.equals("first_key_range") && cp.getEcsConnectionState() == EcsConnectionState.WAITING_FOR_INITIALIZATION){
                     cp.setDataRangeStart("00000000000000000000000000000000");
-                    cp.setDataRangeEnd("ffffffffffffffffffffffffffffffff");
+                    cp.setDataRangeEnd("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
                     cp.setNextKVServer(cp);
                     cp.setPrevKVServer(cp);
                     cp.setEcsConnectionState(EcsConnectionState.WAITING_FOR_METADATA);
                 }
-                else if (command.equals("init_key_range")){
+                else if (command.equals("init_key_range") && cp.getEcsConnectionState() == EcsConnectionState.WAITING_FOR_INITIALIZATION) {
                     // Receive metadata and set (from Bilge)
                     //cp.setDataRangeStart();
                     //cp.setDataRangeEnd();
                     //cp.setNextKVServer();
                     //cp.setPrevKVServer();
-                    cp.setEcsConnectionState(EcsConnectionState.READY_FOR_SERVER_DATA_RETRIEVAL);
+                    cp.setEcsConnectionState(EcsConnectionState.INITIALIZED_KVSERVER_WAITING_FOR_DATA);
                     ConnectionManager kvServerToRetrieveConn = createConnectionManager(respParts[3]);
                     kvServerToRetrieveConn.send("request_data " + respParts[1] + " " + respParts[2]);
                 }
