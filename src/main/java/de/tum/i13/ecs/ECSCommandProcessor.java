@@ -31,8 +31,10 @@ public class ECSCommandProcessor implements CommandProcessorInterface {
                     cs.addServer(server);
                     break;
                 case "handover_complete":
-                    cs.handoverFinished(new Pair<>(parts[1], parts[2]));
-                    throw new CommunicationTerminatedException();
+                    boolean endConnection = cs.handoverFinished(new Pair<>(parts[1], parts[2]));
+                    if (endConnection) {
+                        throw new CommunicationTerminatedException();
+                    }
                 case "shutdown":
                     server = new Server(parts[1], parts[2]);
                     cs.deleteServer(server);

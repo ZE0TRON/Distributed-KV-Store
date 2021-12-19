@@ -9,6 +9,6 @@ public interface ConfigurationService {
     void deleteServer(Server server);
     Server getServer(String key);
     void updateMetadata();
-    void handoverFinished(Pair<String, String> keyRange);
+    boolean handoverFinished(Pair<String, String> keyRange);
     Server getServerForStorageKey(String key);
 }

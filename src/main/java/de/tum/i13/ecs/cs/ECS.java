@@ -97,17 +97,19 @@ public class ECS implements ConfigurationService {
     }
 
     @Override
-    public void handoverFinished(Pair<String, String> keyRange){
+    public boolean handoverFinished(Pair<String, String> keyRange){
         if (!onGoingRebalance.getKeyRange().fst.equals(keyRange.fst) || !onGoingRebalance.getKeyRange().snd.equals(keyRange.snd)) {
             LOGGER.warning("No re-balance operation on going with keyRange: " + keyRange.fst + "-" + keyRange.snd );
-            return;
+            return false;
         }
         LOGGER.info("Finishing handover process with keyrange: " + keyRange.fst + "-" + keyRange.snd);
+        boolean endConnection = onGoingRebalance.getRebalanceType() == RebalanceType.DELETE;
         onGoingRebalance = null;
         updateMetadata();
         if (!rebalanceQueue.isEmpty()) {
             startHandoverProcess(this.rebalanceQueue.poll());
         }
+        return endConnection;
     }
 
 
