@@ -1,5 +1,6 @@
 package de.tum.i13.ecs;
 
+import de.tum.i13.server.exception.CommunicationTerminatedException;
 import de.tum.i13.server.kv.CommandProcessorInterface;
 import de.tum.i13.shared.Pair;
 import de.tum.i13.shared.Server;
@@ -16,7 +17,7 @@ public class ECSCommandProcessor implements CommandProcessorInterface {
     }
 
     @Override
-    public String process(String command) {
+    public String process(String command) throws CommunicationTerminatedException {
         ECSMessage ecsMessage = null;
         String[] parts = command.split(" ");
         if (parts.length == 0) {
@@ -24,7 +25,6 @@ public class ECSCommandProcessor implements CommandProcessorInterface {
         }
         Server server;
         LOGGER.info("received command " + command);
-        try {
             switch (parts[0]) {
                 case "add_server":
                     server = new Server(parts[1], parts[2], parts[3]);
@@ -32,7 +32,7 @@ public class ECSCommandProcessor implements CommandProcessorInterface {
                     break;
                 case "handover_complete":
                     cs.handoverFinished(new Pair<>(parts[1], parts[2]));
-                    break;
+                    throw new CommunicationTerminatedException();
                 case "shutdown":
                     server = new Server(parts[1], parts[2]);
                     cs.deleteServer(server);
@@ -41,9 +41,5 @@ public class ECSCommandProcessor implements CommandProcessorInterface {
                     LOGGER.info("command not found");
             }
             return ecsMessage != null ?  ecsMessage.toString() : null;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

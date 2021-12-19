@@ -1,6 +1,7 @@
 package de.tum.i13.shared.ConnectionManager;
 
 import de.tum.i13.ecs.ECSCommandProcessor;
+import de.tum.i13.server.exception.CommunicationTerminatedException;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -39,9 +40,17 @@ public class ServerConnectionThread extends Thread {
         try {
             String recv, res;
             while ( (recv = connectionManager.receive()) != null) {
-                res = cp.process(recv);
-                if(res != null) {
-                    this.connectionManager.send(res+ "\r\n");
+                try {
+                    res = cp.process(recv);
+                    if (res != null) {
+                        this.connectionManager.send(res + "\r\n");
+                    }
+                } catch (CommunicationTerminatedException ex) {
+                    String serverString = clientSocket.getInetAddress().toString().substring(1) + ":" + clientSocket.getPort();
+                    connections.remove(serverString);
+                    break;
+                } catch (Exception e) {
+                    LOGGER.warning(e.getMessage());
                 }
             }
         } catch(Exception ex) {
