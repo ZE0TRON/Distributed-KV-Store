@@ -48,7 +48,7 @@ public class CommandProcessor implements CommandProcessorInterface {
                 KeyRange keyrange = KVStoreImpl.getKeyRange();
                 if (!commandType.equals("keyrange") && !Util.isKeyInRange(keyrange.from, keyrange.to, ConsistentHashingService.findHash(parts[1]))){
                     LOGGER.info("KVServer: SERVER_NOT_RESPONSIBLE occurred.");
-                    kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getMetaDataString(), null, KVClientMessage.StatusType.SERVER_NOT_RESPONSIBLE);
+                    kvClientMessage = new KVClientMessageImpl( null/*KVStoreImpl.getMetaDataString()*/, null, KVClientMessage.StatusType.SERVER_NOT_RESPONSIBLE);
                 }
                 else {
                     switch (parts[0]) {
