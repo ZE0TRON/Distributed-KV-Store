@@ -37,11 +37,11 @@ public class KVStoreImpl implements KVStore {
 				if (persistType == PersistType.INSERT) {
 					cache.put(item);
 					LOGGER.info("Put (insert) operation successfully executed on tuple: (" + key + ", " + value + ")");
-					return new KVClientMessageImpl(key, value, StatusType.PUT_SUCCESS);
+					return new KVClientMessageImpl(key, null, StatusType.PUT_SUCCESS);
 				} else {
 					cache.put(item);
 					LOGGER.info("Put (update) operation successfully executed on tuple: (" + key + ", " + value + ")");
-					return new KVClientMessageImpl(key, value, StatusType.PUT_UPDATE);
+					return new KVClientMessageImpl(key, null, StatusType.PUT_UPDATE);
 				}
 
 			} else {
