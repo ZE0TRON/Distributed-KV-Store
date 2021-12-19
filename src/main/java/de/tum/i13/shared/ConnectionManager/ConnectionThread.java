@@ -17,7 +17,7 @@ public class ConnectionThread extends Thread {
     private KVCommandProcessor kvScp;
     private Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
-    private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack"));
+    private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack", "Connection"));
     private final boolean receivedConnection;
     public static boolean CanShutdown;
 
@@ -42,11 +42,11 @@ public class ConnectionThread extends Thread {
         }
         try {
             String res = null;
-            if(receivedConnection) {
-                res = "Connection established.";
-                this.connectionManager.send(res);
-                LOGGER.info("Response sent.");
-            }
+//            if(receivedConnection) {
+//                res = "Connection established.";
+//                this.connectionManager.send(res);
+//                LOGGER.info("Response sent.");
+//            }
             String recv;
 
             while ( (recv = connectionManager.receive()) != null) {

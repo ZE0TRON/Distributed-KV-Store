@@ -48,6 +48,8 @@ public class KVCommandProcessor implements CommandProcessorInterface {
                 CommandProcessor.serverState = ServerState.SERVER_WRITE_LOCK;
                 res = "handover_ack " + parts[1] + " " + parts[2];
                 break;
+            case "Connection":
+
             default:
                 LOGGER.warning("KVServerCommand not found.");
         }
