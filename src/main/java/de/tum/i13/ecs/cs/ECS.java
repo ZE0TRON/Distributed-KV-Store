@@ -48,6 +48,7 @@ public class ECS implements ConfigurationService {
         keyRingService.put(newRingItem);
         Server receiverServer = server;
         RingItem oldRingItem = keyRingService.findPredecessor(Server.serverToHashString(server));
+        LOGGER.info("Setted hashed key: " + newRingItem.key + " for server " +server.getAddress() + " " + server.getPort());
         RingItem successorItem = keyRingService.findSuccessor(Server.serverToHashString(server));
         Server senderServer = successorItem.value;
         Pair<String, String> keyRange = new Pair<>(oldRingItem.key, newRingItem.key);
