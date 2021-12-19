@@ -104,7 +104,7 @@ public class KVStoreImpl implements KVStore {
 	}
 
 	public static KeyRange getKeyRange() {
-		LOGGER.info("KVStoreImpl.getKeyRange called with keyRange: " + keyRange.toString());
+		LOGGER.info("KVStoreImpl.getKeyRange called with keyRange: " + KVStoreImpl.keyRange.toString());
 		return KVStoreImpl.keyRange;
 	}
 
