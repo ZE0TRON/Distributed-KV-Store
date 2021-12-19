@@ -41,7 +41,7 @@ public class CommandProcessor implements CommandProcessorInterface {
             if (serverState.equals(ServerState.SERVER_STOPPED)){
                 kvClientMessage = new KVClientMessageImpl(null,null, KVClientMessage.StatusType.SERVER_STOPPED);
             }
-            else if (serverState.equals(ServerState.SERVER_WRITE_LOCK)){
+            else if (serverState.equals(ServerState.SERVER_WRITE_LOCK) && (parts[0].equals("put") || parts[0].equals("delete"))){
                 kvClientMessage = new KVClientMessageImpl(null,null, KVClientMessage.StatusType.SERVER_WRITE_LOCK);
             }
             else { // ServerState.RUNNING
