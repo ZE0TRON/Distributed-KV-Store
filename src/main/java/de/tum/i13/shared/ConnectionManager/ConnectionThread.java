@@ -41,7 +41,7 @@ public class ConnectionThread extends Thread {
             LOGGER.warning(e.getMessage());
         }
         try {
-            String res;
+            String res = null;
             if(receivedConnection) {
                 res = "Connection established.";
                 this.connectionManager.send(res);
@@ -65,6 +65,7 @@ public class ConnectionThread extends Thread {
                         LOGGER.info("ConnectionThread response being sent.");
                         this.connectionManager.send(res);
                     }
+                    res = null;
                 } catch (CommunicationTerminatedException ex) {
                     ConnectionThread.CanShutdown = true;
                     break;
