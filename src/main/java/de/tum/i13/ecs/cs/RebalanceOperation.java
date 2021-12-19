@@ -47,4 +47,14 @@ public class RebalanceOperation {
     public void setSenderServer(Server senderServer) {
         this.senderServer = senderServer;
     }
+
+    @Override
+    public String toString() {
+        return "RebalanceOperation{" +
+                "senderServer=" + senderServer +
+                ", receiverServer=" + receiverServer +
+                ", keyRange=" + keyRange +
+                ", rebalanceType=" + rebalanceType +
+                '}';
+    }
 }

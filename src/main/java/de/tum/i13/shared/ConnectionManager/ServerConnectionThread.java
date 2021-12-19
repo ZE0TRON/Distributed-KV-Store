@@ -30,7 +30,9 @@ public class ServerConnectionThread extends Thread {
     public void run() {
         try {
             this.connectionManager = new ConnectionManager(clientSocket);
-            connections.put(clientSocket.getInetAddress().toString().substring(1) + ":" + clientSocket.getPort(), this.connectionManager);
+            String serverString = clientSocket.getInetAddress().toString().substring(1) + ":" + clientSocket.getPort();
+            connections.put(serverString, this.connectionManager);
+            LOGGER.info("Connection established with server: " + serverString );
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
         }

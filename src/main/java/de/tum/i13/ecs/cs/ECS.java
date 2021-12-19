@@ -53,18 +53,21 @@ public class ECS implements ConfigurationService {
         Pair<String, String> keyRange = new Pair<>(oldRingItem.key, newRingItem.key);
         RebalanceOperation rebalanceOperation = new RebalanceOperation(senderServer, receiverServer, keyRange, RebalanceType.ADD);
         queueHandoverProcess(rebalanceOperation);
+        LOGGER.info("Rebalance opereation "+ rebalanceOperation +" for add server queued");
     }
 
     @Override
     public synchronized void deleteServer(Server server) {
         RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
         RingItem ringItem = keyRingService.findSuccessor(ringItemToDelete.key);
+        RingItem predecessorItem = keyRingService.findPredecessor(ringItemToDelete.key);
         keyRingService.delete(ringItemToDelete);
         Server senderServer = ringItemToDelete.value;
         Server receiverServer = ringItem.value;
-        Pair<String, String> keyRange = new Pair<>(ringItemToDelete.key, ringItem.key);
+        Pair<String, String> keyRange = new Pair<>(predecessorItem.key, ringItemToDelete.key);
         RebalanceOperation rebalanceOperation = new RebalanceOperation(senderServer, receiverServer , keyRange, RebalanceType.DELETE);
         queueHandoverProcess(rebalanceOperation);
+        LOGGER.info("Rebalance opereation "+ rebalanceOperation +" for delete server queued");
     }
 
     @Override
@@ -85,9 +88,11 @@ public class ECS implements ConfigurationService {
     @Override
     public void updateMetadata() {
         createNewMetaData();
+        LOGGER.info("New metadata created: " + metadata);
         for (ConnectionManagerInterface connection : ServerConnectionThread.connections.values()) {
            connection.send("update_metadata " + metadata);
         }
+        LOGGER.info("Metadata sent to all servers");
     }
 
     @Override
@@ -96,6 +101,7 @@ public class ECS implements ConfigurationService {
             LOGGER.warning("No re-balance operation on going with keyRange: " + keyRange.fst + "-" + keyRange.snd );
             return;
         }
+        LOGGER.info("Finishing handover process with keyrange: " + keyRange.fst + "-" + keyRange.snd);
         onGoingRebalance = null;
         updateMetadata();
         if (!rebalanceQueue.isEmpty()) {
@@ -106,6 +112,7 @@ public class ECS implements ConfigurationService {
 
 
     private synchronized void startHandoverProcess(RebalanceOperation rebalanceOperation) {
+        LOGGER.info("Starting handover process for rebalance operation" + rebalanceOperation.toString());
         if(onGoingRebalance != null) {
             // TODO log here
             return;
@@ -118,8 +125,10 @@ public class ECS implements ConfigurationService {
           // Since the first node added before handover process there should be 1 node in first case
           if(keyRingService.getCount() == 1) {
               connectionManager.send("first_key_range");
+              LOGGER.info("Handover first key range");
               handoverFinished(onGoingRebalance.getKeyRange());
           } else {
+              LOGGER.info("Handover init key range");
               connectionManager.send("init_key_range " +
                       rebalanceOperation.getKeyRange().fst + " " +
                       rebalanceOperation.getKeyRange().snd + " " +
@@ -127,6 +136,7 @@ public class ECS implements ConfigurationService {
           }
         }
         else if (onGoingRebalance.getRebalanceType() == RebalanceType.DELETE) {
+            LOGGER.info("Handover delete");
             Server server = rebalanceOperation.getSenderServer();
             ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toEcsConnectionString());
             if(keyRingService.isKeyringEmpty()) {
