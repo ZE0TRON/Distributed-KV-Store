@@ -51,7 +51,7 @@ public class Main {
             System.out.println("Closing thread main KVServer. Shutdown procedure has been started.");
             try {
                 shutdownProcedure(kvServerSocket, ecsSocket, ecsThread);
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }));
@@ -66,12 +66,14 @@ public class Main {
         }
     }
 
-    public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket, EcsConnectionThread ecsThread) throws IOException {
+    public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket, EcsConnectionThread ecsThread) throws IOException, InterruptedException {
         String address = Main.serverIp;
         String port = String.valueOf(Main.port);
         String payload ="shutdown " + address + " " +  port;
         EcsConnectionThread.ECSConnection.send(payload);
-        while (!ConnectionThread.CanShutdown){}
+        while (!ConnectionThread.CanShutdown){
+            Thread.sleep(2000);
+        }
         ecsThread.cancel();
         kvServerSocket.close();
     }
