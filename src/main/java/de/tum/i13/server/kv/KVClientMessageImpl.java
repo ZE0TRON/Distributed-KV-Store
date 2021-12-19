@@ -34,6 +34,18 @@ public class KVClientMessageImpl implements KVClientMessage {
 
 	@Override
 	public String toString() {
-		return this.status.toString().toLowerCase(Locale.ROOT) + " " + this.key  + " " + this.value;
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.status.toString().toLowerCase(Locale.ROOT));
+		sb.append(" ");
+		if(this.key != null) {
+			sb.append(this.key);
+			sb.append(" ");
+		}
+		if(this.value != null) {
+			sb.append(this.value);
+			sb.append(" ");
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		return sb.toString();
 	}
 }
