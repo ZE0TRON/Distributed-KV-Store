@@ -21,7 +21,6 @@ import de.tum.i13.server.storageManagment.CacheManagerFactory;
 public class Main {
     public static String serverIp;
     public static int port;
-
     public static void main(String[] args) throws IOException {
         ServerConfig cfg = ServerConfig.parseCommandlineArgs(args);  //Do not change this
         setupLogging(cfg.logfile, cfg.logLevel);
@@ -68,13 +67,12 @@ public class Main {
     }
 
     public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket, EcsConnectionThread ecsThread) throws IOException {
-        String[] parts = ecsSocket.getLocalSocketAddress().toString().split(":");
         String address = Main.serverIp;
         String port = String.valueOf(Main.port);
-        EcsConnectionThread.ECSConnection.send("shutdown " + address + " " +  port);
+        String payload ="shutdown " + address + " " +  port;
+        EcsConnectionThread.ECSConnection.send(payload);
         while (!ConnectionThread.CanShutdown){}
         ecsThread.cancel();
         kvServerSocket.close();
-        ecsSocket.close();
     }
 }

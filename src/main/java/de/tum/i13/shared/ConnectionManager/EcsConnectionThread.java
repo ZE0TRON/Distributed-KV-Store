@@ -76,6 +76,7 @@ public class EcsConnectionThread extends Thread {
                             ConnectionThread.CanShutdown = true;
                             return;
                         }
+                        ConnectionThread.CanShutdown = false;
                         String metadataString = partsMeta[1];
 
                         String[] keyRanges = resp.substring(index + "update_metadata".length() + 1).split(";");
