@@ -6,5 +6,5 @@ package de.tum.i13.server.storageManagment;
  * Used), LFU (Least Frequently Used).
  */
 public enum CacheDisplacementStrategy {
-	FIFO, LRU, LFU;
+	FIFO, LRU, LFU
 }

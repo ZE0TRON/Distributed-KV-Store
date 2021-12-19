@@ -14,20 +14,20 @@ public interface DataManager {
 	 * @param key the key, whose item we want to acquire.
 	 * @return PersistItem, null if this key is not found.
 	 */
-	PersistItem get(String key) throws Exception;
+	PersistItem get(String key);
 
 	/**
 	 * Puts the given key-value item.
 	 * 
-	 * @param item the key-value item to be put.
+	 * @param persistItem the key-value item to be put.
 	 * @return PersistType.UPDATE if an item with the same key already exists,
 	 *         PersistType.INSERT otherwise.
 	 */
-	PersistType put(PersistItem persistItem) throws Exception;
+	PersistType put(PersistItem persistItem);
 
 	/**
 	 * Deletes the item with the given key.
-	 * 
+	 *
 	 * @param key the key of the item to be deleted.
 	 * @return PersistType.DELETE after delete operation is completed.
 	 */

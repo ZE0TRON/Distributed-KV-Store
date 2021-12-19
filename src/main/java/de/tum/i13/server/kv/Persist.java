@@ -46,8 +46,13 @@ public class Persist implements DataManager {
         return instance;
     }
 
-    public void serializeAndPersistItem(PersistItemCollection persistItemCollection) throws JAXBException {
-        marshaller.marshal(persistItemCollection, storeFileName);
+    public void serializeAndPersistItem(PersistItemCollection persistItemCollection){
+        try {
+            marshaller.marshal(persistItemCollection, storeFileName);
+        } catch (JAXBException ex) {
+            LOGGER.severe("Exception thrown while writing to the persistence file.");
+            LOGGER.severe(ex.getMessage());
+        }
     }
 
     public PersistItemCollection deserializeItem(){
@@ -61,7 +66,7 @@ public class Persist implements DataManager {
         return result;
     }
 
-    public PersistType put(PersistItem putItem) throws JAXBException {
+    public PersistType put(PersistItem putItem){
         PersistItemCollection storedItems;
         try {
             storedItems = this.deserializeItem();

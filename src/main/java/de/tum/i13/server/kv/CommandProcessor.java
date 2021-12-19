@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 public class CommandProcessor implements de.tum.i13.shared.CommandProcessor {
     private ServerState serverState;
     private EcsConnectionState ecsConnectionState;
-    private KVStore kvStore;
+    private final KVStore kvStore;
 
     private static final Logger LOGGER = Logger.getLogger(CommandProcessor.class.getName());
     public CommandProcessor(KVStore kvStore) {

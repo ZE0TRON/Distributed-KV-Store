@@ -3,7 +3,7 @@ package de.tum.i13.server.storageManagment;
 public class CacheManagerFactory {
 
 	/**
-	 * Creates an subclass of {@code CacheManager} according to the given
+	 * Creates a subclass of {@code CacheManager} according to the given
 	 * {@code CacheDisplacementStrategy} and cache size.
 	 * 
 	 * @param cacheSize the cache size of the cache manager to be created.

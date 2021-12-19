@@ -57,9 +57,10 @@ public class CacheManagerLRU extends CacheManager {
 	/**
 	 * Removes the appropriate item from the cache according to the LRU strategy.
 	 */
+	@SuppressWarnings("DuplicatedCode")
 	@Override
 	protected void removeFromCache() {
-		LOGGER.fine("Removing an item from the cache");
+		LOGGER.fine("Removing an item from the LRU cache");
 
 		String minKey = "";
 		long min = Long.MAX_VALUE;

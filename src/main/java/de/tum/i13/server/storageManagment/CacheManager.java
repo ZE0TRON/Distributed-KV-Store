@@ -70,7 +70,7 @@ public abstract class CacheManager implements DataManager {
 	 * @return PersistType.UPDATE if an item with the same key already exists,
 	 *         PersistType.INSERT otherwise.
 	 */
-	synchronized public PersistType put(PersistItem item) throws Exception {
+	synchronized public PersistType put(PersistItem item){
 		Value v = map.get(item.key);
 		if (v != null) {
 			LOGGER.fine(

@@ -6,9 +6,7 @@ import java.util.logging.Logger;
 import de.tum.i13.client.KeyRange;
 import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
-import de.tum.i13.server.storageManagment.DataManager;
 import de.tum.i13.server.storageManagment.PersistType;
-import de.tum.i13.shared.keyring.KeyRingService;
 
 public class KVStoreImpl implements KVStore {
 
@@ -43,10 +41,10 @@ public class KVStoreImpl implements KVStore {
 				try {
 					kvPersist.delete(key);
 					LOGGER.fine("Delete operation successfully executed on key: " + key);
-					return new KVClientMessageImpl(key, value, StatusType.DELETE_SUCCESS);
+					return new KVClientMessageImpl(key, null, StatusType.DELETE_SUCCESS);
 				} catch(Exception e) {
 					LOGGER.fine("Delete operation not successfully executed on key: " + key + " because of key could not found");
-					return new KVClientMessageImpl(key, value, StatusType.DELETE_ERROR);
+					return new KVClientMessageImpl(key, null, StatusType.DELETE_ERROR);
 				}
 				finally {
 					cache.delete(key);
