@@ -45,7 +45,7 @@ public class KeyRingService implements KeyRangeService{
 
     @Override
     public RingItem findPredecessor(String key) {
-        return RingItem.fromRingNode(keyRing.successorOfKey(key));
+        return RingItem.fromRingNode(keyRing.predecessorOfKey(key));
     }
     // TODO correct this
     @Override

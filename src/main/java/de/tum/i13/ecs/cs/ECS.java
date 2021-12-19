@@ -43,19 +43,20 @@ public class ECS implements ConfigurationService {
 
 
     @Override
-    public void addServer(Server server) {
+    public synchronized void addServer(Server server) {
         RingItem newRingItem = RingItem.createRingItemFromServer(server);
         keyRingService.put(newRingItem);
         Server receiverServer = server;
         RingItem oldRingItem = keyRingService.findPredecessor(Server.serverToHashString(server));
-        Server senderServer = oldRingItem.value;
+        RingItem successorItem = keyRingService.findSuccessor(Server.serverToHashString(server));
+        Server senderServer = successorItem.value;
         Pair<String, String> keyRange = new Pair<>(oldRingItem.key, newRingItem.key);
         RebalanceOperation rebalanceOperation = new RebalanceOperation(senderServer, receiverServer, keyRange, RebalanceType.ADD);
         queueHandoverProcess(rebalanceOperation);
     }
 
     @Override
-    public void deleteServer(Server server) {
+    public synchronized void deleteServer(Server server) {
         RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
         RingItem ringItem = keyRingService.findSuccessor(ringItemToDelete.key);
         keyRingService.delete(ringItemToDelete);

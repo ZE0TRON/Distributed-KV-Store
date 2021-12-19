@@ -185,28 +185,14 @@ public class BST {
     }
 
     public RingNode successorOfKey(String key) {
-        RingNode current = root;
-        RingNode prev = root;
-        while(current != null) {
-            prev = current;
-            if (current.key.compareTo(key) > 0 ) {
-                current = current.left;
+        RingNode current = search(key);
+        return ringSuccessor(current);
 
-            }
-            else if (current.key.compareTo(key) < 0) {
-                current = current.right;
-            }
-            else {
-                return current;
-            }
-        }
-        if (prev == null) {
-            return root;
-        }
-        if (prev.key.compareTo(key) < 0) {
-            return ringSuccessor(prev);
-        }
-        return prev;
+    }
+
+    public RingNode predecessorOfKey(String key) {
+        RingNode current = search(key);
+        return ringPredecessor(current);
     }
 
     private RingNode ringSuccessor(RingNode node) {
