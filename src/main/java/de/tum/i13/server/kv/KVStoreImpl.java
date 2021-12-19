@@ -8,6 +8,7 @@ import de.tum.i13.server.Main;
 import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
 import de.tum.i13.server.storageManagment.PersistType;
+import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
 
 public class KVStoreImpl implements KVStore {
 
@@ -111,9 +112,9 @@ public class KVStoreImpl implements KVStore {
 
 		String start = null, end = null;
 		String kvServerAddr = Main.serverIp;
-		int port = Main.port;
+		int port = EcsConnectionThread.ECSConnection.getSocketPort();
 		for (KeyRange keyrange : metaData){
-			if (keyrange.host == kvServerAddr && keyrange.port == port){
+			if (keyrange.host.equals(kvServerAddr) && keyrange.port == port){
 				start = keyrange.from;
 				end = keyrange.to;
 				break;

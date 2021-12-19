@@ -65,7 +65,13 @@ public class EcsConnectionThread extends Thread {
                     }
                     case "update_metadata":
                         int index = resp.indexOf("update_metadata");
-                        String metadataString = resp.split(" ")[1];
+                        String[] partsMeta = resp.split(" ");
+                        if(partsMeta.length < 2) {
+                            ConnectionThread.CanShutdown = true;
+                            return;
+                        }
+                        String metadataString = partsMeta[1];
+
                         String[] keyRanges = resp.substring(index + "update_metadata".length() + 1).split(";");
                         ArrayList<KeyRange> metaData = new ArrayList<>();
                         for (String keyRange : keyRanges) {

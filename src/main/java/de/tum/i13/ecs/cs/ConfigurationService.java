@@ -8,7 +8,7 @@ public interface ConfigurationService {
     void addServer(Server server);
     void deleteServer(Server server);
     Server getServer(String key);
-    void updateMedata();
+    void updateMetadata();
     void handoverFinished(Pair<String, String> keyRange);
     Server getServerForStorageKey(String key);
 }

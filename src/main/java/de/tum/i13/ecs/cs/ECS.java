@@ -73,11 +73,16 @@ public class ECS implements ConfigurationService {
 
 
     private void createNewMetaData() {
-       metadata = keyRingService.serializeKeyRing();
+        if(keyRingService.isKeyringEmpty()) {
+            metadata = "";
+        }
+        else {
+            metadata = keyRingService.serializeKeyRanges();
+        }
     }
 
     @Override
-    public void updateMedata() {
+    public void updateMetadata() {
         createNewMetaData();
         for (ConnectionManagerInterface connection : ServerConnectionThread.connections.values()) {
            connection.send("update_metadata " + metadata);
@@ -91,7 +96,7 @@ public class ECS implements ConfigurationService {
             return;
         }
         onGoingRebalance = null;
-        updateMedata();
+        updateMetadata();
         if (!rebalanceQueue.isEmpty()) {
             startHandoverProcess(this.rebalanceQueue.poll());
         }
@@ -112,6 +117,7 @@ public class ECS implements ConfigurationService {
           // Since the first node added before handover process there should be 1 node in first case
           if(keyRingService.getCount() == 1) {
               connectionManager.send("first_key_range");
+              handoverFinished(onGoingRebalance.getKeyRange());
           } else {
               connectionManager.send("init_key_range " +
                       rebalanceOperation.getKeyRange().fst + " " +
@@ -122,6 +128,10 @@ public class ECS implements ConfigurationService {
         else if (onGoingRebalance.getRebalanceType() == RebalanceType.DELETE) {
             Server server = rebalanceOperation.getSenderServer();
             ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toHashableString());
+            if(keyRingService.isKeyringEmpty()) {
+                handoverFinished(onGoingRebalance.getKeyRange());
+                return;
+            }
             connectionManager.send("handover_start " +
                     rebalanceOperation.getKeyRange().fst + " " +
                     rebalanceOperation.getKeyRange().snd + " " +

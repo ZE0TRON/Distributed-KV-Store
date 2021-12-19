@@ -6,4 +6,5 @@ public interface ConnectionManagerInterface {
    void send(String message);
    String receive() throws IOException;
    void disconnect();
+   int getSocketPort();
 }

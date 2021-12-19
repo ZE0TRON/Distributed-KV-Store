@@ -74,25 +74,6 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>echo-client</id>
-                        <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <archive>
-                                <manifest>
-                                    <mainClass>de.tum.i13.client.Milestone1Main</mainClass>
-                                </manifest>
-                            </archive>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <finalName>echo-client</finalName>
-                        </configuration>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>ecs-server</id>
                         <configuration>
                             <appendAssemblyId>false</appendAssemblyId>

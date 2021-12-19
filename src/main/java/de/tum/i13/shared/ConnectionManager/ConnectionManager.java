@@ -14,6 +14,9 @@ public class ConnectionManager implements ConnectionManagerInterface{
     private BufferedReader in;
     private PrintWriter out;
 
+    public int getSocketPort() {
+        return socket.getLocalPort();
+    }
     public ConnectionManager(Socket clientSocket) throws IOException {
         this.socket = clientSocket;
         in = new BufferedReader(new InputStreamReader(this.socket.getInputStream(), Constants.TELNET_ENCODING));

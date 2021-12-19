@@ -1,5 +1,6 @@
 package de.tum.i13.server;
 
+import de.tum.i13.ecs.cs.ECS;
 import de.tum.i13.server.kv.*;
 import de.tum.i13.shared.ConnectionManager.ConnectionManager;
 import de.tum.i13.shared.ConnectionManager.ConnectionThread;
@@ -67,8 +68,10 @@ public class Main {
     }
 
     public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket, EcsConnectionThread ecsThread) throws IOException {
-        ConnectionManager connectionManager = new ConnectionManager(ecsSocket);
-        connectionManager.send("shutdown " + kvServerSocket.getLocalSocketAddress() + " " +  kvServerSocket.getLocalPort());
+        String[] parts = ecsSocket.getLocalSocketAddress().toString().split(":");
+        String address = parts[0].substring(1);
+        String port = parts[1];
+        EcsConnectionThread.ECSConnection.send("shutdown " + address + " " +  port);
         while (!ConnectionThread.CanShutdown){}
         ecsThread.cancel();
         kvServerSocket.close();
