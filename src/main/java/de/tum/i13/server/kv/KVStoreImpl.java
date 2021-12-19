@@ -103,9 +103,9 @@ public class KVStoreImpl implements KVStore {
 		return new KVClientMessageImpl(null, null, StatusType.ERROR);
 	}
 
-	public KeyRange getKeyRange() {
+	public static KeyRange getKeyRange() {
 		LOGGER.info("KVStoreImpl.getKeyRange called with keyRange: " + keyRange.toString());
-		return keyRange;
+		return KVStoreImpl.keyRange;
 	}
 
 	public static String getMetaDataString() {
@@ -129,7 +129,7 @@ public class KVStoreImpl implements KVStore {
 				break;
 			}
 		}
-		keyRange = new KeyRange(start, end, kvServerAddr, port);
+		KVStoreImpl.keyRange = new KeyRange(start, end, kvServerAddr, port);
 	}
 
 

@@ -27,8 +27,6 @@ public interface KVStore {
      */
     KVClientMessage get(String key) throws Exception;
 
-    KeyRange getKeyRange();
-
     void updateKeyRange(ArrayList<KeyRange> metaData, String metaDataString);
 
     ArrayList<PersistItem> getAll();
