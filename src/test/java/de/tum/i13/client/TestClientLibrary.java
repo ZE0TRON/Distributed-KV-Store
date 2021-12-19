@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import de.tum.i13.shared.keyring.ConsistentHashingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -156,7 +157,7 @@ public class TestClientLibrary {
 		assertEquals(metaData.get(1).host, "127.1.2.2");
 		assertEquals(metaData.get(1).port, 3213);
 		String key1 = "apple";
-		String key1Hash = clientLibrary.findHash(key1);
+		String key1Hash = ConsistentHashingService.findHash(key1);
 		System.out.println(key1Hash);
 		KeyRange kr2 = clientLibrary.findCorrectKeyRange(key1);
 		System.out.println(kr2.host + " " +  kr2.from + " " +  kr2.to);
