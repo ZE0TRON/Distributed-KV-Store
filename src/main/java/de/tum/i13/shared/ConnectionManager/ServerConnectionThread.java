@@ -48,6 +48,8 @@ public class ServerConnectionThread extends Thread {
                 } catch (CommunicationTerminatedException ex) {
                     String serverString = clientSocket.getInetAddress().toString().substring(1) + ":" + clientSocket.getPort();
                     connections.remove(serverString);
+                    clientSocket.close();
+                    clientSocket = null;
                     break;
                 } catch (Exception e) {
                     LOGGER.warning(e.getMessage());

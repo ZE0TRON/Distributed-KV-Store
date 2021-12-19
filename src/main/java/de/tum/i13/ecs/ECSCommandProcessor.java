@@ -35,6 +35,7 @@ public class ECSCommandProcessor implements CommandProcessorInterface {
                     if (endConnection) {
                         throw new CommunicationTerminatedException();
                     }
+                    break;
                 case "shutdown":
                     server = new Server(parts[1], parts[2]);
                     cs.deleteServer(server);
