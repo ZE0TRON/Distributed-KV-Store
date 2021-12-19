@@ -15,6 +15,8 @@ public class KVStoreImpl implements KVStore {
 	public static ArrayList<KeyRange> metaData;
 	private final Persist kvPersist;
 	private final CacheManager cache;
+	private String rangeStart;
+	private String rangeEnd;
 
 	public KVStoreImpl() {
 		kvPersist = Persist.getInstance();
@@ -90,5 +92,16 @@ public class KVStoreImpl implements KVStore {
 	public KVClientMessage commandNotFound(String command) {
 		// TODO Implement return description
 		return new KVClientMessageImpl(null, null, StatusType.ERROR);
+	}
+
+	//TODO: implement getRangeStart and getRangeEnd
+	public String getRangeStart(){
+
+		return "";
+	}
+
+	public String getRangeEnd(){
+
+		return "";
 	}
 }

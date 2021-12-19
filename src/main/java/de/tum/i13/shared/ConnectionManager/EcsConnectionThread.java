@@ -30,7 +30,6 @@ public class EcsConnectionThread extends Thread {
     @Override
     public void run(){
         cp.setServerState(ServerState.SERVER_STOPPED);
-        cp.setEcsConnectionState(EcsConnectionState.READY_FOR_CONNECTION);
         try {
             ecsConnManager = new ConnectionManager(ecsSocket);
             ECSConnection = ecsConnManager;
@@ -41,7 +40,6 @@ public class EcsConnectionThread extends Thread {
         try {
             String initConnection = "add_server " + ecsSocket.getLocalAddress().toString().substring(1) + " " + ecsSocket.getLocalPort();
             ecsConnManager.send(initConnection);
-            //cp.setEcsConnectionState(EcsConnectionState.WAITING_FOR_INITIALIZATION);
             LOGGER.info("add_server request sent to ECS.");
             String resp;
             while ( (resp = ecsConnManager.receive()) != null) {
@@ -51,7 +49,7 @@ public class EcsConnectionThread extends Thread {
                 LOGGER.info("Received command from ECS: " + command);
                 switch (command) {
                     case "first_key_range":
-                        //cp.setEcsConnectionState(EcsConnectionState.WAITING_FOR_METADATA);
+
                         break;
                     case "init_key_range": {
                         ConnectionManager kvServerToRetrieveConn = createConnectionManager(respParts[3]);
@@ -61,7 +59,6 @@ public class EcsConnectionThread extends Thread {
                         break;
                     }
                     case "handover_start": {
-                        //cp.setEcsConnectionState(EcsConnectionState.INITIALIZED_KVSERVER_WAITING_FOR_DATA);
                         ConnectionManager kvServerToRetrieveConn = createConnectionManager(respParts[3]);
                         kvServerToRetrieveConn.send("handover_data " + respParts[1] + " " + respParts[2]);
                         ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToRetrieveConn.getSocket(), false);
@@ -97,12 +94,7 @@ public class EcsConnectionThread extends Thread {
                         LOGGER.info("command not found");
                         break;
                 }
-                // TODO: return result
-//                String res = cp.processEcsCommand(resp) + "\r\n";
-//                this.connectionManager.send(res);
             }
-//            String res = cp.processEcsCommand(resp) + "\r\n";
-//            this.connectionManager.send(res);
         } catch (Exception ex) {
             LOGGER.warning(ex.getMessage());
             ex.printStackTrace();
