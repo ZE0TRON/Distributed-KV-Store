@@ -69,8 +69,8 @@ public class Main {
 
     public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket, EcsConnectionThread ecsThread) throws IOException {
         String[] parts = ecsSocket.getLocalSocketAddress().toString().split(":");
-        String address = parts[0].substring(1);
-        String port = parts[1];
+        String address = Main.serverIp;
+        String port = String.valueOf(Main.port);
         EcsConnectionThread.ECSConnection.send("shutdown " + address + " " +  port);
         while (!ConnectionThread.CanShutdown){}
         ecsThread.cancel();
