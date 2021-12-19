@@ -20,9 +20,12 @@ public class KVCommandProcessor implements CommandProcessorInterface {
         if (parts.length == 0) {
             parts = new String[]{"help"};
         }
+        LOGGER.info("KVCommand Processor: Received command " + command);
+        LOGGER.info("KVServer state: " + CommandProcessor.serverState);
         String res = null;
         switch (parts[0]) {
             case "request_data":
+                LOGGER.info("Entering SERVER_WRITE_LOCK state.");
                 CommandProcessor.serverState = ServerState.SERVER_WRITE_LOCK;
             case "handover_ack":
                 res = "send_data " + parts[1] + " " + parts[2] + " " + kvTransferService.sendData(parts[1], parts[2]);
@@ -36,11 +39,12 @@ public class KVCommandProcessor implements CommandProcessorInterface {
                 throw new CommunicationTerminatedException();
 
             case "handover_data":
+                LOGGER.info("Entering SERVER_WRITE_LOCK state.");
                 CommandProcessor.serverState = ServerState.SERVER_WRITE_LOCK;
                 res = "handover_ack " + parts[1] + " " + parts[2];
                 break;
             default:
-                LOGGER.warning("KVServerCommand not found");
+                LOGGER.warning("KVServerCommand not found.");
         }
         return res;
    }

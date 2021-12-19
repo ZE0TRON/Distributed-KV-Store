@@ -23,4 +23,13 @@ public class KeyRange {
 	}
 
 
+	@Override
+	public String toString() {
+		return "KeyRange{" +
+				"from='" + from + '\'' +
+				", to='" + to + '\'' +
+				", host='" + host + '\'' +
+				", port=" + port +
+				'}';
+	}
 }

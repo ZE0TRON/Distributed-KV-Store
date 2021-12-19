@@ -36,6 +36,7 @@ public class EcsConnectionThread extends Thread {
 
     @Override
     public void run(){
+        LOGGER.info("ECSThread has been started.");
         try {
             String initConnection = "add_server " + ecsSocket.getLocalAddress().toString().substring(1) + " " + Main.port + " " + ecsSocket.getLocalPort();
             ecsConnManager.send(initConnection);
@@ -90,6 +91,7 @@ public class EcsConnectionThread extends Thread {
                             metaData.add(new KeyRange(from, to, serverIP, serverPort));
                         }
                         new KVStoreImpl().updateKeyRange(metaData, metadataString);
+                        LOGGER.info("Entering RUNNING state.");
                         CommandProcessor.serverState = ServerState.RUNNING;
                         break;
                     case "health_check":
@@ -119,6 +121,7 @@ public class EcsConnectionThread extends Thread {
         String ip = parts[0];
         int port = Integer.parseInt(parts[1]);
         Socket socket = new Socket(ip, port);
+        LOGGER.info("ConnectionManager has been created with addr: " + addr);
         return new ConnectionManager(socket);
     }
 }

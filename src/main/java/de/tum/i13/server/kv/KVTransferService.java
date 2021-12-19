@@ -15,6 +15,7 @@ public class KVTransferService {
     }
 
     public String sendData(String from, String to) {
+        LOGGER.info("KVTransferService.sendData called with from: " + from + ", and to: " + to);
        ArrayList<PersistItem> dataToSend = new ArrayList<>();
        ArrayList<PersistItem> allItems = kvStore.getAll();
        for (PersistItem item : allItems) {
@@ -26,6 +27,8 @@ public class KVTransferService {
     }
 
     public String receiveData(String from, String to, String data) {
+        LOGGER.info("KVTransferService.receiveData called with from: " + from + ", and to: " + to + ", and data: " + data);
+
         ArrayList<PersistItem> dataToAdd = deserializeData(data);
         dataToAdd.stream().map((item) -> {
             try {
@@ -40,6 +43,7 @@ public class KVTransferService {
     }
 
     private String serializeData(ArrayList<PersistItem> data) {
+        LOGGER.info("KVTransferService.serializeData called with data: " + data.toString());
         StringBuilder sb = new StringBuilder();
         for(PersistItem item : data) {
             sb.append(item.toString());
@@ -50,12 +54,13 @@ public class KVTransferService {
     }
 
     private ArrayList<PersistItem> deserializeData(String data) {
-       String[] parts = data.split("\f");
-       ArrayList<PersistItem> result = new ArrayList<>();
-       for (String part : parts) {
-           String[] keyValue = part.split("\t");
-           result.add(new PersistItem(keyValue[0], keyValue[1]));
-       }
-       return result;
+        LOGGER.info("KVTransferService.deserializeData called with data: " + data.toString());
+        String[] parts = data.split("\f");
+        ArrayList<PersistItem> result = new ArrayList<>();
+        for (String part : parts) {
+            String[] keyValue = part.split("\t");
+            result.add(new PersistItem(keyValue[0], keyValue[1]));
+        }
+        return result;
     }
 }

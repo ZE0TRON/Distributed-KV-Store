@@ -11,6 +11,12 @@ public class CommandProcessor implements CommandProcessorInterface {
     private final KVStore kvStore;
 
     private static final Logger LOGGER = Logger.getLogger(CommandProcessor.class.getName());
+
+    /**
+     * Constructs a {@code Command Processor} with a KVStore instance, which handles primitive key-value operations.
+     *
+     * @param kvStore the beginning of this {@code CommandProcessor}
+     */
     public CommandProcessor(KVStore kvStore) {
         this.kvStore = kvStore;
     }
@@ -28,7 +34,8 @@ public class CommandProcessor implements CommandProcessorInterface {
         if (parts.length == 0) {
            parts = new String[]{"help"};
         }
-        LOGGER.info("received command " + command);
+        LOGGER.info("Command Processor: Received command " + command);
+        LOGGER.info("KVServer state: " + serverState);
         String commandType = parts[0];
         try {
             if (serverState.equals(ServerState.SERVER_STOPPED)){
@@ -37,9 +44,10 @@ public class CommandProcessor implements CommandProcessorInterface {
             else if (serverState.equals(ServerState.SERVER_WRITE_LOCK)){
                 kvClientMessage = new KVClientMessageImpl(null,null, KVClientMessage.StatusType.SERVER_WRITE_LOCK);
             }
-            else {
+            else { // ServerState.RUNNING
                 KeyRange keyrange = kvStore.getKeyRange();
                 if (!commandType.equals("keyrange") && !Util.isKeyInRange(keyrange.from, keyrange.to, ConsistentHashingService.findHash(parts[1]))){
+                    LOGGER.info("KVServer: SERVER_NOT_RESPONSIBLE occurred.");
                     kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getMetaDataString(), null, KVClientMessage.StatusType.SERVER_NOT_RESPONSIBLE);
                 }
                 else {
@@ -86,9 +94,5 @@ public class CommandProcessor implements CommandProcessorInterface {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public void setServerState(ServerState serverState) {
-        this.serverState = serverState;
     }
 }

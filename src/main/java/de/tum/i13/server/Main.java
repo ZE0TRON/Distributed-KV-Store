@@ -49,7 +49,7 @@ public class Main {
 
         // Graceful shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Closing thread main KVServer");
+            System.out.println("Closing thread main KVServer. Shutdown procedure has been started.");
             try {
                 shutdownProcedure(kvServerSocket, ecsSocket, ecsThread);
             } catch (IOException e) {

@@ -29,6 +29,7 @@ public class KVStoreImpl implements KVStore {
 
 	@Override
 	public KVClientMessage put(String key, String value) throws Exception {
+		LOGGER.info("KVStoreImpl.put called with key: " + key + ", and value: " + value);
 		try {
 			if (value != null) {
 				PersistItem item = new PersistItem(key, value);
@@ -64,6 +65,7 @@ public class KVStoreImpl implements KVStore {
 
 	@Override
 	public KVClientMessage get(String key) throws Exception {
+		LOGGER.info("KVStoreImpl.get called with key: " + key);
 		try {
 			PersistItem item = cache.get(key);
 			if (item != null) {
@@ -90,25 +92,31 @@ public class KVStoreImpl implements KVStore {
 
 	@Override
 	public ArrayList<PersistItem> getAll() {
+		LOGGER.info("KVStoreImpl.getAll called.");
 		return kvPersist.deserializeItem().parts;
 	}
 
 	public KVClientMessage commandNotFound(String command) {
+		LOGGER.info("KVStoreImpl.commandNotFound called.");
 		// TODO Implement return description
 		return new KVClientMessageImpl(null, null, StatusType.ERROR);
 	}
 
 	public KeyRange getKeyRange() {
+		LOGGER.info("KVStoreImpl.getKeyRange called with keyRange: " + keyRange.toString());
 		return keyRange;
 	}
 
 	public static String getMetaDataString() {
+		LOGGER.info("KVStoreImpl.getMetaDataString called with metaDataString: " + metaDataString);
 		return metaDataString;
 	}
 
 	public void updateKeyRange(ArrayList<KeyRange> metaData, String metaDataString){
-		this.metaData = metaData;
-		this.metaDataString = metaDataString;
+		LOGGER.info("KVStoreImpl.updateKeyRange called with metaData: " + metaData.toString() + ",and metaDataString: " + metaDataString);
+
+		KVStoreImpl.metaData = metaData;
+		KVStoreImpl.metaDataString = metaDataString;
 
 		String start = null, end = null;
 		String kvServerAddr = Main.serverIp;

@@ -34,6 +34,7 @@ public class ConnectionThread extends Thread {
     // TODO delete same
     @Override
     public void run() {
+        LOGGER.info("ConnectionThread has been started.");
         try {
             this.connectionManager = new ConnectionManager(clientSocket);
         } catch (IOException e) {
@@ -42,23 +43,26 @@ public class ConnectionThread extends Thread {
         try {
             String res;
             if(receivedConnection) {
-                res = "Connection established";
+                res = "Connection established.";
                 this.connectionManager.send(res);
-                LOGGER.info("Response sent");
+                LOGGER.info("Response sent.");
             }
             String recv;
 
             while ( (recv = connectionManager.receive()) != null) {
                 String command = recv.split(" ")[0];
-
+                LOGGER.info("Received command in ConnectionThread: " + recv);
                 try {
                     if (KVServerCommands.contains(command)) {
+                        LOGGER.info("KVServerCommand has been received. Now being processed.");
                         res = kvScp.process(recv) + "\r\n";
                     }
                     else {
+                        LOGGER.info("ClientCommand has been received. Now being processed.");
                         res = cp.process(recv) + "\r\n";
                     }
                     if(res != null) {
+                        LOGGER.info("ConnectionThread response being sent.");
                         this.connectionManager.send(res);
                     }
                 } catch (CommunicationTerminatedException ex) {
