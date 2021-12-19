@@ -71,9 +71,7 @@ public class Main {
         String port = String.valueOf(Main.port);
         String payload ="shutdown " + address + " " +  port;
         EcsConnectionThread.ECSConnection.send(payload);
-        while (!ConnectionThread.CanShutdown){
-            Thread.sleep(2000);
-        }
+        Thread.sleep(4000);
         ecsThread.cancel();
         kvServerSocket.close();
     }
