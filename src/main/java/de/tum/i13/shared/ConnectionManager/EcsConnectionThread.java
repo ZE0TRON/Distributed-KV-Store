@@ -51,7 +51,9 @@ public class EcsConnectionThread extends Thread {
                         break;
                     case "init_key_range": {
                         ConnectionManager kvServerToRetrieveConn = createConnectionManager(respParts[3]);
-                        kvServerToRetrieveConn.send("request_data " + respParts[1] + " " + respParts[2]);
+                        String payload = "request_data " + respParts[1] + " " + respParts[2];
+                        LOGGER.info("Sending " + payload + " to " + respParts[3]);
+                        kvServerToRetrieveConn.send(payload);
                         ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToRetrieveConn.getSocket(), false);
                         connectionThread.start();
                         break;
