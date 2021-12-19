@@ -47,17 +47,4 @@ public class ECSCommandProcessor implements CommandProcessor {
         }
         return null;
     }
-
-    @Override
-    public String connectionAccepted(InetSocketAddress address, InetSocketAddress remoteAddress) {
-        //TODO
-        LOGGER.fine("Connection accepted address: " + address + " remote address: " + remoteAddress);
-        return new ECSMessageImpl(null, null, ECSMessage.StatusType.CONNECTION_ESTABLISHED).toString();
-    }
-
-    @Override
-    public void connectionClosed(InetAddress address) {
-        LOGGER.fine("Connection closed address: " + address );
-        //TODO
-    }
 }

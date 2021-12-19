@@ -62,14 +62,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        // Command Processorlari ayir(eminsen)
 
-        // Yeni Thread ac
-        // Threadin icinde whilela don kvserver bekle
-        // Kvserver connection gelicne yeni threadde handle et
-        // key aktarimi bitince connection kapaninca threadi kapa
-
-        // Graceful shutdown here
         while (true) {
             Socket clientSocket = kvServerSocket.accept();
             // When client connection comes through, start a new Thread for this client

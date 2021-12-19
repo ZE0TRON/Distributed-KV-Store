@@ -19,11 +19,11 @@ public class ConnectionThread extends Thread {
     private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("", "", "", ""));
     private final boolean receivedConnection;
 
-    public ConnectionThread(CommandProcessor commandProcessor, KVCommandProcessor kvCommandProcessor, Socket clientSocket, boolean receviedConnection) {
+    public ConnectionThread(CommandProcessor commandProcessor, KVCommandProcessor kvCommandProcessor, Socket clientSocket, boolean receivedConnection) {
         this.cp = commandProcessor;
         this.clientSocket = clientSocket;
         this.kvScp = kvCommandProcessor;
-        this.receivedConnection = receviedConnection;
+        this.receivedConnection = receivedConnection;
     }
 
     // TODO put KV sync function
@@ -46,9 +46,9 @@ public class ConnectionThread extends Thread {
             String recv;
 
             while ( (recv = connectionManager.receive()) != null) {
-                String[] parts = recv.split(" ");
+                String command = recv.split(" ")[0];
 
-                if (KVServerCommands.contains(parts[0])) {
+                if (KVServerCommands.contains(command)) {
                     res = kvScp.process(recv) + "\r\n";
                 }
                 else {

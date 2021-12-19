@@ -13,13 +13,13 @@ public class ConnectionManager implements ConnectionManagerInterface{
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
+
     public ConnectionManager(Socket clientSocket) throws IOException {
         this.socket = clientSocket;
         in = new BufferedReader(new InputStreamReader(this.socket.getInputStream(), Constants.TELNET_ENCODING));
         out = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), Constants.TELNET_ENCODING));
 
     }
-
 
     public void send(String message) {
         LOGGER.info("Sending message " + message + " to the client.");
