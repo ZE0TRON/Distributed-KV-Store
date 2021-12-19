@@ -121,6 +121,7 @@ public class KVStoreImpl implements KVStore {
 
 		String start = null, end = null;
 		String kvServerAddr = Main.serverIp;
+		LOGGER.info("updateKeyRange Server IP: " + Main.serverIp);
 		int port = Main.port;
 		for (KeyRange keyrange : metaData){
 			if (keyrange.host.equals(kvServerAddr) && keyrange.port == port){
