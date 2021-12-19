@@ -93,7 +93,8 @@ public class KVStoreImpl implements KVStore {
 	@Override
 	public ArrayList<PersistItem> getAll() {
 		LOGGER.info("KVStoreImpl.getAll called.");
-		return kvPersist.deserializeItem().parts;
+		PersistItemCollection collection = kvPersist.deserializeItem();
+		return collection == null ? new ArrayList<PersistItem>() : collection.parts;
 	}
 
 	public KVClientMessage commandNotFound(String command) {

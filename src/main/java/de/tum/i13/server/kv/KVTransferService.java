@@ -49,8 +49,11 @@ public class KVTransferService {
             sb.append(item.toString());
             sb.append("\f");
         }
-        sb.deleteCharAt(sb.length() -1);
-        return sb.toString();
+        if(sb.length() > 0 ) {
+            sb.deleteCharAt(sb.length() - 1);
+            return sb.toString();
+        }
+        return "";
     }
 
     private ArrayList<PersistItem> deserializeData(String data) {

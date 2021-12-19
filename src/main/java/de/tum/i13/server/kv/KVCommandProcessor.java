@@ -28,10 +28,15 @@ public class KVCommandProcessor implements CommandProcessorInterface {
                 LOGGER.info("Entering SERVER_WRITE_LOCK state.");
                 CommandProcessor.serverState = ServerState.SERVER_WRITE_LOCK;
             case "handover_ack":
-                res = "send_data " + parts[1] + " " + parts[2] + " " + kvTransferService.sendData(parts[1], parts[2]);
+                String dataToSend = kvTransferService.sendData(parts[1], parts[2]);
+                res = "send_data " + parts[1] + " " + parts[2] + ((dataToSend.length() > 0) ? (" " + dataToSend) : "");
                 break;
             case "send_data":
-                res = "ack_data " + kvTransferService.receiveData(parts[1], parts[2], parts[3]); // receiveData(from, to, data), returns ("from to"),
+                if (parts.length == 3) {
+                    res = "ack_data " + kvTransferService.receiveData(parts[1], parts[2], parts[3]); // receiveData(from, to, data), returns ("from to"),
+                } else {
+                    res = "ack_data " + parts[1] + " " + parts[2];
+                }
                 break;
             case "ack_data":
                 ConnectionManagerInterface ecsConnection = EcsConnectionThread.ECSConnection;
