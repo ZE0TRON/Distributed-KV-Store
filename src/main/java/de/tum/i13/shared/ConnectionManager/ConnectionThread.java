@@ -16,7 +16,7 @@ public class ConnectionThread extends Thread {
     private KVCommandProcessor kvScp;
     private Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
-    private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("", "", "", ""));
+    private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack"));
     private final boolean receivedConnection;
 
     public ConnectionThread(CommandProcessor commandProcessor, KVCommandProcessor kvCommandProcessor, Socket clientSocket, boolean receivedConnection) {

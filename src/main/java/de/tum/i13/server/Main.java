@@ -1,6 +1,7 @@
 package de.tum.i13.server;
 
 import de.tum.i13.server.kv.*;
+import de.tum.i13.shared.ConnectionManager.ConnectionManager;
 import de.tum.i13.shared.ConnectionManager.ConnectionThread;
 import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
 import de.tum.i13.shared.ServerConfig;
@@ -17,12 +18,6 @@ import de.tum.i13.server.storageManagment.CacheManagerFactory;
  * Created by chris on 09.01.15.
  */
 public class Main {
-
-    public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket) throws IOException {
-        // TODO: handout keys here
-        kvServerSocket.close();
-        ecsSocket.close();
-    }
 
     public static void main(String[] args) throws IOException {
         ServerConfig cfg = ServerConfig.parseCommandlineArgs(args);  //Do not change this
@@ -42,23 +37,19 @@ public class Main {
         CommandProcessor logic = new CommandProcessor(new KVStoreImpl());
         KVCommandProcessor kvTransferLogic = new KVCommandProcessor(new KVTransferService(new KVStoreImpl()));
 
-        try {
-            // Start ECS Thread
-            Socket ecsSocket = new Socket(cfg.bootstrap.getAddress(), cfg.bootstrap.getPort());
-            Thread ecsThread = new EcsConnectionThread(logic, kvTransferLogic, ecsSocket);
-            ecsThread.start();
-//
-//            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-//                System.out.println("Closing thread main kv server");
-//                try {
-//                    shutdownProcedure(kvServerSocket, ecsSocket);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }));
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+        Socket ecsSocket = new Socket(cfg.bootstrap.getAddress(), cfg.bootstrap.getPort());
+        Thread ecsThread = new EcsConnectionThread(logic, kvTransferLogic, ecsSocket);
+        ecsThread.start();
+
+        // Graceful shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Closing thread main KVServer");
+            try {
+                shutdownProcedure(kvServerSocket, ecsSocket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
 
 
         while (true) {
@@ -68,5 +59,13 @@ public class Main {
             Thread th = new ConnectionThread(logic, kvTransferLogic, clientSocket, true);
             th.start();
         }
+    }
+
+    public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket) throws IOException {
+        ConnectionManager connectionManager = new ConnectionManager(ecsSocket);
+        connectionManager.send("shutdown " + kvServerSocket.getLocalSocketAddress() + " " +  kvServerSocket.getLocalPort());
+        // TODO: should we wait here?
+        kvServerSocket.close();
+        ecsSocket.close();
     }
 }

@@ -23,10 +23,11 @@ public class KVCommandProcessor implements de.tum.i13.shared.CommandProcessor {
         try {
             switch (parts[0]) {
                 case "request_data":
-                    res = "send_data " + kvTransferService.sendData(parts[1], parts[2]);
+                case "handover_ack":
+                    res = "send_data " + parts[1] + " " + parts[2] + " " + kvTransferService.sendData(parts[1], parts[2]);
                     break;
                 case "send_data":
-                    res = "ack_data " + kvTransferService.receiveData(parts[1], parts[2], parts[3]);
+                    res = "ack_data " + kvTransferService.receiveData(parts[1], parts[2], parts[3]); // receiveData(from, to, data), returns ("from to"),
                     break;
                 case "ack_data":
                     ConnectionManagerInterface ecsConnection = EcsConnectionThread.ECSConnection;
@@ -36,7 +37,7 @@ public class KVCommandProcessor implements de.tum.i13.shared.CommandProcessor {
                     res = "handover_ack " + parts[1] + " " + parts[2];
                     break;
                 default:
-                    LOGGER.warning("command not found");
+                    LOGGER.warning("KVServerCommand not found");
             }
             return res;
         } catch (Exception e) {
