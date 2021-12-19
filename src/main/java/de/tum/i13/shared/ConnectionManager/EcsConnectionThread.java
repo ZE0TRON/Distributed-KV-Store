@@ -38,7 +38,9 @@ public class EcsConnectionThread extends Thread {
     public void run(){
         LOGGER.info("ECSThread has been started.");
         try {
-            String initConnection = "add_server " + ecsSocket.getLocalAddress().toString().substring(1) + " " + Main.port + " " + ecsSocket.getLocalPort();
+            String myIP = ecsSocket.getLocalAddress().toString().substring(1);
+            Main.serverIp = myIP;
+            String initConnection = "add_server " + myIP + " " + Main.port + " " + ecsSocket.getLocalPort();
             ecsConnManager.send(initConnection);
             LOGGER.info("add_server request sent to ECS.");
             String resp;
