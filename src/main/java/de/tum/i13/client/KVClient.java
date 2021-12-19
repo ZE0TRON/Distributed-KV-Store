@@ -21,7 +21,7 @@ public class KVClient {
 
 		LOGGER.fine("Initial server info host/post: " + host + "/" + port);
 
-		KVStoreClientLibrary kvStore = new KVStoreClientLibraryImpl(host, port, new CommandSender());
+		KVStoreClientLibrary kvStore = new KVStoreClientLibraryImpl(host, port);
 
 		CLI(kvStore);
 	}

@@ -10,7 +10,6 @@ import de.tum.i13.shared.keyring.HashService;
 
 public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	
-	private CommandSender cs = new CommandSender();
 
 	private ArrayList<KeyRange> metaData;
 
@@ -18,6 +17,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	private static final String HASHING_ALGORITHM = "md5";
 	private static final int MAX_SLEEP_IN_MILLI_SECOND = 1000;
 	private static final int SLEEP_BASE_IN_MILLI_SECOND = 10;
+	private ActiveConnection activeConnection;
 
 	/**
 	 * Constructs a {@code KVStoreClientLibraryImpl} with the given address and port
@@ -25,13 +25,13 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 * 
 	 * @param host the address of this {@code KVStoreClientLibraryImpl}
 	 * @param port the port of this {@code KVStoreClientLibraryImpl}
-	 * @param commandSender 
 	 */
-	public KVStoreClientLibraryImpl(String host, int port, CommandSender commandSender) {
-		this.cs = commandSender;
+
+
+	public KVStoreClientLibraryImpl(String host, int port) {
 		this.metaData = new ArrayList<>();
 		this.metaData.add(new KeyRange(null, null, host, port));
-
+		 activeConnection = CommandSender.buildConnection(host, port);
 		try {
 			this.hashService = new ConsistentHashingService(HASHING_ALGORITHM);
 		} catch (NoSuchAlgorithmException e) {
@@ -107,7 +107,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 
 		
 		KeyRange kr = findCorrectKeyRange(parts[1]);
-		String response = cs.sendCommandToServer(kr.host, kr.port, line);
+		String response = CommandSender.sendCommandToServer(kr.host, kr.port, line, activeConnection);
 
 		parts = response.split(" ");
 
@@ -159,7 +159,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 *                          server are not in a valid form.
 	 */
 	public void updateKeyRanges(String host, int port) throws IOException {
-		String response = cs.sendCommandToServer(host, port, "keyrange");
+		String response = CommandSender.sendCommandToServer(host, port, "keyrange", activeConnection);
 		int index = response.indexOf("keyrange_success");
 		if (index == -1) {
 			if (response.contains("server_stopped")) {

@@ -27,7 +27,7 @@ public class ECSCommandProcessor implements CommandProcessorInterface {
         try {
             switch (parts[0]) {
                 case "add_server":
-                    server = new Server(parts[1], parts[2]);
+                    server = new Server(parts[1], parts[2], parts[3]);
                     cs.addServer(server);
                     break;
                 case "handover_complete":

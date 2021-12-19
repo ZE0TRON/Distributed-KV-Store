@@ -91,7 +91,7 @@ public class ECS implements ConfigurationService {
 
     @Override
     public void handoverFinished(Pair<String, String> keyRange){
-        if (onGoingRebalance.getKeyRange() != keyRange) {
+        if (!onGoingRebalance.getKeyRange().fst.equals(keyRange.fst) || !onGoingRebalance.getKeyRange().snd.equals(keyRange.snd)) {
             LOGGER.warning("No re-balance operation on going with keyRange: " + keyRange.fst + "-" + keyRange.snd );
             return;
         }
@@ -113,7 +113,7 @@ public class ECS implements ConfigurationService {
         onGoingRebalance = rebalanceOperation;
         if (onGoingRebalance.getRebalanceType() == RebalanceType.ADD) {
           Server server = rebalanceOperation.getReceiverServer();
-          ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toHashableString());
+          ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toEcsConnectionString());
           // Since the first node added before handover process there should be 1 node in first case
           if(keyRingService.getCount() == 1) {
               connectionManager.send("first_key_range");
@@ -127,7 +127,7 @@ public class ECS implements ConfigurationService {
         }
         else if (onGoingRebalance.getRebalanceType() == RebalanceType.DELETE) {
             Server server = rebalanceOperation.getSenderServer();
-            ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toHashableString());
+            ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toEcsConnectionString());
             if(keyRingService.isKeyringEmpty()) {
                 handoverFinished(onGoingRebalance.getKeyRange());
                 return;

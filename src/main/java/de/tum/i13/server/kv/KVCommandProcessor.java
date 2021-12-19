@@ -32,7 +32,7 @@ public class KVCommandProcessor implements CommandProcessorInterface {
                 break;
             case "ack_data":
                 ConnectionManagerInterface ecsConnection = EcsConnectionThread.ECSConnection;
-                ecsConnection.send("handover_completed " + parts[1] + " " + parts[2]);
+                ecsConnection.send("handover_complete " + parts[1] + " " + parts[2]);
                 throw new CommunicationTerminatedException();
 
             case "handover_data":

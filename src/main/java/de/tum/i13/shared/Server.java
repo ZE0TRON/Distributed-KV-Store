@@ -8,15 +8,27 @@ import java.security.NoSuchAlgorithmException;
 public class Server {
     private String address;
     private String port;
+    private String ecsPort;
 
     public Server(String address, String port){
         this.address = address;
         this.port = port;
     }
 
+    public Server(String address, String port, String ecsPort) {
+        this.address = address;
+        this.port = port;
+        this.ecsPort = ecsPort;
+    }
+
     public String toHashableString() {
         return address + ":" + port;
     }
+
+    public String toEcsConnectionString() {
+        return address + ":" + ecsPort;
+    }
+
 
     public static Server fromHashableString(String hashableString) {
         String[] parts = hashableString.split(":");
@@ -49,5 +61,13 @@ public class Server {
 
     public void setPort(String port) {
         this.port = port;
+    }
+
+    public String getEcsPort() {
+        return ecsPort;
+    }
+
+    public void setEcsPort(String ecsPort) {
+        this.ecsPort = ecsPort;
     }
 }

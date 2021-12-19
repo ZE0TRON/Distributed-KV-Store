@@ -112,7 +112,7 @@ public class KVStoreImpl implements KVStore {
 
 		String start = null, end = null;
 		String kvServerAddr = Main.serverIp;
-		int port = EcsConnectionThread.ECSConnection.getSocketPort();
+		int port = Main.port;
 		for (KeyRange keyrange : metaData){
 			if (keyrange.host.equals(kvServerAddr) && keyrange.port == port){
 				start = keyrange.from;

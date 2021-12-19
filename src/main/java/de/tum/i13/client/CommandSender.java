@@ -27,10 +27,10 @@ public class CommandSender {
 	 * @param command the command to be sent to the server
 	 * @return response of the server
 	 */
-	public String sendCommandToServer(String host, int port, String command) throws IOException {
+	public static String sendCommandToServer(String host, int port, String command, ActiveConnection activeConnection) throws IOException {
 		checkValidInternetAddress(host);
 
-		ActiveConnection activeConnection = buildConnection(host, port);
+
 		if (activeConnection == null)
 			return "Could not connect to server!";
 
@@ -40,7 +40,7 @@ public class CommandSender {
 		String response = activeConnection.readline();
 		LOGGER.fine("Response for the command: " + command + " response: " + response);
 
-		closeConnection(activeConnection);
+		//closeConnection(activeConnection);
 
 		return response;
 	}
@@ -61,7 +61,7 @@ public class CommandSender {
 	 *                               request
 	 */
 
-	private ActiveConnection buildConnection(String host, int port) {
+	public static ActiveConnection buildConnection(String host, int port) {
 		try {
 			ActiveConnection activeConnection = connect(host, port);
 
@@ -91,7 +91,7 @@ public class CommandSender {
 	 * @return {@code ActiveConnection} that represents this connection.
 	 * @throws IOException if an error occurs while connecting.
 	 */
-	private ActiveConnection connect(String host, int port) throws IOException {
+	public static ActiveConnection connect(String host, int port) throws IOException {
 		LOGGER.fine("Connecting to host/port: " + host + "/" + port);
 		Socket s = new Socket(host, port);
 
@@ -107,7 +107,7 @@ public class CommandSender {
 	 * @param activeConnection {@code ActiveConnection} to be closed.
 	 * @throws ConnectException if an error occurs while disconnecting.
 	 */
-	private void closeConnection(ActiveConnection activeConnection) {
+	public static void closeConnection(ActiveConnection activeConnection) {
 		if (activeConnection == null || !activeConnection.isSocketInitiated() || !activeConnection.isSocketConnected()
 				|| activeConnection.isSocketClosed()) {
 			LOGGER.fine("Not connected.");

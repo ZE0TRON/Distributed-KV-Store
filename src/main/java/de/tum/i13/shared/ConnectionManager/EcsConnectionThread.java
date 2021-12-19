@@ -1,6 +1,7 @@
 package de.tum.i13.shared.ConnectionManager;
 
 import de.tum.i13.client.KeyRange;
+import de.tum.i13.server.Main;
 import de.tum.i13.server.kv.*;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class EcsConnectionThread extends Thread {
     @Override
     public void run(){
         try {
-            String initConnection = "add_server " + ecsSocket.getLocalAddress().toString().substring(1) + " " + ecsSocket.getLocalPort();
+            String initConnection = "add_server " + ecsSocket.getLocalAddress().toString().substring(1) + " " + Main.port + " " + ecsSocket.getLocalPort();
             ecsConnManager.send(initConnection);
             LOGGER.info("add_server request sent to ECS.");
             String resp;
@@ -44,7 +45,7 @@ public class EcsConnectionThread extends Thread {
                 String[] respParts = resp.split(" ");
                 String command = respParts[0];
                 ServerMessage serverMessage;
-                LOGGER.info("Received command from ECS: " + command);
+                LOGGER.info("Received command from ECS: " + resp);
                 switch (command) {
                     case "first_key_range":
                         break;
