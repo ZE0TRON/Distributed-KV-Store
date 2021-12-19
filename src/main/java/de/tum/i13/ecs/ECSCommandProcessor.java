@@ -1,15 +1,14 @@
 package de.tum.i13.ecs;
 
+import de.tum.i13.server.kv.CommandProcessorInterface;
 import de.tum.i13.shared.Pair;
 import de.tum.i13.shared.Server;
 import de.tum.i13.ecs.cs.ConfigurationService;
-import de.tum.i13.shared.CommandProcessor;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
+
 import java.util.logging.Logger;
 
-public class ECSCommandProcessor implements CommandProcessor {
+public class ECSCommandProcessor implements CommandProcessorInterface {
     private static final Logger LOGGER = Logger.getLogger(ECSCommandProcessor.class.getName());
     private final ConfigurationService cs;
     public ECSCommandProcessor(ConfigurationService cs) {

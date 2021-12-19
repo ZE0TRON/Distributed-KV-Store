@@ -1,12 +1,13 @@
 package de.tum.i13.server.kv;
 
+import de.tum.i13.client.KeyRange;
 import de.tum.i13.shared.Util;
 import de.tum.i13.shared.keyring.ConsistentHashingService;
 
 import java.util.logging.Logger;
 
-public class CommandProcessor implements de.tum.i13.shared.CommandProcessor {
-    private ServerState serverState;
+public class CommandProcessor implements CommandProcessorInterface {
+    public static ServerState serverState;
     private final KVStore kvStore;
 
     private static final Logger LOGGER = Logger.getLogger(CommandProcessor.class.getName());
@@ -30,13 +31,16 @@ public class CommandProcessor implements de.tum.i13.shared.CommandProcessor {
         LOGGER.info("received command " + command);
         String commandType = parts[0];
         try {
-            if (this.serverState.equals(ServerState.SERVER_STOPPED)){
+            if (serverState.equals(ServerState.SERVER_STOPPED)){
                 kvClientMessage = new KVClientMessageImpl(null,null, KVClientMessage.StatusType.SERVER_STOPPED);
             }
+            else if (serverState.equals(ServerState.SERVER_WRITE_LOCK)){
+                kvClientMessage = new KVClientMessageImpl(null,null, KVClientMessage.StatusType.SERVER_WRITE_LOCK);
+            }
             else {
-                //TODO:
-                if (!commandType.equals("keyrange") && !Util.isKeyInRange(kvStore.getRangeStart(), kvStore.getRangeEnd(), ConsistentHashingService.findHash(parts[1]))){
-                    kvClientMessage = new KVClientMessageImpl(null, null, KVClientMessage.StatusType.SERVER_NOT_RESPONSIBLE);
+                KeyRange keyrange = kvStore.getKeyRange();
+                if (!commandType.equals("keyrange") && !Util.isKeyInRange(keyrange.from, keyrange.to, ConsistentHashingService.findHash(parts[1]))){
+                    kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getMetaDataString(), null, KVClientMessage.StatusType.SERVER_NOT_RESPONSIBLE);
                 }
                 else {
                     switch (parts[0]) {
@@ -69,7 +73,7 @@ public class CommandProcessor implements de.tum.i13.shared.CommandProcessor {
                             kvClientMessage = kvStore.put(parts[1], null);
                             break;
                         case "keyrange":
-                            kvClientMessage = new KVClientMessageImpl(KVStoreImpl.metaDataString,null, KVClientMessage.StatusType.KEYRANGE_SUCCESS);
+                            kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getMetaDataString(),null, KVClientMessage.StatusType.KEYRANGE_SUCCESS);
                             break;
                         default:
                             LOGGER.info("command not found");

@@ -1,7 +1,8 @@
 package de.tum.i13.shared.ConnectionManager;
 
+import de.tum.i13.server.exception.CommunicationTerminatedException;
+import de.tum.i13.server.kv.CommandProcessor;
 import de.tum.i13.server.kv.KVCommandProcessor;
-import de.tum.i13.shared.CommandProcessor;
 
 import java.io.*;
 import java.net.Socket;
@@ -18,12 +19,14 @@ public class ConnectionThread extends Thread {
     private ConnectionManagerInterface connectionManager;
     private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack"));
     private final boolean receivedConnection;
+    public static boolean CanShutdown;
 
     public ConnectionThread(CommandProcessor commandProcessor, KVCommandProcessor kvCommandProcessor, Socket clientSocket, boolean receivedConnection) {
         this.cp = commandProcessor;
         this.clientSocket = clientSocket;
         this.kvScp = kvCommandProcessor;
         this.receivedConnection = receivedConnection;
+        ConnectionThread.CanShutdown = false;
     }
 
     // TODO put KV sync function
@@ -48,15 +51,24 @@ public class ConnectionThread extends Thread {
             while ( (recv = connectionManager.receive()) != null) {
                 String command = recv.split(" ")[0];
 
-                if (KVServerCommands.contains(command)) {
-                    res = kvScp.process(recv) + "\r\n";
+                try {
+                    if (KVServerCommands.contains(command)) {
+                        res = kvScp.process(recv) + "\r\n";
+                    }
+                    else {
+                        res = cp.process(recv) + "\r\n";
+                    }
+                    if(res != null) {
+                        this.connectionManager.send(res);
+                    }
+                } catch (CommunicationTerminatedException ex) {
+                    ConnectionThread.CanShutdown = true;
+                    break;
+                } catch (Exception ex) {
+                    LOGGER.warning(ex.getMessage());
+                    ex.printStackTrace();
                 }
-                else {
-                    res = cp.process(recv) + "\r\n";
-                }
-                if(res != null) {
-                    this.connectionManager.send(res);
-                }
+
             }
         } catch(Exception ex) {
             LOGGER.warning(ex.getMessage());

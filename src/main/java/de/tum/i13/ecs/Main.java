@@ -1,7 +1,8 @@
 package de.tum.i13.ecs;
 
 import de.tum.i13.ecs.cs.ECS;
-import de.tum.i13.shared.CommandProcessor;
+import de.tum.i13.server.kv.CommandProcessor;
+import de.tum.i13.server.kv.CommandProcessorInterface;
 import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
 import de.tum.i13.shared.ConnectionManager.ServerConnectionThread;
 import de.tum.i13.shared.ECSConfig;
@@ -43,7 +44,7 @@ public class Main {
         }
         LOGGER.info("ECS SERVER Started Waiting for connections");
         // If you use multithreading you need locking
-        CommandProcessor logic = new ECSCommandProcessor(ECS.getInstance());
+        ECSCommandProcessor logic = new ECSCommandProcessor(ECS.getInstance());
         // TODO checkout help thing
         while (true) {
             Socket clientSocket = serverSocket.accept();

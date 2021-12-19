@@ -1,13 +1,9 @@
 package de.tum.i13.shared.ConnectionManager;
 
 import de.tum.i13.client.KeyRange;
-import de.tum.i13.ecs.cs.ECS;
-import de.tum.i13.shared.ConnectionManager.ConnectionManager;
-import de.tum.i13.shared.ConnectionManager.ConnectionManagerInterface;
 import de.tum.i13.server.kv.*;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -20,16 +16,14 @@ public class EcsConnectionThread extends Thread {
     private Socket ecsSocket;
     private ConnectionManagerInterface ecsConnManager;
     public static ConnectionManagerInterface ECSConnection;
+    private boolean threadAlive;
 
     public EcsConnectionThread(CommandProcessor commandProcessor, KVCommandProcessor kvcp, Socket ecsSocket){
         this.cp = commandProcessor;
         this.ecsSocket = ecsSocket;
         this.kvcp = kvcp;
-    }
+        this.threadAlive = true;
 
-    @Override
-    public void run(){
-        cp.setServerState(ServerState.SERVER_STOPPED);
         try {
             ecsConnManager = new ConnectionManager(ecsSocket);
             ECSConnection = ecsConnManager;
@@ -37,19 +31,22 @@ public class EcsConnectionThread extends Thread {
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
         }
+    }
+
+    @Override
+    public void run(){
         try {
             String initConnection = "add_server " + ecsSocket.getLocalAddress().toString().substring(1) + " " + ecsSocket.getLocalPort();
             ecsConnManager.send(initConnection);
             LOGGER.info("add_server request sent to ECS.");
             String resp;
-            while ( (resp = ecsConnManager.receive()) != null) {
+            while (threadAlive  && (resp = ecsConnManager.receive()) != null) {
                 String[] respParts = resp.split(" ");
                 String command = respParts[0];
                 ServerMessage serverMessage;
                 LOGGER.info("Received command from ECS: " + command);
                 switch (command) {
                     case "first_key_range":
-
                         break;
                     case "init_key_range": {
                         ConnectionManager kvServerToRetrieveConn = createConnectionManager(respParts[3]);
@@ -59,6 +56,7 @@ public class EcsConnectionThread extends Thread {
                         break;
                     }
                     case "handover_start": {
+                        CommandProcessor.serverState = ServerState.SERVER_WRITE_LOCK;
                         ConnectionManager kvServerToRetrieveConn = createConnectionManager(respParts[3]);
                         kvServerToRetrieveConn.send("handover_data " + respParts[1] + " " + respParts[2]);
                         ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToRetrieveConn.getSocket(), false);
@@ -82,8 +80,8 @@ public class EcsConnectionThread extends Thread {
                             int serverPort = Integer.parseInt(parts[2].substring(index + 1));
                             metaData.add(new KeyRange(from, to, serverIP, serverPort));
                         }
-                        KVStoreImpl.metaDataString = metadataString;
-                        KVStoreImpl.metaData = metaData;
+                        new KVStoreImpl().updateKeyRange(metaData, metadataString);
+                        CommandProcessor.serverState = ServerState.RUNNING;
                         break;
                     case "health_check":
                         serverMessage = new ServerMessageImpl(ServerMessage.StatusType.HEALTHY);
@@ -100,6 +98,11 @@ public class EcsConnectionThread extends Thread {
             ex.printStackTrace();
         }
 
+    }
+
+    public void cancel(){
+        this.threadAlive = false;
+        ecsConnManager.disconnect();
     }
 
     private ConnectionManager createConnectionManager(String addr) throws IOException {

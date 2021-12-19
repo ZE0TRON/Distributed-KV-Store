@@ -1,6 +1,6 @@
 package de.tum.i13.shared.ConnectionManager;
 
-import de.tum.i13.shared.CommandProcessor;
+import de.tum.i13.ecs.ECSCommandProcessor;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -11,11 +11,11 @@ public class ServerConnectionThread extends Thread {
     private static final Logger LOGGER = Logger.getLogger(ServerConnectionThread.class.getName());
     public static HashMap<String, ConnectionManagerInterface> connections;
 
-    private CommandProcessor cp;
+    private ECSCommandProcessor cp;
     private Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
 
-    public ServerConnectionThread(CommandProcessor commandProcessor, Socket clientSocket) {
+    public ServerConnectionThread(ECSCommandProcessor commandProcessor, Socket clientSocket) {
         this.cp = commandProcessor;
         this.clientSocket = clientSocket;
         if(connections == null) {

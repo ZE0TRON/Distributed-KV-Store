@@ -1,5 +1,7 @@
 package de.tum.i13.server.kv;
 
+import de.tum.i13.client.KeyRange;
+
 import java.util.ArrayList;
 
 public interface KVStore {
@@ -24,6 +26,10 @@ public interface KVStore {
      *                   KV server).
      */
     KVClientMessage get(String key) throws Exception;
+
+    KeyRange getKeyRange();
+
+    void updateKeyRange(ArrayList<KeyRange> metaData, String metaDataString);
 
     ArrayList<PersistItem> getAll();
 

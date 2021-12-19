@@ -18,10 +18,14 @@ import de.tum.i13.server.storageManagment.CacheManagerFactory;
  * Created by chris on 09.01.15.
  */
 public class Main {
+    public static String serverIp;
+    public static int port;
 
     public static void main(String[] args) throws IOException {
         ServerConfig cfg = ServerConfig.parseCommandlineArgs(args);  //Do not change this
         setupLogging(cfg.logfile, cfg.logLevel);
+        serverIp = cfg.listenaddr;
+        port = cfg.port;
 
         final ServerSocket kvServerSocket = new ServerSocket();
         kvServerSocket.bind(new InetSocketAddress(cfg.listenaddr, cfg.port));
@@ -34,18 +38,19 @@ public class Main {
             e.printStackTrace();
         }
 
+        CommandProcessor.serverState = ServerState.SERVER_STOPPED;
         CommandProcessor logic = new CommandProcessor(new KVStoreImpl());
         KVCommandProcessor kvTransferLogic = new KVCommandProcessor(new KVTransferService(new KVStoreImpl()));
 
         Socket ecsSocket = new Socket(cfg.bootstrap.getAddress(), cfg.bootstrap.getPort());
-        Thread ecsThread = new EcsConnectionThread(logic, kvTransferLogic, ecsSocket);
+        EcsConnectionThread ecsThread = new EcsConnectionThread(logic, kvTransferLogic, ecsSocket);
         ecsThread.start();
 
         // Graceful shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Closing thread main KVServer");
             try {
-                shutdownProcedure(kvServerSocket, ecsSocket);
+                shutdownProcedure(kvServerSocket, ecsSocket, ecsThread);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -61,10 +66,11 @@ public class Main {
         }
     }
 
-    public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket) throws IOException {
+    public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket, EcsConnectionThread ecsThread) throws IOException {
         ConnectionManager connectionManager = new ConnectionManager(ecsSocket);
         connectionManager.send("shutdown " + kvServerSocket.getLocalSocketAddress() + " " +  kvServerSocket.getLocalPort());
-        // TODO: should we wait here?
+        while (!ConnectionThread.CanShutdown){}
+        ecsThread.cancel();
         kvServerSocket.close();
         ecsSocket.close();
     }

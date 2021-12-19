@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import de.tum.i13.client.KeyRange;
+import de.tum.i13.server.Main;
 import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
 import de.tum.i13.server.storageManagment.PersistType;
@@ -11,12 +12,14 @@ import de.tum.i13.server.storageManagment.PersistType;
 public class KVStoreImpl implements KVStore {
 
 	private static final Logger LOGGER = Logger.getLogger(KVStoreImpl.class.getName());
-	public static String metaDataString;
-	public static ArrayList<KeyRange> metaData;
+
+
+	private static String metaDataString;
+	private static ArrayList<KeyRange> metaData;
 	private final Persist kvPersist;
 	private final CacheManager cache;
-	private String rangeStart;
-	private String rangeEnd;
+
+	private static KeyRange keyRange;
 
 	public KVStoreImpl() {
 		kvPersist = Persist.getInstance();
@@ -94,14 +97,31 @@ public class KVStoreImpl implements KVStore {
 		return new KVClientMessageImpl(null, null, StatusType.ERROR);
 	}
 
-	//TODO: implement getRangeStart and getRangeEnd
-	public String getRangeStart(){
-
-		return "";
+	public KeyRange getKeyRange() {
+		return keyRange;
 	}
 
-	public String getRangeEnd(){
-
-		return "";
+	public static String getMetaDataString() {
+		return metaDataString;
 	}
+
+	public void updateKeyRange(ArrayList<KeyRange> metaData, String metaDataString){
+		this.metaData = metaData;
+		this.metaDataString = metaDataString;
+
+		String start = null, end = null;
+		String kvServerAddr = Main.serverIp;
+		int port = Main.port;
+		for (KeyRange keyrange : metaData){
+			if (keyrange.host == kvServerAddr && keyrange.port == port){
+				start = keyrange.from;
+				end = keyrange.to;
+				break;
+			}
+		}
+		keyRange = new KeyRange(start, end, kvServerAddr, port);
+	}
+
+
+
 }
