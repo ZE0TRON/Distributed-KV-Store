@@ -18,15 +18,15 @@ public class ConnectionThread extends Thread {
     private Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
     private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack", "Connection"));
-    private final boolean receivedConnection;
     public static boolean CanShutdown;
+    private String initialPayload;
 
-    public ConnectionThread(CommandProcessor commandProcessor, KVCommandProcessor kvCommandProcessor, Socket clientSocket, boolean receivedConnection) {
+    public ConnectionThread(CommandProcessor commandProcessor, KVCommandProcessor kvCommandProcessor, Socket clientSocket, String initialPayload) {
         this.cp = commandProcessor;
         this.clientSocket = clientSocket;
         this.kvScp = kvCommandProcessor;
-        this.receivedConnection = receivedConnection;
         ConnectionThread.CanShutdown = false;
+        this.initialPayload = initialPayload;
     }
 
     // TODO put KV sync function
@@ -42,15 +42,15 @@ public class ConnectionThread extends Thread {
         }
         try {
             String res = null;
-//            if(receivedConnection) {
-//                res = "Connection established.";
-//                this.connectionManager.send(res);
-//                LOGGER.info("Response sent.");
-//            }
+            this.connectionManager.send(initialPayload);
+            LOGGER.info("Response sent.");
             String recv;
 
             while ( (recv = connectionManager.receive()) != null) {
                 String command = recv.split(" ")[0];
+                if(recv.equals("Connection established.")) {
+                    continue;
+                }
                 LOGGER.info("Received command in ConnectionThread: " + recv);
                 try {
                     if (KVServerCommands.contains(command)) {

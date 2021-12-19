@@ -61,7 +61,7 @@ public class Main {
             Socket clientSocket = kvServerSocket.accept();
             // When client connection comes through, start a new Thread for this client
             System.out.println("Client connected");
-            Thread th = new ConnectionThread(logic, kvTransferLogic, clientSocket, true);
+            Thread th = new ConnectionThread(logic, kvTransferLogic, clientSocket,  "Connection established.");
             th.start();
         }
     }

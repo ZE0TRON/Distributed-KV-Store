@@ -53,19 +53,18 @@ public class EcsConnectionThread extends Thread {
                     case "first_key_range":
                         break;
                     case "init_key_range": {
-                        ConnectionManager kvServerToRetrieveConn = createConnectionManager(respParts[3]);
+                        Socket kvServerToCommunicateSocket = createSocket(respParts[3]);
                         String payload = "request_data " + respParts[1] + " " + respParts[2];
                         LOGGER.info("Sending " + payload + " to " + respParts[3]);
-                        kvServerToRetrieveConn.send(payload);
-                        ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToRetrieveConn.getSocket(), false);
+                        ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToCommunicateSocket,  payload);
                         connectionThread.start();
                         break;
                     }
                     case "handover_start": {
                         CommandProcessor.serverState = ServerState.SERVER_WRITE_LOCK;
-                        ConnectionManager kvServerToRetrieveConn = createConnectionManager(respParts[3]);
-                        kvServerToRetrieveConn.send("handover_data " + respParts[1] + " " + respParts[2]);
-                        ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToRetrieveConn.getSocket(), false);
+                        Socket kvServerToCommunicateSocket = createSocket(respParts[3]);
+                        String payload = "handover_data " + respParts[1] + " " + respParts[2];
+                        ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToCommunicateSocket,  payload);
                         connectionThread.start();
                         break;
                     }
@@ -119,12 +118,12 @@ public class EcsConnectionThread extends Thread {
         ecsConnManager.disconnect();
     }
 
-    private ConnectionManager createConnectionManager(String addr) throws IOException {
+    private Socket createSocket(String addr) throws IOException {
         String[] parts = addr.split(":");
         String ip = parts[0];
         int port = Integer.parseInt(parts[1]);
         Socket socket = new Socket(ip, port);
         LOGGER.info("ConnectionManager has been created with addr: " + addr);
-        return new ConnectionManager(socket);
+        return socket;
     }
 }
