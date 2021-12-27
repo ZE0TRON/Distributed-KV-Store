@@ -163,12 +163,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 		}
 		String[] keyRanges = response.substring(index + "keyrange_success".length() + 1).split(";");
 		metaData = new ArrayList<>();
-		for (String v : keyRanges) {
-			String[] parts = v.split(",");
-			if (parts.length != 3 || !parts[2].contains(":"))
-				throw new RuntimeException("Invalid key range: " + v);
-			Util.parseMetadata(metaData, parts);
-		}
+		Util.parseKeyrange(keyRanges, metaData);
 
 	}
 

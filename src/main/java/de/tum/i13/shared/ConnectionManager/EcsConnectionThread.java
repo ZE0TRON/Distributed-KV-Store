@@ -81,13 +81,7 @@ public class EcsConnectionThread extends Thread {
 
                         String[] keyRanges = resp.substring(index + "update_metadata".length() + 1).split(";");
                         ArrayList<KeyRange> metaData = new ArrayList<>();
-                        for (String keyRange : keyRanges) {
-                            String[] parts = keyRange.split(",");
-                            if (parts.length != 3 || !parts[2].contains(":")) {
-                                throw new RuntimeException("Invalid key range: " + keyRange);
-                            }
-                            Util.parseMetadata(metaData, parts);
-                        }
+                        Util.parseKeyrange(keyRanges, metaData);
                         new KVStoreImpl().updateKeyRange(metaData, metadataString);
                         LOGGER.info("Entering RUNNING state.");
                         CommandProcessor.serverState = ServerState.RUNNING;

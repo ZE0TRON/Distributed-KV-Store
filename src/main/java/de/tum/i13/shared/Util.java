@@ -39,4 +39,14 @@ public class Util {
         int serverPort = Integer.parseInt(parts[2].substring(index + 1));
         metaData.add(new KeyRange(from, to, serverIP, serverPort));
     }
+
+    public static void parseKeyrange(String[] keyRanges, ArrayList<KeyRange> metaData) {
+        for (String keyRange : keyRanges) {
+            String[] parts = keyRange.split(",");
+            if (parts.length != 3 || !parts[2].contains(":")) {
+                throw new RuntimeException("Invalid key range: " + keyRange);
+            }
+            Util.parseMetadata(metaData, parts);
+        }
+    }
 }

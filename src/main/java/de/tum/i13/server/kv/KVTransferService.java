@@ -16,14 +16,14 @@ public class KVTransferService {
 
     public String sendData(String from, String to) {
         LOGGER.info("KVTransferService.sendData called with from: " + from + ", and to: " + to);
-       ArrayList<PersistItem> dataToSend = new ArrayList<>();
-       ArrayList<PersistItem> allItems = kvStore.getAll();
-       for (PersistItem item : allItems) {
-           if(Util.isKeyInRange(from, to, ConsistentHashingService.findHash(item.key))){
-               dataToSend.add(item);
-           }
-       }
-       return serializeData(dataToSend);
+        ArrayList<PersistItem> dataToSend = new ArrayList<>();
+        ArrayList<PersistItem> allItems = kvStore.getAll();
+        for (PersistItem item : allItems) {
+            if(Util.isKeyInRange(from, to, ConsistentHashingService.findHash(item.key))){
+                dataToSend.add(item);
+            }
+        }
+        return serializeData(dataToSend);
     }
 
     public String receiveData(String from, String to, String data) {
