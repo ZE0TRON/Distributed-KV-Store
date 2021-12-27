@@ -14,7 +14,6 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 
     private static final int MAX_SLEEP_IN_MILLI_SECOND = 1000;
     private static final int SLEEP_BASE_IN_MILLI_SECOND = 10;
-    private ActiveConnection activeConnection;
 
     /**
      * Constructs a {@code KVStoreClientLibraryImpl} with the given address and port
@@ -26,7 +25,6 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
     public KVStoreClientLibraryImpl(String host, int port) {
         this.metaData = new ArrayList<>();
         this.metaData.add(new KeyRange(null, null, host, port));
-        activeConnection = CommandSender.buildConnection(host, port);
 
     }
 
@@ -103,7 +101,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
         } else {
             kr = findCorrectKeyRange(parts[1]);
         }
-        String response = CommandSender.sendCommandToServer(kr.host, kr.port, line, activeConnection);
+        String response = CommandSender.sendCommandToServer(kr.host, kr.port, line);
 
         parts = response.split(" ");
 
@@ -148,7 +146,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
      *                          server are not in a valid form.
      */
     public void updateKeyRanges(String host, int port) throws IOException {
-        String response = CommandSender.sendCommandToServer(host, port, "keyrange_read", activeConnection);
+        String response = CommandSender.sendCommandToServer(host, port, "keyrange_read");
         int index = response.indexOf("keyrange_success");
         if (index == -1) {
             if (response.contains("server_stopped")) {
