@@ -27,8 +27,8 @@ public class CacheManagerLRUTest implements CMTest {
 		
 	}
 
-	private CacheManagerLRU create(int cahceSize) {
-		CacheManagerFactory.create(cahceSize, CacheDisplacementStrategy.LRU);
+	private CacheManagerLRU create(int cacheSize) {
+		CacheManagerFactory.create(cacheSize, CacheDisplacementStrategy.LRU);
 
 		return (CacheManagerLRU) CacheManager.getInstance();
 	}
@@ -37,9 +37,7 @@ public class CacheManagerLRUTest implements CMTest {
 
 	@Test
 	public void testGetInstanceBeforeInitializeIt() {
-		RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, () -> {
-			CacheManager.getInstance();
-		});
+		RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, CacheManager::getInstance);
 
 		assertEquals("Initialize CacheManager first!", thrown.getMessage());
 	}

@@ -16,7 +16,7 @@ import de.tum.i13.shared.Constants;
 
 public class CommandSender {
 
-	private static Logger LOGGER = Logger.getLogger(CommandSender.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(CommandSender.class.getName());
 
 	/**
 	 * connects to the server with the given address and port and sends the given
@@ -48,7 +48,7 @@ public class CommandSender {
 	
 	/**
 	 * Builds the connection to the server with the given address and port with the
-	 * confirmations response of the server for logging and handles the exception
+	 * confirmations' response of the server for logging and handles the exception
 	 * with further information.
 	 * 
 	 * @param host the address of the server

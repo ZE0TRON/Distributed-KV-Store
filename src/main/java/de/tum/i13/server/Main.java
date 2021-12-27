@@ -1,8 +1,6 @@
 package de.tum.i13.server;
 
-import de.tum.i13.ecs.cs.ECS;
 import de.tum.i13.server.kv.*;
-import de.tum.i13.shared.ConnectionManager.ConnectionManager;
 import de.tum.i13.shared.ConnectionManager.ConnectionThread;
 import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
 import de.tum.i13.shared.ServerConfig;
@@ -50,7 +48,7 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Closing thread main KVServer. Shutdown procedure has been started.");
             try {
-                shutdownProcedure(kvServerSocket, ecsSocket, ecsThread);
+                shutdownProcedure(kvServerSocket, ecsThread);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -66,7 +64,7 @@ public class Main {
         }
     }
 
-    public static void shutdownProcedure(ServerSocket kvServerSocket, Socket ecsSocket, EcsConnectionThread ecsThread) throws IOException, InterruptedException {
+    public static void shutdownProcedure(ServerSocket kvServerSocket, EcsConnectionThread ecsThread) throws IOException, InterruptedException {
         String address = Main.serverIp;
         String port = String.valueOf(Main.port);
         String payload ="shutdown " + address + " " +  port;

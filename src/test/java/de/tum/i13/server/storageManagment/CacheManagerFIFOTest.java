@@ -26,9 +26,7 @@ public class CacheManagerFIFOTest implements CMTest {
 
 	@Test
 	public void testGetInstanceBeforeInitializeIt() {
-		RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, () -> {
-			CacheManager.getInstance();
-		});
+		RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, CacheManager::getInstance);
 
 		assertEquals("Initialize CacheManager first!", thrown.getMessage());
 	}

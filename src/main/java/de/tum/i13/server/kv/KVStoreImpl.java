@@ -8,7 +8,6 @@ import de.tum.i13.server.Main;
 import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
 import de.tum.i13.server.storageManagment.PersistType;
-import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
 
 public class KVStoreImpl implements KVStore {
 
@@ -94,7 +93,7 @@ public class KVStoreImpl implements KVStore {
 	public ArrayList<PersistItem> getAll() {
 		LOGGER.info("KVStoreImpl.getAll called.");
 		PersistItemCollection collection = kvPersist.deserializeItem();
-		return collection == null ? new ArrayList<PersistItem>() : collection.parts;
+		return collection == null ? new ArrayList<>() : collection.parts;
 	}
 
 	public KVClientMessage commandNotFound(String command) {

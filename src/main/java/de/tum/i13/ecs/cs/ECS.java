@@ -48,13 +48,13 @@ public class ECS implements ConfigurationService {
         keyRingService.put(newRingItem);
         Server receiverServer = server;
         RingItem oldRingItem = keyRingService.findPredecessor(Server.serverToHashString(server));
-        LOGGER.info("Setted hashed key: " + newRingItem.key + " for server " +server.getAddress() + " " + server.getPort());
+        LOGGER.info("Set hashed key: " + newRingItem.key + " for server " +server.getAddress() + " " + server.getPort());
         RingItem successorItem = keyRingService.findSuccessor(Server.serverToHashString(server));
         Server senderServer = successorItem.value;
         Pair<String, String> keyRange = new Pair<>(oldRingItem.key, newRingItem.key);
         RebalanceOperation rebalanceOperation = new RebalanceOperation(senderServer, receiverServer, keyRange, RebalanceType.ADD);
         queueHandoverProcess(rebalanceOperation);
-        LOGGER.info("Rebalance opereation "+ rebalanceOperation +" for add server queued");
+        LOGGER.info("Rebalance operation "+ rebalanceOperation +" for add server queued");
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ECS implements ConfigurationService {
         Pair<String, String> keyRange = new Pair<>(predecessorItem.key, ringItemToDelete.key);
         RebalanceOperation rebalanceOperation = new RebalanceOperation(senderServer, receiverServer , keyRange, RebalanceType.DELETE);
         queueHandoverProcess(rebalanceOperation);
-        LOGGER.info("Rebalance opereation "+ rebalanceOperation +" for delete server queued");
+        LOGGER.info("Rebalance operation "+ rebalanceOperation +" for delete server queued");
     }
 
     @Override

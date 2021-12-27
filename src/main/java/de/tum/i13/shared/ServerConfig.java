@@ -61,13 +61,15 @@ public class ServerConfig {
 
     @Override
     public String toString() {
-        return "Config{" +
+        return "ServerConfig{" +
                 "port=" + port +
-                ", listenaddr='" + listenaddr +
+                ", listenaddr='" + listenaddr + '\'' +
                 ", bootstrap=" + bootstrap +
                 ", dataDir=" + dataDir +
                 ", logfile=" + logfile +
                 ", logLevel=" + logLevel +
+                ", cacheSize=" + cacheSize +
+                ", cacheDisplacementStrategy=" + cacheDisplacementStrategy +
                 ", usagehelp=" + usagehelp +
                 '}';
     }

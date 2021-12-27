@@ -21,7 +21,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 
 	/**
 	 * Constructs a {@code KVStoreClientLibraryImpl} with the given address and port
-	 * and initializes its meta data list.
+	 * and initializes its metadata list.
 	 * 
 	 * @param host the address of this {@code KVStoreClientLibraryImpl}
 	 * @param port the port of this {@code KVStoreClientLibraryImpl}
@@ -119,14 +119,6 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 			sleepBackoffAndJitter(attempt++);
 			return sendRequest(line);
 
-//		case "server_write_lock":
-//		case "get_success":
-//		case "get_error":
-//		case "put_success":
-//		case "put_update":
-//		case "put_error":
-//		case "delete_success":
-//		case "delete_error":
 		default:
 			return response;
 		}
@@ -173,16 +165,9 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 		metaData = new ArrayList<>();
 		for (String v : keyRanges) {
 			String[] parts = v.split(",");
-			if (parts.length != 3 || parts[2].indexOf(":") == -1)
+			if (parts.length != 3 || !parts[2].contains(":"))
 				throw new RuntimeException("Invalid key range: " + v);
-			
-			String from = parts[0];
-			String to = parts[1];
-			index = parts[2].indexOf(":");
-			String serverIP = parts[2].substring(0, index);
-			int serverPort = Integer.parseInt(parts[2].substring(index + 1));
-			
-			metaData.add(new KeyRange(from, to, serverIP, serverPort));
+			Util.parseMetadata(metaData, parts);
 		}
 
 	}

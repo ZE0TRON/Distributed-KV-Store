@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class KVClient {
-	private static Logger LOGGER = Logger.getLogger(KVClient.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(KVClient.class.getName());
 
 	public static void main(String[] args) {
 		setupLogging(Paths.get("echo-client.log"), Level.ALL);
@@ -94,9 +94,7 @@ public class KVClient {
 	private static void printEchoLine(String msg) {
 		String[] parts = msg.split(" ");
 		StringBuilder output = new StringBuilder();
-		for (int i = 0; i < parts.length; i++) {
-			String part = parts[i];
-
+		for (String part : parts) {
 			if (!Objects.equals(part, "null")) {
 				output.append(part).append(" ");
 			}

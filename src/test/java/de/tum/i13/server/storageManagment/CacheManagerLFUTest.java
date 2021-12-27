@@ -26,15 +26,13 @@ public class CacheManagerLFUTest implements CMTest {
 
 	@Test
 	public void testGetInstanceBeforeInitializeIt() {
-		RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, () -> {
-			CacheManager.getInstance();
-		});
+		RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, CacheManager::getInstance);
 
 		assertEquals("Initialize CacheManager first!", thrown.getMessage());
 	}
 
-	private CacheManagerLFU create(int cahceSize) {
-		CacheManagerFactory.create(cahceSize, CacheDisplacementStrategy.LFU);
+	private CacheManagerLFU create(int cacheSize) {
+		CacheManagerFactory.create(cacheSize, CacheDisplacementStrategy.LFU);
 
 		return (CacheManagerLFU) CacheManager.getInstance();
 	}

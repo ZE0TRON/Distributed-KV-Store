@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 /*
 We use Junit 5 (or also called Junit Jupiter)
 Many online tutorials use Junit 4, the API changed slightly
-Userguide: https://junit.org/junit5/docs/current/user-guide/#writing-tests
+User guide: https://junit.org/junit5/docs/current/user-guide/#writing-tests
  */
 public class TestExample {
 

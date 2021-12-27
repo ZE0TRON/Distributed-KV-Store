@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 public class ConnectionThread extends Thread {
     private static final Logger LOGGER = Logger.getLogger(ConnectionThread.class.getName());
 
-    private CommandProcessor cp;
-    private KVCommandProcessor kvScp;
-    private Socket clientSocket;
+    private final CommandProcessor cp;
+    private final KVCommandProcessor kvScp;
+    private final Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
     private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack", "Connection"));
     public static boolean CanShutdown;
@@ -41,7 +41,7 @@ public class ConnectionThread extends Thread {
             LOGGER.warning(e.getMessage());
         }
         try {
-            String res = null;
+            String res;
             this.connectionManager.send(initialPayload);
             LOGGER.info("Response sent.");
             String recv;

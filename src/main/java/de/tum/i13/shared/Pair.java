@@ -6,7 +6,7 @@ public class Pair<K, V> {
     public V snd;
 
     public Pair<K, V> Pair(K fst, V snd) {
-        return new Pair<K, V>(fst, snd);
+        return new Pair<>(fst, snd);
     }
 
     public Pair(K fst, V snd) {

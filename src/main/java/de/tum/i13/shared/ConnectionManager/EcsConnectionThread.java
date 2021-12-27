@@ -3,6 +3,7 @@ package de.tum.i13.shared.ConnectionManager;
 import de.tum.i13.client.KeyRange;
 import de.tum.i13.server.Main;
 import de.tum.i13.server.kv.*;
+import de.tum.i13.shared.Util;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -12,9 +13,9 @@ import java.util.logging.Logger;
 public class EcsConnectionThread extends Thread {
     private static final Logger LOGGER = Logger.getLogger(EcsConnectionThread.class.getName());
 
-    private CommandProcessor cp;
-    private KVCommandProcessor kvcp;
-    private Socket ecsSocket;
+    private final CommandProcessor cp;
+    private final KVCommandProcessor kvcp;
+    private final Socket ecsSocket;
     private ConnectionManagerInterface ecsConnManager;
     public static ConnectionManagerInterface ECSConnection;
     private boolean threadAlive;
@@ -85,12 +86,7 @@ public class EcsConnectionThread extends Thread {
                             if (parts.length != 3 || !parts[2].contains(":")) {
                                 throw new RuntimeException("Invalid key range: " + keyRange);
                             }
-                            String from = parts[0];
-                            String to = parts[1];
-                            index = parts[2].indexOf(":");
-                            String serverIP = parts[2].substring(0, index);
-                            int serverPort = Integer.parseInt(parts[2].substring(index + 1));
-                            metaData.add(new KeyRange(from, to, serverIP, serverPort));
+                            Util.parseMetadata(metaData, parts);
                         }
                         new KVStoreImpl().updateKeyRange(metaData, metadataString);
                         LOGGER.info("Entering RUNNING state.");
@@ -103,6 +99,7 @@ public class EcsConnectionThread extends Thread {
                     default:
                         serverMessage = new ServerMessageImpl(ServerMessage.StatusType.COMMAND_NOT_FOUND);
                         LOGGER.info("command not found");
+                        ecsConnManager.send(serverMessage.toString());
                         break;
                 }
             }

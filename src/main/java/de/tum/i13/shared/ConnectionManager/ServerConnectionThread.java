@@ -12,7 +12,7 @@ public class ServerConnectionThread extends Thread {
     private static final Logger LOGGER = Logger.getLogger(ServerConnectionThread.class.getName());
     public static HashMap<String, ConnectionManagerInterface> connections;
 
-    private ECSCommandProcessor cp;
+    private final ECSCommandProcessor cp;
     private Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
 
