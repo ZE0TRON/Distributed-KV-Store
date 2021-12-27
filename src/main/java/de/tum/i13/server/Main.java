@@ -3,6 +3,7 @@ package de.tum.i13.server;
 import de.tum.i13.server.kv.*;
 import de.tum.i13.shared.ConnectionManager.ConnectionThread;
 import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
+import de.tum.i13.shared.ConnectionManager.HeartbeatThread;
 import de.tum.i13.shared.ServerConfig;
 import static de.tum.i13.shared.LogSetup.setupLogging;
 
@@ -19,6 +20,8 @@ import de.tum.i13.server.storageManagment.CacheManagerFactory;
 public class Main {
     public static String serverIp;
     public static int port;
+    public final static int HEARTBEAT_PORT = 3000;
+
     public static void main(String[] args) throws IOException {
         ServerConfig cfg = ServerConfig.parseCommandlineArgs(args);  //Do not change this
         setupLogging(cfg.logfile, cfg.logLevel);
@@ -44,11 +47,16 @@ public class Main {
         EcsConnectionThread ecsThread = new EcsConnectionThread(logic, kvTransferLogic, ecsSocket);
         ecsThread.start();
 
+        final ServerSocket ecsHeartbeatSocket = new ServerSocket();
+        ecsHeartbeatSocket.bind(new InetSocketAddress(cfg.listenaddr, HEARTBEAT_PORT));
+        HeartbeatThread heartbeatThread = new HeartbeatThread(ecsHeartbeatSocket);
+        heartbeatThread.start();
+
         // Graceful shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Closing thread main KVServer. Shutdown procedure has been started.");
             try {
-                shutdownProcedure(kvServerSocket, ecsThread);
+                shutdownProcedure(kvServerSocket, ecsThread, heartbeatThread);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -64,13 +72,14 @@ public class Main {
         }
     }
 
-    public static void shutdownProcedure(ServerSocket kvServerSocket, EcsConnectionThread ecsThread) throws IOException, InterruptedException {
+    public static void shutdownProcedure(ServerSocket kvServerSocket, EcsConnectionThread ecsThread, HeartbeatThread heartbeatThread) throws IOException, InterruptedException {
         String address = Main.serverIp;
         String port = String.valueOf(Main.port);
         String payload ="shutdown " + address + " " +  port;
         EcsConnectionThread.ECSConnection.send(payload);
         Thread.sleep(4000);
-        ecsThread.cancel();
+        ecsThread.kill();
+        heartbeatThread.kill();
         kvServerSocket.close();
     }
 }

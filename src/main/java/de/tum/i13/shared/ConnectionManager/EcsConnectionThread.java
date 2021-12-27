@@ -86,10 +86,6 @@ public class EcsConnectionThread extends Thread {
                         LOGGER.info("Entering RUNNING state.");
                         CommandProcessor.serverState = ServerState.RUNNING;
                         break;
-                    case "health_check":
-                        serverMessage = new ServerMessageImpl(ServerMessage.StatusType.HEALTHY);
-                        ecsConnManager.send(serverMessage.toString());
-                        break;
                     default:
                         serverMessage = new ServerMessageImpl(ServerMessage.StatusType.COMMAND_NOT_FOUND);
                         LOGGER.info("command not found");
@@ -104,7 +100,7 @@ public class EcsConnectionThread extends Thread {
 
     }
 
-    public void cancel(){
+    public void kill(){
         this.threadAlive = false;
         ecsConnManager.disconnect();
     }
