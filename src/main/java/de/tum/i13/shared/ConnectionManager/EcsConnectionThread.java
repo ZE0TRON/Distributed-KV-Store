@@ -19,6 +19,7 @@ public class EcsConnectionThread extends Thread {
     private ConnectionManagerInterface ecsConnManager;
     public static ConnectionManagerInterface ECSConnection;
     private boolean threadAlive;
+    public static volatile int handoverOperationCount;
 
     public EcsConnectionThread(CommandProcessor commandProcessor, KVCommandProcessor kvcp, Socket ecsSocket){
         this.cp = commandProcessor;
@@ -65,12 +66,26 @@ public class EcsConnectionThread extends Thread {
                         connectionThread.start();
                         break;
                     }
-                    case "handover_start": {
+                    case "handover_start": { // handover_start from to ip:port from to ip:port from to ip:port
                         CommandProcessor.serverState = ServerState.SERVER_WRITE_LOCK;
-                        Socket kvServerToCommunicateSocket = createSocket(respParts[3]);
-                        String payload = "handover_data " + respParts[1] + " " + respParts[2];
-                        ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToCommunicateSocket,  payload);
-                        connectionThread.start();
+                        if (respParts.length == 10){
+                            LOGGER.info("ECSThread received three handover_start requests.");
+                            handoverOperationCount = 3;
+                        }
+                        else if (respParts.length == 4){
+                            LOGGER.info("ECSThread received a single handover_start request.");
+                            handoverOperationCount = 1;
+                        }
+                        else {
+                            LOGGER.warning("ECSThread received a handover_start request with an incorrect format!");
+                            break;
+                        }
+                        for (int i=0, request_count=handoverOperationCount; i<request_count; i++, handoverOperationCount =- 1){
+                            String payload = "handover_data " + respParts[3*i+1] + " " + respParts[3*i+2];
+                            Socket kvServerToCommunicateSocket = createSocket(respParts[3*i+3]);
+                            ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToCommunicateSocket,  payload);
+                            connectionThread.start();
+                        }
                         break;
                     }
                     case "update_metadata":
