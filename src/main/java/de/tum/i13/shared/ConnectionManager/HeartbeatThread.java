@@ -13,7 +13,7 @@ public class HeartbeatThread extends Thread {
     private final ServerSocket ECS_HEARTBEAT_SOCKET;
     private ConnectionManagerInterface connectionManager;
     private Socket ecsSocket;
-    private boolean exit;
+    private volatile boolean exit;
 
 
     public HeartbeatThread(ServerSocket ecsHeartbeatSocket){

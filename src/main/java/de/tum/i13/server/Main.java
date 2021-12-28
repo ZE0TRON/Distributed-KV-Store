@@ -5,6 +5,8 @@ import de.tum.i13.shared.ConnectionManager.ConnectionThread;
 import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
 import de.tum.i13.shared.ConnectionManager.HeartbeatThread;
 import de.tum.i13.shared.ServerConfig;
+
+import static de.tum.i13.shared.Constants.HEARTBEAT_PORT;
 import static de.tum.i13.shared.LogSetup.setupLogging;
 
 import java.io.IOException;
@@ -20,7 +22,6 @@ import de.tum.i13.server.storageManagment.CacheManagerFactory;
 public class Main {
     public static String serverIp;
     public static int port;
-    public final static int HEARTBEAT_PORT = 3000;
 
     public static void main(String[] args) throws IOException {
         ServerConfig cfg = ServerConfig.parseCommandlineArgs(args);  //Do not change this
