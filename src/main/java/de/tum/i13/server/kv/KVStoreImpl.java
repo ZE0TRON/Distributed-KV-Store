@@ -126,10 +126,16 @@ public class KVStoreImpl implements KVStore {
 		return KVStoreImpl.coordinatorKeyRange;
 	}
 
-	public static String getMetaDataString() {
-		LOGGER.info("KVStoreImpl.getMetadataString called with metadataString: " + coordinatorMetadataString);
+	public static String getCoordinatorMetadataString() {
+		LOGGER.info("KVStoreImpl.getCoordinatorMetadataString called with CoordinatorMetadataString: " + coordinatorMetadataString);
 		return coordinatorMetadataString;
 	}
+
+	public static String getWholeMetadataString() {
+		LOGGER.info("KVStoreImpl.getWholeMetadataString called with WholeMetadataString: " + wholeMetadataString);
+		return wholeMetadataString;
+	}
+
 
 	public void updateKeyRange(ArrayList<KeyRange> metadata, String metadataString, String metadataType){
 		LOGGER.info("KVStoreImpl.updateKeyRange called with metadata: " + metadata.toString() + ", metadataString: "
