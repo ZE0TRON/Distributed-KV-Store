@@ -32,7 +32,7 @@ public class KVTransferService {
         ArrayList<PersistItem> dataToAdd = deserializeData(data);
         dataToAdd.stream().map((item) -> {
             try {
-                return kvStore.put(item.key, item.value);
+                return kvStore.put(item.key, item.value, "self");
             } catch (Exception e) {
                 LOGGER.warning(e.getMessage());
             }
@@ -57,7 +57,7 @@ public class KVTransferService {
     }
 
     private ArrayList<PersistItem> deserializeData(String data) {
-        LOGGER.info("KVTransferService.deserializeData called with data: " + data.toString());
+        LOGGER.info("KVTransferService.deserializeData called with data: " + data);
         String[] parts = data.split("\f");
         ArrayList<PersistItem> result = new ArrayList<>();
         for (String part : parts) {

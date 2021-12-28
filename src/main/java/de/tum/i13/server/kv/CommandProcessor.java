@@ -58,12 +58,12 @@ public class CommandProcessor implements CommandProcessorInterface {
                                 break;
                             }
                             else if (parts.length == 2) {
-                                kvClientMessage = kvStore.put(parts[1], null);
+                                kvClientMessage = kvStore.put(parts[1], null, "kvClient");
                             }
                             else {
                                 String args = command.substring(command.indexOf(' ') + 1);
                                 String value = args.substring(args.indexOf(' ') + 1);
-                                kvClientMessage = kvStore.put(parts[1], value);
+                                kvClientMessage = kvStore.put(parts[1], value, "kvClient");
                             }
                             break;
                         case "get":
@@ -78,7 +78,7 @@ public class CommandProcessor implements CommandProcessorInterface {
                                 kvClientMessage = kvStore.commandNotFound(command);
                                 break;
                             }
-                            kvClientMessage = kvStore.put(parts[1], null);
+                            kvClientMessage = kvStore.put(parts[1], null, "kvClient");
                             break;
                         case "keyrange":
                             kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getMetaDataString(),null, KVClientMessage.StatusType.KEYRANGE_SUCCESS);
