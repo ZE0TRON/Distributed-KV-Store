@@ -11,7 +11,7 @@ import de.tum.i13.shared.keyring.HashService;
 public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	
 
-	private ArrayList<KeyRange> metaData;
+	private ArrayList<KeyRange> metadata;
 
 	private HashService hashService;
 	private static final String HASHING_ALGORITHM = "md5";
@@ -29,8 +29,8 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 
 
 	public KVStoreClientLibraryImpl(String host, int port) {
-		this.metaData = new ArrayList<>();
-		this.metaData.add(new KeyRange(null, null, host, port));
+		this.metadata = new ArrayList<>();
+		this.metadata.add(new KeyRange(null, null, host, port));
 		 activeConnection = CommandSender.buildConnection(host, port);
 		try {
 			this.hashService = new ConsistentHashingService(HASHING_ALGORITHM);
@@ -162,8 +162,8 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 			}
 		}
 		String[] keyRanges = response.substring(index + "keyrange_success".length() + 1).split(";");
-		metaData = new ArrayList<>();
-		Util.parseKeyrange(keyRanges, metaData);
+		metadata = new ArrayList<>();
+		Util.parseKeyrange(keyRanges, metadata);
 
 	}
 
@@ -176,11 +176,11 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	 *                                  hash code of the key.
 	 */
 	public KeyRange findCorrectKeyRange(String key) throws NoSuchAlgorithmException {
-		if (metaData.size() == 1)
-			return metaData.get(0);
+		if (metadata.size() == 1)
+			return metadata.get(0);
 
 		String hashCode = ConsistentHashingService.findHash(key);
-		for (KeyRange keyRange : metaData) {
+		for (KeyRange keyRange : metadata) {
 			// Wrap around
 			if(Util.isKeyInRange(keyRange.from, keyRange.to, hashCode))	{
 				return keyRange;

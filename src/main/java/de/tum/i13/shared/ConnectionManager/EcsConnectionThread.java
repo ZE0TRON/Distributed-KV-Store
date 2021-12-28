@@ -97,7 +97,6 @@ public class EcsConnectionThread extends Thread {
             LOGGER.warning(ex.getMessage());
             ex.printStackTrace();
         }
-
     }
 
     public void kill(){

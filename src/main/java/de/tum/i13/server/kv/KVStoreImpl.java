@@ -8,6 +8,8 @@ import de.tum.i13.server.Main;
 import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
 import de.tum.i13.server.storageManagment.PersistType;
+import de.tum.i13.shared.Util;
+import de.tum.i13.shared.keyring.ConsistentHashingService;
 
 public class KVStoreImpl implements KVStore {
 
@@ -122,7 +124,7 @@ public class KVStoreImpl implements KVStore {
 		String kvServerAddr = Main.serverIp;
 		LOGGER.info("updateKeyRange Server IP: " + Main.serverIp);
 		int port = Main.port;
-		for (KeyRange keyrange : metaData){
+		for (KeyRange keyrange : metadata){
 			if (keyrange.host.equals(kvServerAddr) && keyrange.port == port){
 				start = keyrange.from;
 				end = keyrange.to;
