@@ -1,8 +1,8 @@
 package de.tum.i13.keyring;
 
 import de.tum.i13.shared.Server;
-import de.tum.i13.shared.keyring.KeyRingService;
-import de.tum.i13.shared.keyring.RingItem;
+import de.tum.i13.ecs.keyring.KeyRingService;
+import de.tum.i13.ecs.keyring.RingItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -3,7 +3,7 @@ package de.tum.i13.ecs.cs;
 import de.tum.i13.shared.Pair;
 import de.tum.i13.shared.ConnectionManager.ServerConnectionThread;
 import de.tum.i13.shared.Server;
-import de.tum.i13.shared.keyring.*;
+import de.tum.i13.ecs.keyring.*;
 import de.tum.i13.shared.ConnectionManager.ConnectionManagerInterface;
 import de.tum.i13.shared.Constants;
 

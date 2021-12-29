@@ -5,8 +5,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import de.tum.i13.shared.Util;
-import de.tum.i13.shared.keyring.ConsistentHashingService;
-import de.tum.i13.shared.keyring.HashService;
+import de.tum.i13.ecs.keyring.ConsistentHashingService;
+import de.tum.i13.ecs.keyring.HashService;
 
 public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 	

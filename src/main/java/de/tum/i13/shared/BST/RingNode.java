@@ -1,7 +1,7 @@
 package de.tum.i13.shared.BST;
 
 import de.tum.i13.shared.Server;
-import de.tum.i13.shared.keyring.RingItem;
+import de.tum.i13.ecs.keyring.RingItem;
 
 public class RingNode {
     public String key;

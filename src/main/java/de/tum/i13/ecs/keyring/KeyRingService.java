@@ -1,4 +1,4 @@
-package de.tum.i13.shared.keyring;
+package de.tum.i13.ecs.keyring;
 
 
 import de.tum.i13.shared.Constants;

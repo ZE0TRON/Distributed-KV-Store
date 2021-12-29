@@ -6,7 +6,7 @@
 //import java.lang.reflect.Field;
 //import java.util.ArrayList;
 //
-//import de.tum.i13.shared.keyring.ConsistentHashingService;
+//import de.tum.i13.ecs.keyring.ConsistentHashingService;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;

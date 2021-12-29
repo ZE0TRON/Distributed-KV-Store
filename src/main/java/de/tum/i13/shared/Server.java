@@ -1,7 +1,7 @@
 package de.tum.i13.shared;
 
-import de.tum.i13.shared.keyring.ConsistentHashingService;
-import de.tum.i13.shared.keyring.HashService;
+import de.tum.i13.ecs.keyring.ConsistentHashingService;
+import de.tum.i13.ecs.keyring.HashService;
 
 import java.security.NoSuchAlgorithmException;
 

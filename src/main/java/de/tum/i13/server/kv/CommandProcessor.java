@@ -2,7 +2,7 @@ package de.tum.i13.server.kv;
 
 import de.tum.i13.client.KeyRange;
 import de.tum.i13.shared.Util;
-import de.tum.i13.shared.keyring.ConsistentHashingService;
+import de.tum.i13.ecs.keyring.ConsistentHashingService;
 
 import java.util.logging.Logger;
 
