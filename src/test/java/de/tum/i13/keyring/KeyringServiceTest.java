@@ -86,7 +86,7 @@ public class KeyringServiceTest {
        System.out.println("Serialized Key Ring");
        System.out.println(keyRingService.serializeKeyRing());
        System.out.println("Serialized Key Ranges");
-       System.out.println(keyRingService.serializeKeyRanges());
+       System.out.println(keyRingService.serializeKeyRanges(false));
 //       RingItem ringItem = keyRingService.findPredecessor("9149BBA9507A48D46D346AF2C9DC9FBB");
 //       assert (ringItem.key.equals(server4Hash));
 //       System.out.println(ringItem.key);

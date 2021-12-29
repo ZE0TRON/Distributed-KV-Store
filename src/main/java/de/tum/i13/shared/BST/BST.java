@@ -1,5 +1,7 @@
 package de.tum.i13.shared.BST;
 
+import de.tum.i13.shared.Constants;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -229,11 +231,19 @@ public class BST {
         return this.root;
     }
 
-    public String serializeKeyRanges() {
+    private RingNode replicaPredecessor(RingNode node) {
+        RingNode predecessor = node;
+        for (int i = 0; i <= Constants.REPLICA_COUNT; i++)  {
+           predecessor = this.ringPredecessor(predecessor);
+        }
+        return predecessor;
+    }
+
+    public String serializeKeyRanges(boolean includeReplicas) {
         ArrayList<RingNode> nodes = dfs();
         StringBuilder sb = new StringBuilder();
         for (RingNode node: nodes) {
-            RingNode predecessor = this.ringPredecessor(node);
+            RingNode predecessor = includeReplicas ? replicaPredecessor(node) : ringPredecessor(node);
             sb.append(predecessor.key);
             sb.append(",");
             sb.append(node.key);
