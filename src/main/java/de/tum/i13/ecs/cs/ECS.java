@@ -1,5 +1,6 @@
 package de.tum.i13.ecs.cs;
 
+import de.tum.i13.ecs.ECSHeartBeatThread;
 import de.tum.i13.shared.Pair;
 import de.tum.i13.shared.ConnectionManager.ServerConnectionThread;
 import de.tum.i13.shared.Server;
@@ -7,7 +8,9 @@ import de.tum.i13.ecs.keyring.*;
 import de.tum.i13.shared.ConnectionManager.ConnectionManagerInterface;
 import de.tum.i13.shared.Constants;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.logging.Logger;
 
@@ -19,6 +22,7 @@ public class ECS implements ConfigurationService {
     private HashService hashService;
 
     private LinkedList<RebalanceOperation> rebalanceQueue;
+    private ArrayList<Thread> heartbeatThreads;
     private RebalanceOperation onGoingRebalance;
     private String metadata;
 
@@ -32,6 +36,7 @@ public class ECS implements ConfigurationService {
             e.printStackTrace();
         }
         this.rebalanceQueue = new LinkedList<>();
+        this.heartbeatThreads = new ArrayList<>();
     }
 
     public static ECS getInstance() {
@@ -53,7 +58,17 @@ public class ECS implements ConfigurationService {
         Server senderServer = successorItem.value;
         Pair<String, String> keyRange = new Pair<>(oldRingItem.key, newRingItem.key);
         RebalanceOperation rebalanceOperation = new RebalanceOperation(senderServer, receiverServer, keyRange, RebalanceType.ADD);
+        try {
+            Thread heartbeatThread = new ECSHeartBeatThread(server);
+            heartbeatThread.start();
+            heartbeatThreads.add(heartbeatThread);
+        } catch (IOException e) {
+            LOGGER.warning("Couldnt connect to the heartbeat port for server: " + server.toHashableString() + " error " + e.getMessage());
+            ServerConnectionThread.connections.remove(server.toHashableString());
+            return;
+        }
         queueHandoverProcess(rebalanceOperation);
+
         LOGGER.info("Rebalance operation "+ rebalanceOperation +" for add server queued");
     }
 
@@ -159,6 +174,12 @@ public class ECS implements ConfigurationService {
         if (onGoingRebalance == null) {
             startHandoverProcess(this.rebalanceQueue.poll());
         }
+    }
+    // TODO implement
+    public synchronized void serverCrashed(Server server) {
+        //RebalanceOperation rebalanceOperation = new RebalanceOperation();
+        ServerConnectionThread.connections.remove(server.toHashableString());
+        //queueHandoverProcess();
     }
 
     @Override
