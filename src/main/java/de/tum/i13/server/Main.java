@@ -57,7 +57,7 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Closing thread main KVServer. Shutdown procedure has been started.");
             try {
-                shutdownProcedure(kvServerSocket, ecsThread, heartbeatThread);
+                shutdownProcedure(kvServerSocket, ecsHeartbeatSocket, ecsThread);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -73,14 +73,14 @@ public class Main {
         }
     }
 
-    public static void shutdownProcedure(ServerSocket kvServerSocket, EcsConnectionThread ecsThread, HeartbeatThread heartbeatThread) throws IOException, InterruptedException {
+    public static void shutdownProcedure(ServerSocket kvServerSocket, ServerSocket ecsHeartbeatSocket, EcsConnectionThread ecsConnectionThread) throws IOException, InterruptedException {
         String address = Main.serverIp;
         String port = String.valueOf(Main.port);
         String payload ="shutdown " + address + " " +  port;
         EcsConnectionThread.ECSConnection.send(payload);
         Thread.sleep(4000);
-        ecsThread.kill();
-        heartbeatThread.kill();
         kvServerSocket.close();
+        ecsHeartbeatSocket.close();
+        ecsConnectionThread.kill();
     }
 }

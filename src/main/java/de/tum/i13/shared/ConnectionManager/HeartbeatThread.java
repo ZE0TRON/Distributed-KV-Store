@@ -24,39 +24,32 @@ public class HeartbeatThread extends Thread {
     @Override
     public void run(){
         LOGGER.info("HeartbeatThread has been started. Waiting for ECS to connect.");
-        while (!exit){
-            try {
-                ecsSocket = ECS_HEARTBEAT_SOCKET.accept();
-                LOGGER.info("ECS has connected to heartbeat thread.");
-            } catch (IOException e) {
-                LOGGER.warning(e.getMessage());
-            }
-            try {
-                this.connectionManager = new ConnectionManager(ecsSocket);
-            } catch (IOException e){
-                LOGGER.warning(e.getMessage());
-            }
-            try {
-                String recv;
-                while ( (recv = connectionManager.receive()) != null) {
-                    long start = System.currentTimeMillis();
-                    if (recv.equals("health_check")){
-                        connectionManager.send(new ServerMessageImpl(ServerMessage.StatusType.HEALTHY).toString());
-                        LOGGER.info("Sent heartbeat to ECS in less than " + (System.currentTimeMillis() - start) + " ms.");
-                    }
-                    else {
-                        connectionManager.send(new ServerMessageImpl(ServerMessage.StatusType.COMMAND_NOT_FOUND).toString());
-                        LOGGER.info("Unknown command received from ECS in heartbeat thread.");
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            ecsSocket = ECS_HEARTBEAT_SOCKET.accept();
+            LOGGER.info("ECS has connected to heartbeat thread.");
+        } catch (IOException e) {
+            LOGGER.warning(e.getMessage());
         }
-    }
-
-    public void kill(){
-        exit = true;
-        connectionManager.disconnect(); //TODO: check if this should be done before exit flag assignment
+        try {
+            this.connectionManager = new ConnectionManager(ecsSocket);
+        } catch (IOException e){
+            LOGGER.warning(e.getMessage());
+        }
+        try {
+            String recv;
+            while ( (recv = connectionManager.receive()) != null) {
+                long start = System.currentTimeMillis();
+                if (recv.equals("health_check")){
+                    connectionManager.send(new ServerMessageImpl(ServerMessage.StatusType.HEALTHY).toString());
+                    LOGGER.info("Sent heartbeat to ECS in less than " + (System.currentTimeMillis() - start) + " ms.");
+                }
+                else {
+                    connectionManager.send(new ServerMessageImpl(ServerMessage.StatusType.COMMAND_NOT_FOUND).toString());
+                    LOGGER.info("Unknown command received from ECS in heartbeat thread.");
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warning(e.getMessage());
+        }
     }
 }
