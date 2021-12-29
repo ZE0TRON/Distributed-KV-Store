@@ -8,5 +8,5 @@ public class Constants {
 	public static final Charset STRING_CHARSET = StandardCharsets.UTF_8;
 	public static final String HASHING_ALGORITHM = "md5";
 	public static final int REPLICA_COUNT = 2;
-
+	public static final int HEARTBEAT_PORT = 3000;
 }
