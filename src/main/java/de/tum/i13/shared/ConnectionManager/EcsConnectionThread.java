@@ -54,8 +54,12 @@ public class EcsConnectionThread extends Thread {
                     case "first_key_range":
                         break;
                     case "init_key_range": {
+                        // init_key_range <key_range_from_third_precedent_to_itself> <first_successor_kv_server_addr>
+                        // example: init_key_range <from> <to> <addr>:<port>
+                        String replicaRangeFrom = respParts[1];
+                        String replicaRangeTo = respParts[2];
                         Socket kvServerToCommunicateSocket = createSocket(respParts[3]);
-                        String payload = "request_data " + respParts[1] + " " + respParts[2];
+                        String payload = "request_data " + replicaRangeFrom + " " + replicaRangeTo;
                         LOGGER.info("Sending " + payload + " to " + respParts[3]);
                         ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToCommunicateSocket,  payload);
                         connectionThread.start();
@@ -70,25 +74,31 @@ public class EcsConnectionThread extends Thread {
                         break;
                     }
                     case "update_metadata":
-                        int index = resp.indexOf("update_metadata");
-                        String[] partsMeta = resp.split(" ");
-                        if(partsMeta.length < 2) {
+                        if(respParts.length < 2) {
                             ConnectionThread.CanShutdown = true;
                             return;
                         }
                         ConnectionThread.CanShutdown = false;
-                        String metadataString = partsMeta[1];
+                        String coordinatorMetadataStr = respParts[1];
+                        String replicaMetadataStr = respParts[2];
 
-                        String[] keyRanges = resp.substring(index + "update_metadata".length() + 1).split(";");
-                        ArrayList<KeyRange> metaData = new ArrayList<>();
-                        Util.parseKeyrange(keyRanges, metaData);
-                        new KVStoreImpl().updateKeyRange(metaData, metadataString);
+                        String[] coordinatorKeyRanges = coordinatorMetadataStr.split(";");
+                        String[] replicaKeyRanges = replicaMetadataStr.split(";");
+
+                        ArrayList<KeyRange> coordinatorMetadata = new ArrayList<>();
+                        ArrayList<KeyRange> replicaMetadata = new ArrayList<>();
+
+                        Util.parseKeyrange(coordinatorKeyRanges,coordinatorMetadata);
+                        Util.parseKeyrange(replicaKeyRanges,replicaMetadata);
+
+                        KVStoreImpl kvStoreInstance = new KVStoreImpl();
+                        kvStoreInstance.updateKeyRange(coordinatorMetadata, coordinatorMetadataStr, "coordinator");
+                        kvStoreInstance.updateKeyRange(replicaMetadata, replicaMetadataStr, "replica");
+
+                        kvStoreInstance.dropKeys();
+
                         LOGGER.info("Entering RUNNING state.");
                         CommandProcessor.serverState = ServerState.RUNNING;
-                        break;
-                    case "health_check":
-                        serverMessage = new ServerMessageImpl(ServerMessage.StatusType.HEALTHY);
-                        ecsConnManager.send(serverMessage.toString());
                         break;
                     default:
                         serverMessage = new ServerMessageImpl(ServerMessage.StatusType.COMMAND_NOT_FOUND);
@@ -101,10 +111,9 @@ public class EcsConnectionThread extends Thread {
             LOGGER.warning(ex.getMessage());
             ex.printStackTrace();
         }
-
     }
 
-    public void cancel(){
+    public void kill(){
         this.threadAlive = false;
         ecsConnManager.disconnect();
     }
