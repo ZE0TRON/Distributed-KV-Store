@@ -21,6 +21,7 @@ public class ECS implements ConfigurationService {
     private LinkedList<RebalanceOperation> rebalanceQueue;
     private RebalanceOperation onGoingRebalance;
     private String metadata;
+    private String replicaMetadata;
 
     // TODO lock the correct functions like delete or insert in BST
     private ECS() {
@@ -80,18 +81,20 @@ public class ECS implements ConfigurationService {
     private void createNewMetaData() {
         if(keyRingService.isKeyringEmpty()) {
             metadata = "";
+            replicaMetadata = "";
         }
         else {
-            metadata = keyRingService.serializeKeyRanges();
+            metadata = keyRingService.serializeKeyRanges(false);
+            replicaMetadata = keyRingService.serializeKeyRanges(true);
         }
     }
 
     @Override
     public void updateMetadata() {
         createNewMetaData();
-        LOGGER.info("New metadata created: " + metadata);
+        LOGGER.info("New metadata created: " + metadata + " " + replicaMetadata);
         for (ConnectionManagerInterface connection : ServerConnectionThread.connections.values()) {
-           connection.send("update_metadata " + metadata);
+           connection.send("update_metadata " + metadata + " " + replicaMetadata);
         }
         LOGGER.info("Metadata sent to all servers");
     }
