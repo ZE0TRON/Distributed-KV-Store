@@ -8,7 +8,7 @@ import de.tum.i13.shared.BST.RingNode;
 
 import java.security.NoSuchAlgorithmException;
 
-public class KeyRingService implements KeyRangeService{
+public class KeyRingService {
 
     private static KeyRingService instance;
     private final BST keyRing;
@@ -33,27 +33,22 @@ public class KeyRingService implements KeyRangeService{
         return instance;
     }
 
-    @Override
     public void put(RingItem ringItem) {
        keyRing.insert(RingNode.fromRingItem(ringItem)) ;
     }
 
-    @Override
     public RingItem get(String key) {
         return RingItem.fromRingNode(keyRing.search(key));
     }
 
-    @Override
     public RingItem findPredecessor(String key) {
         return RingItem.fromRingNode(keyRing.predecessorOfKey(key));
     }
-    // TODO correct this
-    @Override
+
     public RingItem findSuccessor(String key) {
         return RingItem.fromRingNode(keyRing.successorOfKey(key));
     }
 
-    @Override
     public void delete(RingItem ringItem) {
         keyRing.delete(RingNode.fromRingItem(ringItem));
     }
