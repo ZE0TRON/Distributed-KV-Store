@@ -10,7 +10,8 @@ import de.tum.i13.shared.keyring.ConsistentHashingService;
 public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 
 
-    private ArrayList<KeyRange> metaData;
+    private ArrayList<KeyRange> metaDataCoordinator;
+    private ArrayList<KeyRange> metaDataAll;
 
     private static final int MAX_SLEEP_IN_MILLI_SECOND = 1000;
     private static final int SLEEP_BASE_IN_MILLI_SECOND = 10;
@@ -23,9 +24,11 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
      * @param port the port of this {@code KVStoreClientLibraryImpl}
      */
     public KVStoreClientLibraryImpl(String host, int port) {
-        this.metaData = new ArrayList<>();
-        this.metaData.add(new KeyRange(null, null, host, port));
+        this.metaDataCoordinator = new ArrayList<>();
+        this.metaDataCoordinator.add(new KeyRange(null, null, host, port));
 
+        this.metaDataAll = new ArrayList<>();
+        this.metaDataAll.add(new KeyRange(null, null, host, port));
     }
 
     /**
@@ -107,7 +110,11 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
 
         switch (parts[0]) {
             case "not_responsible":
-                updateKeyRanges(kr.host, kr.port);
+                if (read) {
+                    updateKeyRangesRead(kr.host, kr.port);
+                } else {
+                    updateKeyRanges(kr.host, kr.port);
+                }
                 return sendRequest(line, read);
             case "server_stopped":
                 sleepBackoffAndJitter(attempt);
@@ -146,8 +153,22 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
      *                          server are not in a valid form.
      */
     public void updateKeyRanges(String host, int port) throws IOException {
+        String response = CommandSender.sendCommandToServer(host, port, "keyrange");
+        int index = response.indexOf("keyrange_success");
+
+        metaDataCoordinator = new ArrayList<>();
+        parseKeyRange(response, index, metaDataCoordinator);
+    }
+
+    public void updateKeyRangesRead(String host, int port) throws IOException {
         String response = CommandSender.sendCommandToServer(host, port, "keyrange_read");
         int index = response.indexOf("keyrange_success");
+
+        metaDataAll = new ArrayList<>();
+        parseKeyRange(response, index, metaDataAll);
+    }
+
+    private void parseKeyRange(String response, int index, ArrayList<KeyRange> metaData) {
         if (index == -1) {
             if (response.contains("server_stopped")) {
                 // Do nothing. next request can handle the situation
@@ -157,7 +178,6 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
             }
         }
         String[] keyRanges = response.substring(index + "keyrange_success".length() + 1).split(";");
-        metaData = new ArrayList<>();
         for (String v : keyRanges) {
             String[] parts = v.split(",");
             if (parts.length != 3 || !parts[2].contains(":"))
@@ -173,20 +193,31 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
      * @return {@code KeyRange} that the given key belongs to.
      */
     public KeyRange findCorrectKeyRange(String key) {
-        // Return first key-range as a coordinator
-        return findCorrectKeyRanges(key).get(0);
+
+        if (metaDataCoordinator.size() == 1) {
+            return metaDataCoordinator.get(0);
+        }
+
+        String hashCode = ConsistentHashingService.findHash(key);
+        for (KeyRange keyRange : metaDataCoordinator) {
+            // Wrap around
+            if (Util.isKeyInRange(keyRange.from, keyRange.to, hashCode)) {
+                return keyRange;
+            }
+        }
+        return null;
     }
 
     public List<KeyRange> findCorrectKeyRanges(String key) {
         List<KeyRange> list = new ArrayList<>();
 
-        if (metaData.size() == 1) {
-            list.add(metaData.get(0));
+        if (metaDataAll.size() == 1) {
+            list.add(metaDataAll.get(0));
             return list;
         }
 
         String hashCode = ConsistentHashingService.findHash(key);
-        for (KeyRange keyRange : metaData) {
+        for (KeyRange keyRange : metaDataAll) {
             // Wrap around
             if (Util.isKeyInRange(keyRange.from, keyRange.to, hashCode)) {
                 list.add(keyRange);
