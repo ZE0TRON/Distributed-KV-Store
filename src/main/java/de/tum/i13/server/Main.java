@@ -19,6 +19,7 @@ import de.tum.i13.server.storageManagment.CacheManagerFactory;
 public class Main {
     public static String serverIp;
     public static int port;
+    public static boolean replicaActive = false;
     public static void main(String[] args) throws IOException {
         ServerConfig cfg = ServerConfig.parseCommandlineArgs(args);  //Do not change this
         setupLogging(cfg.logfile, cfg.logLevel);

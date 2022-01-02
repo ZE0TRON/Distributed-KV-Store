@@ -17,7 +17,7 @@ public class ConnectionThread extends Thread {
     private final KVCommandProcessor kvScp;
     private final Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
-    private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack", "Connection"));
+    private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack", "Connection", "replica_active", "replica_deactive"));
     public static boolean CanShutdown;
     private String initialPayload;
 

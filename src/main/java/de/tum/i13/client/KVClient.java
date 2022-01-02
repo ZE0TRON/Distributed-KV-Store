@@ -19,7 +19,7 @@ public class KVClient {
 		CommandSender.checkValidInternetAddress(host);
 		int port = Integer.parseInt(args[1]);
 
-		LOGGER.fine("Initial server info host/post: " + host + "/" + port);
+		LOGGER.fine("Initial server info host/port: " + host + "/" + port);
 
 		KVStoreClientLibrary kvStore = new KVStoreClientLibraryImpl(host, port);
 

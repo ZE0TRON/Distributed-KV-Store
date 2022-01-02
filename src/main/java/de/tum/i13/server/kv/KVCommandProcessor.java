@@ -1,5 +1,6 @@
 package de.tum.i13.server.kv;
 
+import de.tum.i13.server.Main;
 import de.tum.i13.server.exception.CommunicationTerminatedException;
 import de.tum.i13.shared.ConnectionManager.ConnectionManagerInterface;
 import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
@@ -49,6 +50,28 @@ public class KVCommandProcessor implements CommandProcessorInterface {
                 res = "handover_ack " + parts[1] + " " + parts[2];
                 break;
             case "Connection":
+                break;
+            case "replica_active":
+                // FIXME parts[1] and parts[2] replica servers ip:port
+                // Start to transfer all data to rep_server_1 and rep_server_2
+                // Collect all data from this server
+                // ta buraya en genis aralik verilerek alinacak
+                String allDataToSend = kvTransferService.sendData(parts[1], parts[2]);
+                // yada bundan tum data alinacak
+                PersistItemCollection collection = Persist.getInstance().deserializeItem();
+                // send save_replica command to the replica server with my ip:port
+
+                // Set replicaActive = true;
+                Main.replicaActive = true; // synchronize olmali
+                break;
+            case "replica_deactive":
+                // FIXME
+                // Set replicaActive = false;
+                Main.replicaActive = false; // synchronize olmali
+
+                // Delete replica data in local
+
+                break;
 
             default:
                 LOGGER.warning("KVServerCommand not found.");

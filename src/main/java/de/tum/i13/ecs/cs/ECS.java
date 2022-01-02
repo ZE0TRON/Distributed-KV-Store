@@ -9,6 +9,7 @@ import de.tum.i13.shared.Constants;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class ECS implements ConfigurationService {
@@ -21,6 +22,8 @@ public class ECS implements ConfigurationService {
     private LinkedList<RebalanceOperation> rebalanceQueue;
     private RebalanceOperation onGoingRebalance;
     private String metadata;
+
+    private boolean replicaActive = false;
 
     // TODO lock the correct functions like delete or insert in BST
     private ECS() {
@@ -55,6 +58,13 @@ public class ECS implements ConfigurationService {
         RebalanceOperation rebalanceOperation = new RebalanceOperation(senderServer, receiverServer, keyRange, RebalanceType.ADD);
         queueHandoverProcess(rebalanceOperation);
         LOGGER.info("Rebalance operation "+ rebalanceOperation +" for add server queued");
+
+        if (!replicaActive && keyRingService.getCount() >= 3) {
+            replicaActive = true;
+            activateReplica();
+        } else if(replicaActive) {
+            // FIXME yeni serverin replicalari kimler olacak? Onceki replicalar tasinacak mi?
+        }
     }
 
     @Override
@@ -69,6 +79,31 @@ public class ECS implements ConfigurationService {
         RebalanceOperation rebalanceOperation = new RebalanceOperation(senderServer, receiverServer , keyRange, RebalanceType.DELETE);
         queueHandoverProcess(rebalanceOperation);
         LOGGER.info("Rebalance operation "+ rebalanceOperation +" for delete server queued");
+
+        if (replicaActive && keyRingService.getCount() < 3) {
+            replicaActive = false;
+            deactivateReplica();
+        } else if(replicaActive) {
+            // FIXME server silinirken uzerindeki replicalar ne olacak?
+        }
+    }
+
+    private void activateReplica() {
+        // FIXME send replica_active command to all servers
+        // serverlara senin replican budur denecek mi yoksa server metadata dan kendi mi bulacak?
+        for (Map.Entry<String, ConnectionManagerInterface>  connection : ServerConnectionThread.connections.entrySet()) {
+            RingItem successor1 = keyRingService.findSuccessor(connection.getKey());
+            RingItem successor2 = keyRingService.findSuccessor(successor1.key);
+
+            connection.getValue().send("replica_active " + successor1.key + " " + successor2.key);
+        }
+    }
+
+    private void deactivateReplica() {
+        // FIXME send replica_deactive command to all servers
+        for (ConnectionManagerInterface connectionManager : ServerConnectionThread.connections.values()) {
+            connectionManager.send("replica_deactive");
+        }
     }
 
     @Override

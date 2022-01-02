@@ -35,6 +35,7 @@ public class KVStoreImpl implements KVStore {
 				PersistType persistType = kvPersist.put(item);
 				if (persistType == PersistType.INSERT) {
 					cache.put(item);
+					// sendToReplicas(item);
 					LOGGER.info("Put (insert) operation successfully executed on tuple: (" + key + ", " + value + ")");
 					return new KVClientMessageImpl(key, null, StatusType.PUT_SUCCESS);
 				} else {
