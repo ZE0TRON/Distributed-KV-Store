@@ -44,7 +44,7 @@ public class CommandProcessor implements CommandProcessorInterface {
             else if (serverState.equals(ServerState.SERVER_WRITE_LOCK) && (parts[0].equals("put") || parts[0].equals("delete"))){
                 kvClientMessage = new KVClientMessageImpl(null,null, KVClientMessage.StatusType.SERVER_WRITE_LOCK);
             }
-            else { // ServerState.RUNNING
+            else {  // (ServerState.RUNNING) or (ServerState.SERVER_WRITE_LOCK and command is one of GET, KEYRANGE, KEYRANGE_READ)
                 KeyRange keyrange = KVStoreImpl.getKeyRange();
                 if (!commandType.equals("keyrange") && !Util.isKeyInRange(keyrange.from, keyrange.to, ConsistentHashingService.findHash(parts[1]))){
                     LOGGER.info("KVServer: SERVER_NOT_RESPONSIBLE occurred.");
@@ -58,12 +58,12 @@ public class CommandProcessor implements CommandProcessorInterface {
                                 break;
                             }
                             else if (parts.length == 2) {
-                                kvClientMessage = kvStore.put(parts[1], null);
+                                kvClientMessage = kvStore.put(parts[1], null, "kvClient");
                             }
                             else {
                                 String args = command.substring(command.indexOf(' ') + 1);
                                 String value = args.substring(args.indexOf(' ') + 1);
-                                kvClientMessage = kvStore.put(parts[1], value);
+                                kvClientMessage = kvStore.put(parts[1], value, "kvClient");
                             }
                             break;
                         case "get":
@@ -78,10 +78,13 @@ public class CommandProcessor implements CommandProcessorInterface {
                                 kvClientMessage = kvStore.commandNotFound(command);
                                 break;
                             }
-                            kvClientMessage = kvStore.put(parts[1], null);
+                            kvClientMessage = kvStore.put(parts[1], null, "kvClient");
                             break;
                         case "keyrange":
-                            kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getMetaDataString(),null, KVClientMessage.StatusType.KEYRANGE_SUCCESS);
+                            kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getCoordinatorMetadataString(),null, KVClientMessage.StatusType.KEYRANGE_SUCCESS);
+                            break;
+                        case "keyrange_read":
+                            kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getWholeMetadataString(),null, KVClientMessage.StatusType.KEYRANGE_READ_SUCCESS);
                             break;
                         default:
                             LOGGER.info("command not found");

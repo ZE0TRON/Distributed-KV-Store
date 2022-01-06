@@ -75,8 +75,8 @@ public class KeyRingService {
         }
     }
 
-    public String serializeKeyRanges() {
-       return keyRing.serializeKeyRanges();
+    public String serializeKeyRanges(boolean includeReplicas) {
+       return keyRing.serializeKeyRanges(includeReplicas);
     }
 
     public int getCount() {

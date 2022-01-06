@@ -15,7 +15,7 @@ public interface KVStore {
      * @throws Exception if put command cannot be executed (e.g. not connected to any
      *                   KV server).
      */
-    KVClientMessage put(String key, String value) throws Exception;
+    KVClientMessage put(String key, String value, String caller) throws Exception;
 
     /**
      * Retrieves the value for a given key from the KVServer.
@@ -27,7 +27,7 @@ public interface KVStore {
      */
     KVClientMessage get(String key) throws Exception;
 
-    void updateKeyRange(ArrayList<KeyRange> metaData, String metaDataString);
+    void updateKeyRange(ArrayList<KeyRange> metadata, String metadataString, String metadataType);
 
     ArrayList<PersistItem> getAll();
 
