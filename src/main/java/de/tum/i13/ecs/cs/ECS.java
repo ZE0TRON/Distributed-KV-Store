@@ -18,6 +18,7 @@ public class ECS implements ConfigurationService {
 
     private static ECS instance;
     private static final Logger LOGGER = Logger.getLogger(ECS.class.getName());
+    private static int handoverCounter = 0;
     private final KeyRingService keyRingService;
     private HashService hashService;
 
@@ -46,6 +47,10 @@ public class ECS implements ConfigurationService {
        return instance;
     }
 
+    private static boolean getReplicaMod() {
+        return ServerConnectionThread.connections.size() >= 3;
+    }
+
 
     @Override
     public synchronized void addServer(Server server) {
@@ -62,18 +67,22 @@ public class ECS implements ConfigurationService {
             Thread heartbeatThread = new ECSHeartBeatThread(server);
             heartbeatThread.start();
             heartbeatThreads.add(heartbeatThread);
+            queueHandoverProcess(rebalanceOperation);
         } catch (IOException e) {
             LOGGER.warning("Couldnt connect to the heartbeat port for server: " + server.toHashableString() + " error " + e.getMessage());
             ServerConnectionThread.connections.remove(server.toHashableString());
             return;
         }
-        queueHandoverProcess(rebalanceOperation);
 
         LOGGER.info("Rebalance operation "+ rebalanceOperation +" for add server queued");
     }
 
     @Override
     public synchronized void deleteServer(Server server) {
+        if (getReplicaMod()) {
+            serverCrashed(server);
+            return;
+        }
         RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
         RingItem ringItem = keyRingService.findSuccessor(ringItemToDelete.key);
         RingItem predecessorItem = keyRingService.findPredecessor(ringItemToDelete.key);
@@ -117,10 +126,20 @@ public class ECS implements ConfigurationService {
             LOGGER.warning("No re-balance operation on going with keyRange: " + keyRange.fst + "-" + keyRange.snd );
             return false;
         }
+
         LOGGER.info("Finishing handover process with keyrange: " + keyRange.fst + "-" + keyRange.snd);
         boolean endConnection = onGoingRebalance.getRebalanceType() == RebalanceType.DELETE;
+
+        if (onGoingRebalance.getRebalanceType() == RebalanceType.CRASH) {
+            handoverCounter--;
+            LOGGER.info("Handover count reduced new handover count : " + handoverCounter);
+        }
+
+        if (onGoingRebalance.getRebalanceType() != RebalanceType.CRASH || handoverCounter == 0) {
+            updateMetadata();
+        }
+
         onGoingRebalance = null;
-        updateMetadata();
         if (!rebalanceQueue.isEmpty()) {
             startHandoverProcess(this.rebalanceQueue.poll());
         }
@@ -153,7 +172,7 @@ public class ECS implements ConfigurationService {
                       rebalanceOperation.getSenderServer().toHashableString());
           }
         }
-        else if (onGoingRebalance.getRebalanceType() == RebalanceType.DELETE) {
+        else if (onGoingRebalance.getRebalanceType() == RebalanceType.DELETE || onGoingRebalance.getRebalanceType() == RebalanceType.CRASH) {
             LOGGER.info("Handover delete");
             Server server = rebalanceOperation.getSenderServer();
             ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toEcsConnectionString());
@@ -172,14 +191,36 @@ public class ECS implements ConfigurationService {
     private synchronized void queueHandoverProcess(RebalanceOperation rebalanceOperation) {
         rebalanceQueue.addFirst(rebalanceOperation);
         if (onGoingRebalance == null) {
-            startHandoverProcess(this.rebalanceQueue.poll());
+            RebalanceOperation polledOperation = this.rebalanceQueue.poll();
+            if(polledOperation != null) {
+                startHandoverProcess(polledOperation);
+            }
+            else {
+                LOGGER.warning("Tried starting another handover while the queue is empty");
+            }
         }
     }
     // TODO implement
     public synchronized void serverCrashed(Server server) {
-        //RebalanceOperation rebalanceOperation = new RebalanceOperation();
+        // Starting from predecessor of the crashed server
+        // Every server handovers the to the next server for 3 servers
         ServerConnectionThread.connections.remove(server.toHashableString());
-        //queueHandoverProcess();
+        RingItem serverCrashed = keyRingService.get(Server.serverToHashString(server));
+        RingItem predecessor =  keyRingService.findPredecessor(Server.serverToHashString(server));
+        keyRingService.delete(serverCrashed);
+        if (handoverCounter != 0 ) {
+            LOGGER.warning("WOWOWOWOW MORE THAN ONE CRASH Ohh boy! handoverCounter: " + handoverCounter);
+        }
+        handoverCounter += 3;
+        for (int i = 0; i < 3; i++) {
+            RingItem prePredecessor = keyRingService.findPredecessor(Server.serverToHashString(predecessor.value));
+            RingItem prePrePredecessor = keyRingService.findPredecessor(Server.serverToHashString(prePredecessor.value));
+            Pair<String, String> keyRange = new Pair<>(prePrePredecessor.key, prePredecessor.key);
+            RingItem successor = keyRingService.findSuccessor(Server.serverToHashString(predecessor.value));
+            RebalanceOperation rebalanceOperation = new RebalanceOperation(predecessor.value, successor.value, keyRange, RebalanceType.CRASH);
+            queueHandoverProcess(rebalanceOperation);
+            predecessor = successor;
+        }
     }
 
     @Override
