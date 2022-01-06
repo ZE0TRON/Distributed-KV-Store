@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class ECS implements ConfigurationService {
@@ -114,11 +115,22 @@ public class ECS implements ConfigurationService {
     }
 
     @Override
-    public void updateMetadata() {
+    public synchronized void updateMetadata() {
         createNewMetaData();
         LOGGER.info("New metadata created: " + metadata + " " + replicaMetadata);
-        for (ConnectionManagerInterface connection : ServerConnectionThread.connections.values()) {
-           connection.send("update_metadata " + metadata + " " + replicaMetadata);
+        for (Map.Entry<String, ConnectionManagerInterface> entry : ServerConnectionThread.connections.entrySet()) {
+            ConnectionManagerInterface connection = entry.getValue();
+            if(getReplicaMod()) {
+                String server = entry.getKey();
+                RingItem serverRingItem = keyRingService.get(server);
+                RingItem successor = keyRingService.findSuccessor(serverRingItem.key);
+                RingItem secondSuccessor = keyRingService.findSuccessor(successor.key);
+                // Key = server:port
+                connection.send("update_metadata " + metadata + " " + replicaMetadata + " " + successor.key + " " + secondSuccessor.key);
+            }
+            else {
+                connection.send("update_metadata " + metadata);
+            }
         }
         LOGGER.info("Metadata sent to all servers");
     }
