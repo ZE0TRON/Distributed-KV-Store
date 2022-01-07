@@ -40,9 +40,9 @@ public class KVCommandProcessor implements CommandProcessorInterface {
                 break;
             case "ack_data":
                 ConnectionManagerInterface ecsConnection = EcsConnectionThread.ECSConnection;
+                EcsConnectionThread.handoverOperationCount = EcsConnectionThread.handoverOperationCount - 1;
                 ecsConnection.send("handover_complete " + parts[1] + " " + parts[2]);
                 throw new CommunicationTerminatedException();
-
             case "handover_data":
                 LOGGER.info("Entering SERVER_WRITE_LOCK state.");
                 CommandProcessor.serverState = ServerState.SERVER_WRITE_LOCK;

@@ -25,6 +25,7 @@ public class ConnectionThread extends Thread {
         this.cp = commandProcessor;
         this.clientSocket = clientSocket;
         this.kvScp = kvCommandProcessor;
+        //TODO: Could not find any CanShutdown check?
         ConnectionThread.CanShutdown = false;
         this.initialPayload = initialPayload;
     }

@@ -8,6 +8,7 @@ import de.tum.i13.shared.Util;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
 public class EcsConnectionThread extends Thread {
@@ -19,6 +20,7 @@ public class EcsConnectionThread extends Thread {
     private ConnectionManagerInterface ecsConnManager;
     public static ConnectionManagerInterface ECSConnection;
     private boolean threadAlive;
+    public static volatile int handoverOperationCount;
 
     public EcsConnectionThread(CommandProcessor commandProcessor, KVCommandProcessor kvcp, Socket ecsSocket){
         this.cp = commandProcessor;
@@ -65,18 +67,38 @@ public class EcsConnectionThread extends Thread {
                         connectionThread.start();
                         break;
                     }
-                    case "handover_start": {
+                    case "handover_start": { // handover_start from to ip:port from to ip:port from to ip:port
                         CommandProcessor.serverState = ServerState.SERVER_WRITE_LOCK;
-                        Socket kvServerToCommunicateSocket = createSocket(respParts[3]);
-                        String payload = "handover_data " + respParts[1] + " " + respParts[2];
-                        ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToCommunicateSocket,  payload);
-                        connectionThread.start();
+                        if (respParts.length == 10){
+                            LOGGER.info("ECSThread received three handover_start requests.");
+                            handoverOperationCount = 3;
+                        }
+                        else if (respParts.length == 4){
+                            LOGGER.info("ECSThread received a single handover_start request.");
+                            handoverOperationCount = 1;
+                        }
+                        else {
+                            LOGGER.warning("ECSThread received a handover_start request with an incorrect format!");
+                            break;
+                        }
+                        CountDownLatch latch = new CountDownLatch(handoverOperationCount);
+                        for (int i=0, request_count=handoverOperationCount; i<request_count; i++){
+                            String payload = "handover_data " + respParts[3*i+1] + " " + respParts[3*i+2];
+                            Socket kvServerToCommunicateSocket = createSocket(respParts[3*i+3]);
+                            ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToCommunicateSocket,  payload);
+                            connectionThread.start();
+                        }
+                        latch.await();
                         break;
                     }
                     case "update_metadata":
                         if(respParts.length < 2) {
                             ConnectionThread.CanShutdown = true;
                             return;
+                        }
+                        if(respParts.length > 3){
+                            KVStoreImpl.setFirstSuccessor(respParts[3]);
+                            KVStoreImpl.setSecondSuccessor(respParts[4]);
                         }
                         ConnectionThread.CanShutdown = false;
                         String coordinatorMetadataStr = respParts[1];

@@ -25,6 +25,9 @@ public class KVStoreImpl implements KVStore {
 	private static KeyRange coordinatorKeyRange;
 	private static KeyRange wholeKeyRange;
 
+	private static String firstSuccessor;
+	private static String secondSuccessor;
+
 	public KVStoreImpl() {
 		kvPersist = Persist.getInstance();
 		cache = CacheManager.getInstance();
@@ -172,5 +175,21 @@ public class KVStoreImpl implements KVStore {
 			}
 		}
 		kvPersist.serializeAndPersistItem(itemsToSave);
+	}
+
+	public static String getFirstSuccessor() {
+		return firstSuccessor;
+	}
+
+	public static void setFirstSuccessor(String firstSuccessor) {
+		KVStoreImpl.firstSuccessor = firstSuccessor;
+	}
+
+	public static String getSecondSuccessor() {
+		return secondSuccessor;
+	}
+
+	public static void setSecondSuccessor(String secondSuccessor) {
+		KVStoreImpl.secondSuccessor = secondSuccessor;
 	}
 }
