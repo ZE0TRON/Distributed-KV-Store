@@ -41,7 +41,10 @@ public class HeartbeatThread extends Thread {
                 long start = System.currentTimeMillis();
                 if (recv.equals("health_check")){
                     connectionManager.send(new ServerMessageImpl(ServerMessage.StatusType.HEALTHY).toString());
-                    LOGGER.info("Sent heartbeat to ECS in less than " + (System.currentTimeMillis() - start) + " ms.");
+                    long timeItTakes = System.currentTimeMillis() - start;
+                    if(timeItTakes >= 700) {
+                        LOGGER.info("Sent heartbeat to ECS  less than " + timeItTakes + " ms.");
+                    }
                 }
                 else {
                     connectionManager.send(new ServerMessageImpl(ServerMessage.StatusType.COMMAND_NOT_FOUND).toString());
