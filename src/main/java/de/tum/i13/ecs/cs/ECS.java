@@ -191,7 +191,7 @@ public class ECS implements ConfigurationService {
         else if (onGoingRebalance.getRebalanceType() == RebalanceType.DELETE || onGoingRebalance.getRebalanceType() == RebalanceType.CRASH) {
             LOGGER.info("Handover delete");
             Server server = rebalanceOperation.getSenderServer();
-            ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toEcsConnectionString());
+            ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toHashableString());
             if(keyRingService.isKeyringEmpty()) {
                 handoverFinished(onGoingRebalance.getKeyRange());
                 return;
