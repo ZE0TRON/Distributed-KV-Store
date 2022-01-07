@@ -44,7 +44,6 @@ public class ECS implements ConfigurationService {
        return instance;
     }
 
-
     @Override
     public synchronized void addServer(Server server) {
         RingItem newRingItem = RingItem.createRingItemFromServer(server);
@@ -58,13 +57,6 @@ public class ECS implements ConfigurationService {
         RebalanceOperation rebalanceOperation = new RebalanceOperation(senderServer, receiverServer, keyRange, RebalanceType.ADD);
         queueHandoverProcess(rebalanceOperation);
         LOGGER.info("Rebalance operation "+ rebalanceOperation +" for add server queued");
-
-        if (!replicaActive && keyRingService.getCount() >= 3) {
-            replicaActive = true;
-            activateReplica();
-        } else if(replicaActive) {
-            // FIXME yeni serverin replicalari kimler olacak? Onceki replicalar tasinacak mi?
-        }
     }
 
     @Override
@@ -79,31 +71,6 @@ public class ECS implements ConfigurationService {
         RebalanceOperation rebalanceOperation = new RebalanceOperation(senderServer, receiverServer , keyRange, RebalanceType.DELETE);
         queueHandoverProcess(rebalanceOperation);
         LOGGER.info("Rebalance operation "+ rebalanceOperation +" for delete server queued");
-
-        if (replicaActive && keyRingService.getCount() < 3) {
-            replicaActive = false;
-            deactivateReplica();
-        } else if(replicaActive) {
-            // FIXME server silinirken uzerindeki replicalar ne olacak?
-        }
-    }
-
-    private void activateReplica() {
-        // FIXME send replica_active command to all servers
-        // serverlara senin replican budur denecek mi yoksa server metadata dan kendi mi bulacak?
-        for (Map.Entry<String, ConnectionManagerInterface>  connection : ServerConnectionThread.connections.entrySet()) {
-            RingItem successor1 = keyRingService.findSuccessor(connection.getKey());
-            RingItem successor2 = keyRingService.findSuccessor(successor1.key);
-
-            connection.getValue().send("replica_active " + successor1.key + " " + successor2.key);
-        }
-    }
-
-    private void deactivateReplica() {
-        // FIXME send replica_deactive command to all servers
-        for (ConnectionManagerInterface connectionManager : ServerConnectionThread.connections.values()) {
-            connectionManager.send("replica_deactive");
-        }
     }
 
     @Override

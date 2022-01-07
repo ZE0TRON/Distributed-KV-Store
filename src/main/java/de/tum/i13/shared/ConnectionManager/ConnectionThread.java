@@ -1,13 +1,14 @@
 package de.tum.i13.shared.ConnectionManager;
 
+import de.tum.i13.server.Main;
 import de.tum.i13.server.exception.CommunicationTerminatedException;
-import de.tum.i13.server.kv.CommandProcessor;
-import de.tum.i13.server.kv.KVCommandProcessor;
+import de.tum.i13.server.kv.*;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 public class ConnectionThread extends Thread {
@@ -17,7 +18,9 @@ public class ConnectionThread extends Thread {
     private final KVCommandProcessor kvScp;
     private final Socket clientSocket;
     private ConnectionManagerInterface connectionManager;
-    private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack", "Connection", "replica_active", "replica_deactive"));
+    private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack", "Connection",
+            "put_replica", "put_replica_ack", "put_replica_data", "put_replica_data_ack",
+            "delete_replica", "delete_replica_ack", "delete_replica_data", "delete_replica_data_ack"));
     public static boolean CanShutdown;
     private String initialPayload;
 
@@ -60,6 +63,22 @@ public class ConnectionThread extends Thread {
                     else {
                         LOGGER.info("ClientCommand has been received. Now being processed.");
                         res = cp.process(recv) + "\r\n";
+
+                        String replicaCommand = replicaCommand(res);
+                        if (replicaCommand != null) {
+                            CommandProcessor cp = new CommandProcessor(new KVStoreImpl());
+                            KVCommandProcessor KVcp = new KVCommandProcessor(new KVTransferService(new KVStoreImpl()));
+
+                            String[] parts = command.split(" ");
+
+                            Thread th;
+
+                            th = new ConnectionThread(cp, KVcp, Main.replica1Connection, replicaCommand + " " + parts[1]);
+                            th.start();
+
+                            th = new ConnectionThread(cp, KVcp, Main.replica2Connection, replicaCommand + " " + parts[1]);
+                            th.start();
+                        }
                     }
                     if(res != null) {
                         LOGGER.info("ConnectionThread response being sent.");
@@ -79,5 +98,20 @@ public class ConnectionThread extends Thread {
             LOGGER.warning(ex.getMessage());
             ex.printStackTrace();
         }
+    }
+
+    private String replicaCommand(String res) {
+        if (Main.replica1Connection == null || Main.replica2Connection == null || res == null || res.length() == 0) {
+            return null;
+        }
+
+        if (KVClientMessage.StatusType.PUT_SUCCESS.toString().toLowerCase(Locale.ROOT).startsWith(res) ||
+                KVClientMessage.StatusType.PUT_UPDATE.toString().toLowerCase(Locale.ROOT).startsWith(res))
+            return "put_replica";
+
+        if (KVClientMessage.StatusType.DELETE_SUCCESS.toString().toLowerCase(Locale.ROOT).startsWith(res))
+            return "delete_replica";
+
+        return null;
     }
 }

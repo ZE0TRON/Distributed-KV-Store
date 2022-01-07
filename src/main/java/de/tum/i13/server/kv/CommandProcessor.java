@@ -60,21 +60,12 @@ public class CommandProcessor implements CommandProcessorInterface {
                             }
                             else if (parts.length == 2) {
                                 kvClientMessage = kvStore.put(parts[1], null);
-                                // FIXME if replicaActive == true then delete put command (delete_replica) to rep_server_1 and rep_server_2
-                                if (Main.replicaActive) {
-                                    // send command to replicas
-                                }
                             }
                             else {
                                 String args = command.substring(command.indexOf(' ') + 1);
                                 String value = args.substring(args.indexOf(' ') + 1);
                                 kvClientMessage = kvStore.put(parts[1], value);
-                                // FIXME if replicaActive == true then send put command (put_replica) to rep_server_1 and rep_server_2
-                                if (Main.replicaActive) {
-                                    // send command to replicas
-                                }
                             }
-
                             break;
                         case "get":
                             if (parts.length < 2) {
@@ -89,27 +80,9 @@ public class CommandProcessor implements CommandProcessorInterface {
                                 break;
                             }
                             kvClientMessage = kvStore.put(parts[1], null);
-                            // FIXME if replicaActive == true then send delete command to rep_server_1 and rep_server_2
-                            if (Main.replicaActive) {
-                                // send command to replicas
-                            }
                             break;
                         case "keyrange":
                             kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getMetaDataString(),null, KVClientMessage.StatusType.KEYRANGE_SUCCESS);
-                            break;
-                        case "save_replica":
-                            // FIXME save all data from coordinator server into replica for server with parts[1] (ip:port) and parts[2] data
-                            // gelen datayi nereye koyacagiz? KVStorImpl singleton persist kullanıyor. Nasil üc tane KVStor a sahip olabilirim?
-
-                            kvClientMessage = new KVClientMessageImpl(null, null, null);
-                            break;
-                        case "put_replica":
-                            // FIXME put data into replica for server with parts[1] (ip:port)
-                            kvClientMessage = new KVClientMessageImpl(null, null, null);
-                            break;
-                        case "delete_replica":
-                            // FIXME delete data into replica for server with parts[1] (ip:port)
-                            kvClientMessage = new KVClientMessageImpl(null, null, null);
                             break;
                         default:
                             LOGGER.info("command not found");

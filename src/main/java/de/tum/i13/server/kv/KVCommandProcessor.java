@@ -43,7 +43,6 @@ public class KVCommandProcessor implements CommandProcessorInterface {
                 ConnectionManagerInterface ecsConnection = EcsConnectionThread.ECSConnection;
                 ecsConnection.send("handover_complete " + parts[1] + " " + parts[2]);
                 throw new CommunicationTerminatedException();
-
             case "handover_data":
                 LOGGER.info("Entering SERVER_WRITE_LOCK state.");
                 CommandProcessor.serverState = ServerState.SERVER_WRITE_LOCK;
@@ -51,27 +50,33 @@ public class KVCommandProcessor implements CommandProcessorInterface {
                 break;
             case "Connection":
                 break;
-            case "replica_active":
-                // FIXME parts[1] and parts[2] replica servers ip:port
-                // Start to transfer all data to rep_server_1 and rep_server_2
-                // Collect all data from this server
-                // ta buraya en genis aralik verilerek alinacak
-                String allDataToSend = kvTransferService.sendData(parts[1], parts[2]);
-                // yada bundan tum data alinacak
-                PersistItemCollection collection = Persist.getInstance().deserializeItem();
-                // send save_replica command to the replica server with my ip:port
 
-                // Set replicaActive = true;
-                Main.replicaActive = true; // synchronize olmali
+            case "put_replica":
+                res = "put_replica_ack " + parts[1];
                 break;
-            case "replica_deactive":
-                // FIXME
-                // Set replicaActive = false;
-                Main.replicaActive = false; // synchronize olmali
-
-                // Delete replica data in local
-
+            case "put_replica_ack":
+                String value = kvTransferService.getValue(parts[1]);
+                res = "put_replica_data " + parts[1] + " " + value;
                 break;
+            case "put_replica_data":
+                kvTransferService.put(parts[1], parts[2]);
+                res = "put_replica_data_ack " + parts[1];
+                break;
+            case "put_replica_data_ack":
+                throw new CommunicationTerminatedException();
+
+            case "delete_replica":
+                res = "delete_replica_ack " + parts[1];
+                break;
+            case "delete_replica_ack":
+                res = "delete_replica_data " + parts[1];
+                break;
+            case "delete_replica_data":
+                kvTransferService.delete(parts[1]);
+                res = "delete_replica_data_ack " + parts[1];
+                break;
+            case "delete_replica_data_ack":
+                throw new CommunicationTerminatedException();
 
             default:
                 LOGGER.warning("KVServerCommand not found.");

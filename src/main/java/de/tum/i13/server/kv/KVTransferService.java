@@ -66,4 +66,34 @@ public class KVTransferService {
         }
         return result;
     }
+
+    public String getValue(String key) {
+        try {
+            KVClientMessage clientMessage = kvStore.get(key);
+
+            if (clientMessage.getStatus() == KVClientMessage.StatusType.GET_SUCCESS) {
+                return clientMessage.getValue();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void put(String key, String value) {
+        try {
+            kvStore.put(key, value);
+        } catch (Exception e) {
+            // FIXME bu durumda ne yapmaliyim?
+        }
+    }
+
+    public void delete(String key) {
+        try {
+            kvStore.put(key, null);
+        } catch (Exception e) {
+            // FIXME bu durumda ne yapmaliyim?
+        }
+    }
 }
