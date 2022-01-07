@@ -9,7 +9,7 @@ import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
 import de.tum.i13.server.storageManagment.PersistType;
 import de.tum.i13.shared.Util;
-import de.tum.i13.shared.keyring.ConsistentHashingService;
+import de.tum.i13.ecs.keyring.ConsistentHashingService;
 
 public class KVStoreImpl implements KVStore {
 
@@ -24,6 +24,9 @@ public class KVStoreImpl implements KVStore {
 
 	private static KeyRange coordinatorKeyRange;
 	private static KeyRange wholeKeyRange;
+
+	private static String firstSuccessor;
+	private static String secondSuccessor;
 
 	public KVStoreImpl() {
 		kvPersist = Persist.getInstance();
@@ -172,5 +175,21 @@ public class KVStoreImpl implements KVStore {
 			}
 		}
 		kvPersist.serializeAndPersistItem(itemsToSave);
+	}
+
+	public static String getFirstSuccessor() {
+		return firstSuccessor;
+	}
+
+	public static void setFirstSuccessor(String firstSuccessor) {
+		KVStoreImpl.firstSuccessor = firstSuccessor;
+	}
+
+	public static String getSecondSuccessor() {
+		return secondSuccessor;
+	}
+
+	public static void setSecondSuccessor(String secondSuccessor) {
+		KVStoreImpl.secondSuccessor = secondSuccessor;
 	}
 }
