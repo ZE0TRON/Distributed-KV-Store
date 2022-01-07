@@ -1,5 +1,6 @@
 package de.tum.i13.server.kv;
 
+import de.tum.i13.server.Main;
 import de.tum.i13.server.exception.CommunicationTerminatedException;
 import de.tum.i13.shared.ConnectionManager.ConnectionManagerInterface;
 import de.tum.i13.shared.ConnectionManager.EcsConnectionThread;
@@ -49,6 +50,34 @@ public class KVCommandProcessor implements CommandProcessorInterface {
                 res = "handover_ack " + parts[1] + " " + parts[2];
                 break;
             case "Connection":
+                break;
+
+            case "put_replica":
+                res = "put_replica_ack " + parts[1];
+                break;
+            case "put_replica_ack":
+                String value = kvTransferService.getValue(parts[1]);
+                res = "put_replica_data " + parts[1] + " " + value;
+                break;
+            case "put_replica_data":
+                kvTransferService.put(parts[1], parts[2]);
+                res = "put_replica_data_ack " + parts[1];
+                break;
+            case "put_replica_data_ack":
+                throw new CommunicationTerminatedException();
+
+            case "delete_replica":
+                res = "delete_replica_ack " + parts[1];
+                break;
+            case "delete_replica_ack":
+                res = "delete_replica_data " + parts[1];
+                break;
+            case "delete_replica_data":
+                kvTransferService.delete(parts[1]);
+                res = "delete_replica_data_ack " + parts[1];
+                break;
+            case "delete_replica_data_ack":
+                throw new CommunicationTerminatedException();
 
             default:
                 LOGGER.warning("KVServerCommand not found.");
