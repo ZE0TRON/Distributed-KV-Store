@@ -90,18 +90,21 @@ public class EcsConnectionThread extends Thread {
                         break;
                     }
                     case "update_metadata":
-                        if(respParts.length < 2) {
-                            ConnectionThread.CanShutdown = true;
+                        if(respParts.length == 1) {
                             return;
                         }
+                        String replicaMetadataStr;
                         if(respParts.length > 3){
                             KVStoreImpl.setFirstSuccessor(respParts[3]);
                             KVStoreImpl.setSecondSuccessor(respParts[4]);
                             KVStoreImpl.setReplicaConnections();
+                            replicaMetadataStr = respParts[2];
                         }
-                        ConnectionThread.CanShutdown = false;
+                        else {
+                            replicaMetadataStr = respParts[1];
+                        }
+
                         String coordinatorMetadataStr = respParts[1];
-                        String replicaMetadataStr = respParts[2];
 
                         String[] coordinatorKeyRanges = coordinatorMetadataStr.split(";");
                         String[] replicaKeyRanges = replicaMetadataStr.split(";");
