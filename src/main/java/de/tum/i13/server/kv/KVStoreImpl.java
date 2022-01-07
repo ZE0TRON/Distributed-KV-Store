@@ -1,5 +1,6 @@
 package de.tum.i13.server.kv;
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -27,6 +28,8 @@ public class KVStoreImpl implements KVStore {
 
 	private static String firstSuccessor;
 	private static String secondSuccessor;
+	public static Socket replica1Connection = null;
+	public static Socket replica2Connection = null;
 
 	public KVStoreImpl() {
 		kvPersist = Persist.getInstance();
@@ -191,5 +194,28 @@ public class KVStoreImpl implements KVStore {
 
 	public static void setSecondSuccessor(String secondSuccessor) {
 		KVStoreImpl.secondSuccessor = secondSuccessor;
+	}
+
+	public static void setReplicaConnections() {
+		String addr1 = firstSuccessor.split(":")[0];
+		String port1 = firstSuccessor.split(":")[1];
+		String addr2 = secondSuccessor.split(":")[0];
+		String port2 = secondSuccessor.split(":")[1];
+		try {
+			if (replica1Connection != null) {
+				replica1Connection.close();
+				replica1Connection = null;
+			}
+			if (replica2Connection != null) {
+				replica2Connection.close();
+				replica2Connection = null;
+			}
+			replica1Connection = new Socket(addr1, Integer.parseInt(port1));
+			replica2Connection = new Socket(addr1, Integer.parseInt(port1));
+		} catch (Exception e) {
+			LOGGER.warning("Exception while setReplicaConnections " + e.getMessage() );
+		}
+
+
 	}
 }

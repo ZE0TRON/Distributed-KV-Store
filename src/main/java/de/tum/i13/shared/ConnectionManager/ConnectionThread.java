@@ -74,10 +74,10 @@ public class ConnectionThread extends Thread {
 
                             Thread th;
 
-                            th = new ConnectionThread(cp, KVcp, Main.replica1Connection, replicaCommand + " " + parts[1]);
+                            th = new ConnectionThread(cp, KVcp, KVStoreImpl.replica1Connection, replicaCommand + " " + parts[1]);
                             th.start();
 
-                            th = new ConnectionThread(cp, KVcp, Main.replica2Connection, replicaCommand + " " + parts[1]);
+                            th = new ConnectionThread(cp, KVcp, KVStoreImpl.replica2Connection, replicaCommand + " " + parts[1]);
                             th.start();
                         }
                     }
@@ -102,7 +102,7 @@ public class ConnectionThread extends Thread {
     }
 
     private String replicaCommand(String res) {
-        if (Main.replica1Connection == null || Main.replica2Connection == null || res == null || res.length() == 0) {
+        if (KVStoreImpl.replica1Connection == null || KVStoreImpl.replica2Connection == null || res == null || res.length() == 0) {
             return null;
         }
 

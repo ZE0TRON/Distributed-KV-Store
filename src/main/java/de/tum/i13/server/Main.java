@@ -22,8 +22,7 @@ import de.tum.i13.server.storageManagment.CacheManagerFactory;
 public class Main {
     public static String serverIp;
     public static int port;
-    public static Socket replica1Connection = null;
-    public static Socket replica2Connection = null;
+
     public static void main(String[] args) throws IOException {
         ServerConfig cfg = ServerConfig.parseCommandlineArgs(args);  //Do not change this
         setupLogging(cfg.logfile, cfg.logLevel);
@@ -80,9 +79,6 @@ public class Main {
         String payload ="shutdown " + address + " " +  port;
         EcsConnectionThread.ECSConnection.send(payload);
         Thread.sleep(4000);
-        while (EcsConnectionThread.handoverOperationCount != 0){
-            Thread.sleep(500);
-        }
         kvServerSocket.close();
         ecsHeartbeatSocket.close();
         ecsConnectionThread.kill();

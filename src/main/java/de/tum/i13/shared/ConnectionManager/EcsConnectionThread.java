@@ -81,14 +81,12 @@ public class EcsConnectionThread extends Thread {
                             LOGGER.warning("ECSThread received a handover_start request with an incorrect format!");
                             break;
                         }
-                        CountDownLatch latch = new CountDownLatch(handoverOperationCount);
                         for (int i=0, request_count=handoverOperationCount; i<request_count; i++){
                             String payload = "handover_data " + respParts[3*i+1] + " " + respParts[3*i+2];
                             Socket kvServerToCommunicateSocket = createSocket(respParts[3*i+3]);
                             ConnectionThread connectionThread = new ConnectionThread(cp, kvcp, kvServerToCommunicateSocket,  payload);
                             connectionThread.start();
                         }
-                        latch.await();
                         break;
                     }
                     case "update_metadata":
@@ -99,6 +97,7 @@ public class EcsConnectionThread extends Thread {
                         if(respParts.length > 3){
                             KVStoreImpl.setFirstSuccessor(respParts[3]);
                             KVStoreImpl.setSecondSuccessor(respParts[4]);
+                            KVStoreImpl.setReplicaConnections();
                         }
                         ConnectionThread.CanShutdown = false;
                         String coordinatorMetadataStr = respParts[1];
