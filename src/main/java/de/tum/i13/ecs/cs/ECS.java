@@ -122,6 +122,7 @@ public class ECS implements ConfigurationService {
             ConnectionManagerInterface connection = entry.getValue();
             if(getReplicaMod()) {
                 String server = entry.getKey();
+                LOGGER.info("Updating metadata server is "  + server);
                 RingItem serverRingItem = keyRingService.get(server);
                 RingItem successor = keyRingService.findSuccessor(serverRingItem.key);
                 RingItem secondSuccessor = keyRingService.findSuccessor(successor.key);
