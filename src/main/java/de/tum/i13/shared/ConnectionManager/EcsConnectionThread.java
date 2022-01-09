@@ -115,7 +115,7 @@ public class EcsConnectionThread extends Thread {
                         Util.parseKeyrange(coordinatorKeyRanges,coordinatorMetadata);
                         Util.parseKeyrange(replicaKeyRanges,replicaMetadata);
 
-                        KVStoreImpl kvStoreInstance = new KVStoreImpl();
+                        KVStoreImpl kvStoreInstance = KVStoreImpl.getInstance();
                         kvStoreInstance.updateKeyRange(coordinatorMetadata, coordinatorMetadataStr, "coordinator");
                         kvStoreInstance.updateKeyRange(replicaMetadata, replicaMetadataStr, "replica");
 

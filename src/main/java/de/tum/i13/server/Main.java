@@ -41,8 +41,8 @@ public class Main {
         }
 
         CommandProcessor.serverState = ServerState.SERVER_STOPPED;
-        CommandProcessor logic = new CommandProcessor(new KVStoreImpl());
-        KVCommandProcessor kvTransferLogic = new KVCommandProcessor(new KVTransferService(new KVStoreImpl()));
+        CommandProcessor logic = new CommandProcessor(KVStoreImpl.getInstance());
+        KVCommandProcessor kvTransferLogic = new KVCommandProcessor(new KVTransferService(KVStoreImpl.getInstance()));
 
         Socket ecsSocket = new Socket(cfg.bootstrap.getAddress(), cfg.bootstrap.getPort());
         EcsConnectionThread ecsThread = new EcsConnectionThread(logic, kvTransferLogic, ecsSocket);

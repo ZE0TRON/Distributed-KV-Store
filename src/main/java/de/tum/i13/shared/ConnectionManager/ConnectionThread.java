@@ -67,8 +67,8 @@ public class ConnectionThread extends Thread {
 
                         String replicaCommand = replicaCommand(res);
                         if (replicaCommand != null) {
-                            CommandProcessor cp = new CommandProcessor(new KVStoreImpl());
-                            KVCommandProcessor KVcp = new KVCommandProcessor(new KVTransferService(new KVStoreImpl()));
+                            CommandProcessor cp = new CommandProcessor(KVStoreImpl.getInstance());
+                            KVCommandProcessor KVcp = new KVCommandProcessor(new KVTransferService(KVStoreImpl.getInstance()));
 
                             String[] parts = command.split(" ");
 
@@ -108,11 +108,15 @@ public class ConnectionThread extends Thread {
         }
 
         if (KVClientMessage.StatusType.PUT_SUCCESS.toString().toLowerCase(Locale.ROOT).startsWith(res) ||
-                KVClientMessage.StatusType.PUT_UPDATE.toString().toLowerCase(Locale.ROOT).startsWith(res))
+                KVClientMessage.StatusType.PUT_UPDATE.toString().toLowerCase(Locale.ROOT).startsWith(res)) {
+            LOGGER.info("Case is put_replica ");
             return "put_replica";
+        }
 
-        if (KVClientMessage.StatusType.DELETE_SUCCESS.toString().toLowerCase(Locale.ROOT).startsWith(res))
+        if (KVClientMessage.StatusType.DELETE_SUCCESS.toString().toLowerCase(Locale.ROOT).startsWith(res)) {
+            LOGGER.info("Case is delete_replica ");
             return "delete_replica";
+        }
 
         return null;
     }

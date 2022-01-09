@@ -33,10 +33,18 @@ public class KVStoreImpl implements KVStore {
 	private static String secondSuccessor;
 	public static Socket replica1Connection = null;
 	public static Socket replica2Connection = null;
+	public static KVStoreImpl instance = null;
 
-	public KVStoreImpl() {
+	private KVStoreImpl() {
 		kvPersist = Persist.getInstance();
 		cache = CacheManager.getInstance();
+	}
+
+	public static KVStoreImpl getInstance() {
+		if (instance == null){
+			instance = new KVStoreImpl();
+		}
+		return instance;
 	}
 
 	@Override
