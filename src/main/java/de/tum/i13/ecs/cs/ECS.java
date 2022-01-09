@@ -1,6 +1,7 @@
 package de.tum.i13.ecs.cs;
 
 import de.tum.i13.ecs.ECSHeartBeatThread;
+import de.tum.i13.shared.BST.RingNode;
 import de.tum.i13.shared.Pair;
 import de.tum.i13.shared.ConnectionManager.ServerConnectionThread;
 import de.tum.i13.shared.Server;
@@ -9,6 +10,7 @@ import de.tum.i13.shared.ConnectionManager.ConnectionManagerInterface;
 import de.tum.i13.shared.Constants;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -116,6 +118,12 @@ public class ECS implements ConfigurationService {
         if(keyRingService.isKeyringEmpty()) {
             metadata = "";
             replicaMetadata = "";
+        }
+        else if(keyRingService.getCount() == 1 ) {
+            ArrayList<RingNode> items = keyRingService.getAllItems();
+            RingNode node = items.get(0);
+            metadata = "00000000000000000000000000000000,00000000000000000000000000000000," + node.value.toHashableString();
+            replicaMetadata = metadata;
         }
         else {
             metadata = keyRingService.serializeKeyRanges(false);

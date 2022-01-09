@@ -6,7 +6,9 @@ import de.tum.i13.shared.Server;
 import de.tum.i13.shared.BST.BST;
 import de.tum.i13.shared.BST.RingNode;
 
+import java.lang.reflect.Array;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 public class KeyRingService {
 
@@ -82,4 +84,9 @@ public class KeyRingService {
     public int getCount() {
         return this.keyRing.nodeCount();
     }
+
+    public ArrayList<RingNode> getAllItems() {
+       return this.keyRing.dfs();
+    }
+
 }
