@@ -19,6 +19,9 @@ public class KVStoreImpl implements KVStore {
 	private static String coordinatorMetadataString;
 	private static ArrayList<KeyRange> coordinatorMetadata;
 	private static String wholeMetadataString;
+
+
+
 	private static ArrayList<KeyRange> wholeMetadata;
 	private final Persist kvPersist;
 	private final CacheManager cache;
@@ -127,7 +130,7 @@ public class KVStoreImpl implements KVStore {
 		return new KVClientMessageImpl(null, null, StatusType.ERROR);
 	}
 
-	public static KeyRange getKeyRange() {
+	public static KeyRange getCoordinatorKeyRange() {
 		LOGGER.info("KVStoreImpl.getKeyRange called with keyRange: " + KVStoreImpl.coordinatorKeyRange.toString());
 		return KVStoreImpl.coordinatorKeyRange;
 	}
@@ -218,4 +221,9 @@ public class KVStoreImpl implements KVStore {
 
 
 	}
+
+	public static KeyRange getWholeKeyRange() {
+		return wholeKeyRange;
+	}
+
 }
