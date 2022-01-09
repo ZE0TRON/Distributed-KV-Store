@@ -222,6 +222,9 @@ public class ECS implements ConfigurationService {
     }
     // TODO implement
     public synchronized void serverCrashed(Server server) {
+        if(keyRingService.get(Server.serverToHashString(server)) == null) {
+           return;
+        }
         // Starting from predecessor of the crashed server
         // Every server handovers the to the next server for 3 servers
         ServerConnectionThread.connections.remove(server.toHashableString());
