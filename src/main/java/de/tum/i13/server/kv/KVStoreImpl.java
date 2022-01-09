@@ -223,6 +223,7 @@ public class KVStoreImpl implements KVStore {
 	}
 
 	public static KeyRange getWholeKeyRange() {
+		LOGGER.info("KVStoreImpl.getWholeKeyRange called with keyRange: " + KVStoreImpl.wholeKeyRange.toString());
 		return wholeKeyRange;
 	}
 
