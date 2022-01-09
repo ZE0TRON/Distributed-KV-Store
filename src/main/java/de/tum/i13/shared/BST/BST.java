@@ -203,8 +203,8 @@ public class BST {
     }
 
     private RingNode ringPredecessor(RingNode node) {
-        RingNode successor = predecessor(node);
-        return successor == null ? max() : successor;
+        RingNode predecessor = predecessor(node);
+        return predecessor == null ? max() : predecessor;
     }
 
     public ArrayList<RingNode> dfs() {

@@ -81,6 +81,7 @@ public class ECS implements ConfigurationService {
 
     @Override
     public synchronized void deleteServer(Server server) {
+        LOGGER.info("Replica Mod : " + getReplicaMod());
         if (getReplicaMod()) {
             serverCrashed(server);
             return;
@@ -88,6 +89,7 @@ public class ECS implements ConfigurationService {
         RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
         RingItem ringItem = keyRingService.findSuccessor(ringItemToDelete.key);
         RingItem predecessorItem = keyRingService.findPredecessor(ringItemToDelete.key);
+        LOGGER.info("Deleting server from keyRingService :" + ringItemToDelete.value.toHashableString());
         keyRingService.delete(ringItemToDelete);
         Server senderServer = ringItemToDelete.value;
         Server receiverServer = ringItem.value;
