@@ -112,6 +112,7 @@ public class ECS implements ConfigurationService {
 
 
     private void createNewMetaData() {
+        LOGGER.info("KeyRingService count" + keyRingService.getCount());
         if(keyRingService.isKeyringEmpty()) {
             metadata = "";
             replicaMetadata = "";
