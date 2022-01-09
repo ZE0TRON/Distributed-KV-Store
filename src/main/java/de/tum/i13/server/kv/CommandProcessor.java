@@ -91,7 +91,7 @@ public class CommandProcessor implements CommandProcessorInterface {
                             }
                             kvClientMessage = kvStore.put(parts[1], null, "kvClient");
                             break;
-                        case "coordinatorKeyRange":
+                        case "keyrange":
                             kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getCoordinatorMetadataString(),null, KVClientMessage.StatusType.KEYRANGE_SUCCESS);
                             break;
                         case "keyrange_read":
