@@ -214,7 +214,7 @@ public class KVStoreImpl implements KVStore {
 				replica2Connection = null;
 			}
 			replica1Connection = new Socket(addr1, Integer.parseInt(port1));
-			replica2Connection = new Socket(addr1, Integer.parseInt(port1));
+			replica2Connection = new Socket(addr2, Integer.parseInt(port2));
 		} catch (Exception e) {
 			LOGGER.warning("Exception while setReplicaConnections " + e.getMessage() );
 		}
