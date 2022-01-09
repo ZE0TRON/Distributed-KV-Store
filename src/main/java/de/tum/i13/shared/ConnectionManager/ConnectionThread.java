@@ -102,6 +102,7 @@ public class ConnectionThread extends Thread {
     }
 
     private String replicaCommand(String res) {
+        LOGGER.info("replica1Connection : " + KVStoreImpl.replica1Connection + "replica1Connection : " + KVStoreImpl.replica2Connection + " res is:" + res);
         if (KVStoreImpl.replica1Connection == null || KVStoreImpl.replica2Connection == null || res == null || res.length() == 0) {
             return null;
         }
