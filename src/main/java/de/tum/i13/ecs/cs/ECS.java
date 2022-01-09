@@ -132,7 +132,9 @@ public class ECS implements ConfigurationService {
     public synchronized void updateMetadata() {
         createNewMetaData();
         LOGGER.info("New metadata created: " + metadata + " " + replicaMetadata);
+        LOGGER.info("Connections array entry length: " + ServerConnectionThread.connections.size());
         for (Map.Entry<String, ConnectionManagerInterface> entry : ServerConnectionThread.connections.entrySet()) {
+            LOGGER.info("Connections array entry key: " + entry.getKey() );
             ConnectionManagerInterface connection = entry.getValue();
             if(getReplicaMod()) {
                 String server = entry.getKey();
