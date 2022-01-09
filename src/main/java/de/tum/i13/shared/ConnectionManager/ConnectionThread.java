@@ -72,13 +72,11 @@ public class ConnectionThread extends Thread {
 
                             String[] parts = command.split(" ");
 
-                            Thread th;
-
-                            th = new ConnectionThread(cp, KVcp, KVStoreImpl.replica1Connection, replicaCommand + " " + parts[1]);
+                            Thread th = new ConnectionThread(cp, KVcp, KVStoreImpl.replica1Connection, replicaCommand + " " + parts[1]);
                             th.start();
 
-                            th = new ConnectionThread(cp, KVcp, KVStoreImpl.replica2Connection, replicaCommand + " " + parts[1]);
-                            th.start();
+                            Thread th2 = new ConnectionThread(cp, KVcp, KVStoreImpl.replica2Connection, replicaCommand + " " + parts[1]);
+                            th2.start();
                         }
                     }
                     if(res != null) {
@@ -107,13 +105,13 @@ public class ConnectionThread extends Thread {
             return null;
         }
 
-        if (KVClientMessage.StatusType.PUT_SUCCESS.toString().toLowerCase(Locale.ROOT).startsWith(res) ||
-                KVClientMessage.StatusType.PUT_UPDATE.toString().toLowerCase(Locale.ROOT).startsWith(res)) {
+        if (res.startsWith(KVClientMessage.StatusType.PUT_SUCCESS.toString().toLowerCase(Locale.ROOT))  ||
+                res.startsWith(KVClientMessage.StatusType.PUT_UPDATE.toString().toLowerCase(Locale.ROOT))) {
             LOGGER.info("Case is put_replica ");
             return "put_replica";
         }
 
-        if (KVClientMessage.StatusType.DELETE_SUCCESS.toString().toLowerCase(Locale.ROOT).startsWith(res)) {
+        if (res.startsWith(KVClientMessage.StatusType.DELETE_SUCCESS.toString().toLowerCase(Locale.ROOT))) {
             LOGGER.info("Case is delete_replica ");
             return "delete_replica";
         }
