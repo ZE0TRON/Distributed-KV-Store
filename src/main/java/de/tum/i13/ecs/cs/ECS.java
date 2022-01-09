@@ -129,7 +129,7 @@ public class ECS implements ConfigurationService {
                 RingItem successor = keyRingService.findSuccessor(serverRingItem.key);
                 RingItem secondSuccessor = keyRingService.findSuccessor(successor.key);
                 // Key = server:port
-                connection.send("update_metadata " + metadata + " " + replicaMetadata + " " + successor.key + " " + secondSuccessor.key);
+                connection.send("update_metadata " + metadata + " " + replicaMetadata + " " + successor.value.toHashableString() + " " + secondSuccessor.value.toHashableString());
             }
             else {
                 connection.send("update_metadata " + metadata);
