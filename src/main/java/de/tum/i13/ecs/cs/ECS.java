@@ -213,6 +213,13 @@ public class ECS implements ConfigurationService {
                     rebalanceOperation.getKeyRange().snd + " " +
                     rebalanceOperation.getReceiverServer().toHashableString());
         }
+        else if(onGoingRebalance.getRebalanceType() == RebalanceType.REPLICA_TO_NON_REPLICA) {
+            updateMetadata();
+            onGoingRebalance = null;
+            if (!rebalanceQueue.isEmpty()) {
+                startHandoverProcess(this.rebalanceQueue.poll());
+            }
+        }
 
     }
 
@@ -238,7 +245,8 @@ public class ECS implements ConfigurationService {
             ServerConnectionThread.connections.remove(server.toHashableString());
             RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
             keyRingService.delete(ringItemToDelete);
-            updateMetadata();
+            RebalanceOperation rebalanceOperation = new RebalanceOperation(null, null, null, RebalanceType.REPLICA_TO_NON_REPLICA);
+            queueHandoverProcess(rebalanceOperation);
             return;
         }
         // Starting from predecessor of the crashed server
