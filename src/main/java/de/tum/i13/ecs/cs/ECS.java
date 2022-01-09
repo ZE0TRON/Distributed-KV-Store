@@ -54,7 +54,10 @@ public class ECS implements ConfigurationService {
     }
     private static boolean getReplicaInDelete() {
         return ServerConnectionThread.connections.size() > 3;
-}
+    }
+    private static boolean serversHaveAllReplicas() {
+        return ServerConnectionThread.connections.size() == 3;
+    }
 
     @Override
     public synchronized void addServer(Server server) {
@@ -88,6 +91,13 @@ public class ECS implements ConfigurationService {
             serverCrashed(server);
             return;
         }
+        if(serversHaveAllReplicas()) {
+            RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
+            keyRingService.delete(ringItemToDelete);
+            updateMetadata();
+            return;
+        }
+
         RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
         RingItem ringItem = keyRingService.findSuccessor(ringItemToDelete.key);
         RingItem predecessorItem = keyRingService.findPredecessor(ringItemToDelete.key);
