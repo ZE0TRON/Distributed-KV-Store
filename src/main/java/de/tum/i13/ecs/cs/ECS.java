@@ -174,7 +174,7 @@ public class ECS implements ConfigurationService {
         onGoingRebalance = rebalanceOperation;
         if (onGoingRebalance.getRebalanceType() == RebalanceType.ADD) {
           Server server = rebalanceOperation.getReceiverServer();
-          ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toEcsConnectionString());
+          ConnectionManagerInterface connectionManager = ServerConnectionThread.connections.get(server.toHashableString());
           // Since the first node added before handover process there should be 1 node in first case
           if(keyRingService.getCount() == 1) {
               connectionManager.send("first_key_range");
