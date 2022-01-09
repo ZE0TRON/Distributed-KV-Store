@@ -87,11 +87,10 @@ public class ECS implements ConfigurationService {
     @Override
     public synchronized void deleteServer(Server server) {
         LOGGER.info("Replica Mod : " + getReplicaMod());
-        if (getReplicaInDelete()) {
+        if (getReplicaMod()) {
             serverCrashed(server);
             return;
         }
-
 
         RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
         RingItem ringItem = keyRingService.findSuccessor(ringItemToDelete.key);
