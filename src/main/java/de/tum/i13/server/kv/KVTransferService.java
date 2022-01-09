@@ -83,17 +83,19 @@ public class KVTransferService {
 
     public void put(String key, String value) {
         try {
+            LOGGER.info("Put reflection call with key:" + key + " and value:" + value);
             kvStore.put(key, value, "self");
         } catch (Exception e) {
-            // FIXME bu durumda ne yapmaliyim?
+            LOGGER.warning("Exception during put reflection put call " + e.getMessage());
         }
     }
 
     public void delete(String key) {
         try {
+            LOGGER.info("Delete reflection call with key:" + key);
             kvStore.put(key, null, "self");
         } catch (Exception e) {
-            // FIXME bu durumda ne yapmaliyim?
+            LOGGER.warning("Exception during delete reflection delete call " + e.getMessage());
         }
     }
 }
