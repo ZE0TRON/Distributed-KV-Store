@@ -48,7 +48,7 @@ public class KVStoreImpl implements KVStore {
 	}
 
 	@Override
-	public KVClientMessage put(String key, String value, String caller) throws Exception {
+	public synchronized KVClientMessage put(String key, String value, String caller) throws Exception {
 		if (Util.isKeyInRange(coordinatorKeyRange.from, coordinatorKeyRange.to, ConsistentHashingService.findHash(key)) || caller.equals("self")){
 			LOGGER.info("KVStoreImpl.put called with key: " + key + ", and value: " + value);
 			try {
@@ -79,7 +79,7 @@ public class KVStoreImpl implements KVStore {
 					}
 				}
 			} catch (Exception e) {
-				LOGGER.throwing("KVStoreImpl", "put on tuple: (" + key + ", "  + value + ")", e);
+				LOGGER.warning("Exception "+ e.getMessage() +" KVStoreImpl while putting tuple" + key + ", "  + value );
 				return new KVClientMessageImpl(key, value, StatusType.PUT_ERROR);
 			}
 		} else {
