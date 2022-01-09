@@ -70,7 +70,7 @@ public class ConnectionThread extends Thread {
                             CommandProcessor cp = new CommandProcessor(KVStoreImpl.getInstance());
                             KVCommandProcessor KVcp = new KVCommandProcessor(new KVTransferService(KVStoreImpl.getInstance()));
 
-                            String[] parts = command.split(" ");
+                            String[] parts = recv.split(" ");
 
                             Thread th = new ConnectionThread(cp, KVcp, KVStoreImpl.replica1Connection, replicaCommand + " " + parts[1]);
                             th.start();
