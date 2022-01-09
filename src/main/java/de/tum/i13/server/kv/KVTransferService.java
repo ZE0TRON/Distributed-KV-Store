@@ -83,7 +83,7 @@ public class KVTransferService {
 
     public void put(String key, String value) {
         try {
-            LOGGER.info("Put reflection call with key:" + key + " and value:" + value);
+            LOGGER.info("Put reflection call with key: " + key + " and value: " + value);
             kvStore.put(key, value, "self");
         } catch (Exception e) {
             LOGGER.warning("Exception during put reflection put call " + e.getMessage());
@@ -92,7 +92,7 @@ public class KVTransferService {
 
     public void delete(String key) {
         try {
-            LOGGER.info("Delete reflection call with key:" + key);
+            LOGGER.info("Delete reflection call with key: " + key);
             kvStore.put(key, null, "self");
         } catch (Exception e) {
             LOGGER.warning("Exception during delete reflection delete call " + e.getMessage());
