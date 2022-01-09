@@ -52,7 +52,9 @@ public class ECS implements ConfigurationService {
     private static boolean getReplicaMod() {
         return ServerConnectionThread.connections.size() >= 3;
     }
-
+    private static boolean getReplicaInDelete() {
+        return ServerConnectionThread.connections.size() > 3;
+}
 
     @Override
     public synchronized void addServer(Server server) {
@@ -82,7 +84,7 @@ public class ECS implements ConfigurationService {
     @Override
     public synchronized void deleteServer(Server server) {
         LOGGER.info("Replica Mod : " + getReplicaMod());
-        if (getReplicaMod()) {
+        if (getReplicaInDelete()) {
             serverCrashed(server);
             return;
         }
