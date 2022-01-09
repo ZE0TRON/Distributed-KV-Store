@@ -62,7 +62,7 @@ public class KVCommandProcessor implements CommandProcessorInterface {
             case "put_replica_data":
                 String key = parts[1];
                 String keyPlusValue = command.substring(command.indexOf(' ')+1, command.length());
-                String valueStr = command.substring(keyPlusValue.indexOf(' ')+1, keyPlusValue.length());
+                String valueStr = keyPlusValue.substring(keyPlusValue.indexOf(' ')+1, keyPlusValue.length());
                 kvTransferService.put(parts[1], valueStr);
                 res = "put_replica_data_ack " + parts[1];
                 break;
