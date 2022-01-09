@@ -91,13 +91,7 @@ public class ECS implements ConfigurationService {
             serverCrashed(server);
             return;
         }
-        if(serversHaveAllReplicas()) {
-            ServerConnectionThread.connections.remove(server.toHashableString());
-            RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
-            keyRingService.delete(ringItemToDelete);
-            updateMetadata();
-            return;
-        }
+
 
         RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
         RingItem ringItem = keyRingService.findSuccessor(ringItemToDelete.key);
@@ -239,6 +233,14 @@ public class ECS implements ConfigurationService {
     public synchronized void serverCrashed(Server server) {
         if(keyRingService.get(Server.serverToHashString(server)) == null) {
            return;
+        }
+
+        if(serversHaveAllReplicas()) {
+            ServerConnectionThread.connections.remove(server.toHashableString());
+            RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
+            keyRingService.delete(ringItemToDelete);
+            updateMetadata();
+            return;
         }
         // Starting from predecessor of the crashed server
         // Every server handovers the to the next server for 3 servers
