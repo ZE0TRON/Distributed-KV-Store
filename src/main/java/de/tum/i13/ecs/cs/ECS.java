@@ -111,7 +111,7 @@ public class ECS implements ConfigurationService {
     }
 
 
-    private void createNewMetaData() {
+    private synchronized void createNewMetaData() {
         LOGGER.info("KeyRingService count" + keyRingService.getCount());
         if(keyRingService.isKeyringEmpty()) {
             metadata = "";
@@ -150,7 +150,7 @@ public class ECS implements ConfigurationService {
     }
 
     @Override
-    public boolean handoverFinished(Pair<String, String> keyRange){
+    public synchronized boolean handoverFinished(Pair<String, String> keyRange){
         if (!onGoingRebalance.getKeyRange().fst.equals(keyRange.fst) || !onGoingRebalance.getKeyRange().snd.equals(keyRange.snd)) {
             LOGGER.warning("No re-balance operation on going with keyRange: " + keyRange.fst + "-" + keyRange.snd );
             return false;
