@@ -92,6 +92,7 @@ public class ECS implements ConfigurationService {
             return;
         }
         if(serversHaveAllReplicas()) {
+            ServerConnectionThread.connections.remove(server.toHashableString());
             RingItem ringItemToDelete = keyRingService.get(Server.serverToHashString(server));
             keyRingService.delete(ringItemToDelete);
             updateMetadata();
