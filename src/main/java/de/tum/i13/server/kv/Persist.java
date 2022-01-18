@@ -66,7 +66,7 @@ public class Persist implements DataManager {
         return result;
     }
 
-    public PersistType put(PersistItem putItem){
+    public synchronized PersistType put(PersistItem putItem){
         PersistItemCollection storedItems;
         try {
             storedItems = this.deserializeItem();
