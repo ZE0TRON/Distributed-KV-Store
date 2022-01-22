@@ -97,6 +97,32 @@ public class CommandProcessor implements CommandProcessorInterface {
                         case "keyrange_read":
                             kvClientMessage = new KVClientMessageImpl(KVStoreImpl.getWholeMetadataString(),null, KVClientMessage.StatusType.KEYRANGE_READ_SUCCESS);
                             break;
+                        case "subscribe":
+                            if (parts.length < 3) {
+                                kvClientMessage = kvStore.commandNotFound(command);
+                                break;
+                            }
+                            try {
+                                kvStore.addSubscription(parts[1], parts[2]);
+                                kvClientMessage = new KVClientMessageImpl(null,null, KVClientMessage.StatusType.SUBSCRIBE_SUCCESS);
+                            } catch (Exception e) {
+                               LOGGER.warning("Error during adding subscription " + e.getMessage());
+                                kvClientMessage = new KVClientMessageImpl(null,null, KVClientMessage.StatusType.SUBSCRIBE_ERROR);
+                            }
+                            break;
+                        case "unsubscribe":
+                            if (parts.length < 3) {
+                                kvClientMessage = kvStore.commandNotFound(command);
+                                break;
+                            }
+                            try {
+                                kvStore.deleteSubscription(parts[1], parts[2]);
+                                kvClientMessage = new KVClientMessageImpl(null,null, KVClientMessage.StatusType.UNSUBSCRIBE_SUCCESS);
+                            } catch (Exception e) {
+                                LOGGER.warning("Error during deleting subscription " + e.getMessage());
+                                kvClientMessage = new KVClientMessageImpl(null,null, KVClientMessage.StatusType.UNSUBSCRIBE_ERROR);
+                            }
+                            break;
                         default:
                             LOGGER.info("command not found");
                             kvClientMessage = kvStore.commandNotFound(command);

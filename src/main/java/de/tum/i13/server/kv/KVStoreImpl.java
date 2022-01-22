@@ -2,13 +2,16 @@ package de.tum.i13.server.kv;
 
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import de.tum.i13.client.KeyRange;
 import de.tum.i13.server.Main;
+import de.tum.i13.server.exception.NoSuchSubscriptionException;
 import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
 import de.tum.i13.server.storageManagment.PersistType;
+import de.tum.i13.shared.Server;
 import de.tum.i13.shared.Util;
 import de.tum.i13.ecs.keyring.ConsistentHashingService;
 
@@ -34,10 +37,12 @@ public class KVStoreImpl implements KVStore {
 	public static Socket replica1Connection = null;
 	public static Socket replica2Connection = null;
 	public static KVStoreImpl instance = null;
+	private HashMap<String,ArrayList<Server>> subscriptions;
 
 	private KVStoreImpl() {
 		kvPersist = Persist.getInstance();
 		cache = CacheManager.getInstance();
+		subscriptions = new HashMap<>();
 	}
 
 	public static KVStoreImpl getInstance() {
@@ -233,6 +238,32 @@ public class KVStoreImpl implements KVStore {
 	public static KeyRange getWholeKeyRange() {
 		LOGGER.info("KVStoreImpl.getWholeKeyRange called with keyRange: " + KVStoreImpl.wholeKeyRange.toString());
 		return wholeKeyRange;
+	}
+
+	public void addSubscription(String key, String addr) {
+		Server client = Server.fromHashableString(addr);
+		if (this.subscriptions.containsKey(key)) {
+			ArrayList<Server> clients = this.subscriptions.get(key);
+			clients.add(client);
+		} else {
+			ArrayList<Server> clients = new ArrayList<>();
+			clients.add(client);
+			this.subscriptions.put(key, clients);
+		}
+	}
+
+	public void deleteSubscription(String key, String addr) throws NoSuchSubscriptionException {
+		Server client = Server.fromHashableString(addr);
+		if (this.subscriptions.containsKey(key)) {
+			ArrayList<Server> clients = this.subscriptions.get(key);
+			if(clients.contains(client)) {
+				clients.remove(client);
+			} else {
+				throw new NoSuchSubscriptionException();
+			}
+		} else {
+			throw new NoSuchSubscriptionException();
+		}
 	}
 
 }
