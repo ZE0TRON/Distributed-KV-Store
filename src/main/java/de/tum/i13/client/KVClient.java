@@ -47,29 +47,37 @@ public class KVClient {
 				String[] command = line.split(" ");
 				switch (command[0]) {
 				case "put":
-					printEchoLine(kvStore.sendPutRequest(line));
 					LOGGER.info("Client requesting put");
+					printEchoLine(kvStore.sendPutRequest(line));
 					break;
 				case "get":
-					printEchoLine(kvStore.sendGetRequest(line));
 					LOGGER.info("Client requesting get");
+					printEchoLine(kvStore.sendGetRequest(line));
 					break;
 				case "delete":
-					printEchoLine(kvStore.sendDeleteRequest(line));
 					LOGGER.info("Client requesting delete");
+					printEchoLine(kvStore.sendDeleteRequest(line));
 					break;
 				case "help":
 				case "":
-					printHelp();
 					LOGGER.info("Client printing help");
+					printHelp();
+					break;
+				case "subscribe":
+					LOGGER.info("Client requesting subscribe");
+					printEchoLine(kvStore.sendSubscribeRequest(line));
+					break;
+				case "unsubscribe":
+					LOGGER.info("Client requesting unsubscribe");
+					printEchoLine(kvStore.sendUnsubscribeRequest(line));
 					break;
 				case "quit":
-					printEchoLine("Application exit!");
 					LOGGER.info("Client exiting");
+					printEchoLine("Application exit!");
 					return;
 				default:
-					printEchoLine("Unknown command.");
 					LOGGER.info("Client unknown command");
+					printEchoLine("Unknown command.");
 				}
 			} catch (Exception e) {
 				LOGGER.throwing("KVClient", "main", e);
