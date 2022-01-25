@@ -1,5 +1,6 @@
 package de.tum.i13.server.kv;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import de.tum.i13.server.exception.NoSuchSubscriptionException;
 import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
 import de.tum.i13.server.storageManagment.PersistType;
+import de.tum.i13.shared.ConnectionManager.NotificationThread;
 import de.tum.i13.shared.Server;
 import de.tum.i13.shared.Util;
 import de.tum.i13.ecs.keyring.ConsistentHashingService;
@@ -63,10 +65,12 @@ public class KVStoreImpl implements KVStore {
 					if (persistType == PersistType.INSERT) {
 						cache.put(item);
 						LOGGER.info("Put (insert) operation successfully executed on tuple: (" + key + ", " + value + ")");
+						notifyAllClientsSubscribedToKey(key, value , StatusType.NOTIFICATION_UPDATE);
 						return new KVClientMessageImpl(key, null, StatusType.PUT_SUCCESS);
 					} else {
 						cache.put(item);
 						LOGGER.info("Put (update) operation successfully executed on tuple: (" + key + ", " + value + ")");
+						notifyAllClientsSubscribedToKey(key, value , StatusType.NOTIFICATION_UPDATE);
 						return new KVClientMessageImpl(key, null, StatusType.PUT_UPDATE);
 					}
 
@@ -74,6 +78,7 @@ public class KVStoreImpl implements KVStore {
 					try {
 						kvPersist.delete(key);
 						LOGGER.fine("Delete operation successfully executed on key: " + key);
+						notifyAllClientsSubscribedToKey(key, null , StatusType.NOTIFICATION_DELETE);
 						return new KVClientMessageImpl(key, null, StatusType.DELETE_SUCCESS);
 					} catch(Exception e) {
 						LOGGER.fine("Delete operation not successfully executed on key: " + key + " because of key could not found");
@@ -264,6 +269,23 @@ public class KVStoreImpl implements KVStore {
 		} else {
 			throw new NoSuchSubscriptionException();
 		}
+	}
+
+	private void notifyAllClientsSubscribedToKey(String key, String newValue, StatusType notificationType) {
+		if (!this.subscriptions.containsKey(key)) {
+			return;
+		}
+		ArrayList<Server> clients = this.subscriptions.get(key);
+		if( clients != null && clients.size() > 0) {
+			for (Server client : clients) {
+				notify(key, newValue, notificationType, client);
+			}
+		}
+	}
+
+	private void notify(String key, String newValue, StatusType notificationType,  Server server) {
+		NotificationThread nt = new NotificationThread(key, newValue, notificationType, server);
+		nt.run();
 	}
 
 }
