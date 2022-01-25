@@ -1,8 +1,10 @@
 package de.tum.i13.server.kv;
 
 import de.tum.i13.client.KeyRange;
+import de.tum.i13.shared.Server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface KVStore {
 
@@ -32,5 +34,10 @@ public interface KVStore {
     ArrayList<PersistItem> getAll();
 
     KVClientMessage commandNotFound(String command);
+
+    HashMap<String, ArrayList<Server>> getSubscriptions();
+
+    void addSubscription(String key, String addr);
+
 
 }

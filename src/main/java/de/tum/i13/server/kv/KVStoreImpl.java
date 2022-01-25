@@ -2,6 +2,7 @@ package de.tum.i13.server.kv;
 
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import de.tum.i13.client.KeyRange;
@@ -9,6 +10,7 @@ import de.tum.i13.server.Main;
 import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
 import de.tum.i13.server.storageManagment.PersistType;
+import de.tum.i13.shared.Server;
 import de.tum.i13.shared.Util;
 import de.tum.i13.ecs.keyring.ConsistentHashingService;
 
@@ -34,6 +36,16 @@ public class KVStoreImpl implements KVStore {
 	public static Socket replica1Connection = null;
 	public static Socket replica2Connection = null;
 	public static KVStoreImpl instance = null;
+
+	private HashMap<String,ArrayList<Server>> subscriptions;
+
+	public HashMap<String, ArrayList<Server>> getSubscriptions() {
+		return subscriptions;
+	}
+
+	public void addSubscription(String key, String addr) {
+		// FIXME handle in merge operation
+	}
 
 	private KVStoreImpl() {
 		kvPersist = Persist.getInstance();
