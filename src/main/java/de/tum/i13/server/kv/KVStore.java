@@ -1,6 +1,7 @@
 package de.tum.i13.server.kv;
 
 import de.tum.i13.client.KeyRange;
+import de.tum.i13.server.exception.NoSuchSubscriptionException;
 
 import java.util.ArrayList;
 
@@ -33,4 +34,7 @@ public interface KVStore {
 
     KVClientMessage commandNotFound(String command);
 
+    void addSubscription(String key, String addr);
+
+    void deleteSubscription(String key, String addr) throws NoSuchSubscriptionException;
 }

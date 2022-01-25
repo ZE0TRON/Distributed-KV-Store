@@ -2,6 +2,7 @@ package de.tum.i13.shared;
 
 import de.tum.i13.client.KeyRange;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class Util {
@@ -47,5 +48,9 @@ public class Util {
             }
             Util.parseMetadata(metadata, parts);
         }
+    }
+
+    public static String clientSocketToIpString(Socket clientSocket) {
+        return clientSocket.getInetAddress().toString().substring(1);
     }
 }

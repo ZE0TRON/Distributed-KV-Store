@@ -20,6 +20,12 @@ public interface KVClientMessage {
          SERVER_WRITE_LOCK,
          KEYRANGE_SUCCESS,
          KEYRANGE_READ_SUCCESS,
+         SUBSCRIBE_SUCCESS,
+         SUBSCRIBE_ERROR,
+         UNSUBSCRIBE_SUCCESS,
+         UNSUBSCRIBE_ERROR,
+         NOTIFICATION_UPDATE,
+         NOTIFICATION_DELETE
     }
 
     /**
