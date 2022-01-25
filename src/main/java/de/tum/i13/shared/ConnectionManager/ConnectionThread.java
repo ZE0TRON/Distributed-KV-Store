@@ -65,7 +65,7 @@ public class ConnectionThread extends Thread {
                     }
                     else if (SubscriptionCommands.contains(command)) {
                         String ip = Util.clientSocketToIpString(clientSocket);
-                        res = cp.processSubscription(recv, ip) + "\r\n";
+                        res = cp.processSubscription(recv, ip).toString() + "\r\n";
                     }
                     else {
                         LOGGER.info("ClientCommand has been received. Now being processed.");
