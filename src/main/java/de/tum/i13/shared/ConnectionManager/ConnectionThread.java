@@ -3,6 +3,7 @@ package de.tum.i13.shared.ConnectionManager;
 import de.tum.i13.server.Main;
 import de.tum.i13.server.exception.CommunicationTerminatedException;
 import de.tum.i13.server.kv.*;
+import de.tum.i13.shared.Util;
 
 import java.io.*;
 import java.net.Socket;
@@ -21,6 +22,7 @@ public class ConnectionThread extends Thread {
     private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack", "Connection",
             "put_replica", "put_replica_ack", "put_replica_data", "put_replica_data_ack",
             "delete_replica", "delete_replica_ack", "delete_replica_data", "delete_replica_data_ack"));
+    private final ArrayList<String> SubscriptionCommands = new ArrayList<>(Arrays.asList("subscribe", "unsubscribe"));
     public static boolean CanShutdown;
     private String initialPayload;
 
@@ -60,6 +62,10 @@ public class ConnectionThread extends Thread {
                     if (KVServerCommands.contains(command)) {
                         LOGGER.info("KVServerCommand has been received. Now being processed.");
                         res = kvScp.process(recv) + "\r\n";
+                    }
+                    else if (SubscriptionCommands.contains(command)) {
+                        String ip = Util.clientSocketToIpString(clientSocket);
+                        res = cp.processSubscription(recv, ip) + "\r\n";
                     }
                     else {
                         LOGGER.info("ClientCommand has been received. Now being processed.");
