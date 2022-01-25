@@ -1,9 +1,15 @@
 package de.tum.i13.client;
 
+import de.tum.i13.shared.ClientConfig;
+import de.tum.i13.shared.ConnectionManager.ClientNotificationThread;
+
 import static de.tum.i13.shared.LogSetup.setupLogging;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -13,15 +19,27 @@ public class KVClient {
 	private static final Logger LOGGER = Logger.getLogger(KVClient.class.getName());
 
 	public static void main(String[] args) {
+		ClientConfig cfg = ClientConfig.parseCommandlineArgs(args);
+
 		setupLogging(Paths.get("echo-client.log"), Level.ALL);
 
-		String host = args[0];
-		CommandSender.checkValidInternetAddress(host);
-		int port = Integer.parseInt(args[1]);
+		CommandSender.checkValidInternetAddress(cfg.serverAddr.getHostString());
 
-		LOGGER.fine("Initial server info host/port: " + host + "/" + port);
+		String serverIp = cfg.serverAddr.getHostName();
+		int serverPort = cfg.serverAddr.getPort();
+		LOGGER.fine("Initial server info host/port: " + serverIp + "/" + serverPort);
 
-		KVStoreClientLibrary kvStore = new KVStoreClientLibraryImpl(host, port);
+		KVStoreClientLibrary kvStore = new KVStoreClientLibraryImpl(serverIp, serverPort);
+
+		try {
+			final ServerSocket notificationThreadSocket = new ServerSocket();
+			notificationThreadSocket.bind(new InetSocketAddress(cfg.listenaddr, cfg.port));
+			ClientNotificationThread clientNotificationThread = new ClientNotificationThread(notificationThreadSocket);
+			clientNotificationThread.start();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		CLI(kvStore);
 	}
@@ -47,29 +65,37 @@ public class KVClient {
 				String[] command = line.split(" ");
 				switch (command[0]) {
 				case "put":
-					printEchoLine(kvStore.sendPutRequest(line));
 					LOGGER.info("Client requesting put");
+					printEchoLine(kvStore.sendPutRequest(line));
 					break;
 				case "get":
-					printEchoLine(kvStore.sendGetRequest(line));
 					LOGGER.info("Client requesting get");
+					printEchoLine(kvStore.sendGetRequest(line));
 					break;
 				case "delete":
-					printEchoLine(kvStore.sendDeleteRequest(line));
 					LOGGER.info("Client requesting delete");
+					printEchoLine(kvStore.sendDeleteRequest(line));
 					break;
 				case "help":
 				case "":
-					printHelp();
 					LOGGER.info("Client printing help");
+					printHelp();
+					break;
+				case "subscribe":
+					LOGGER.info("Client requesting subscribe");
+					printEchoLine(kvStore.sendSubscribeRequest(line));
+					break;
+				case "unsubscribe":
+					LOGGER.info("Client requesting unsubscribe");
+					printEchoLine(kvStore.sendUnsubscribeRequest(line));
 					break;
 				case "quit":
-					printEchoLine("Application exit!");
 					LOGGER.info("Client exiting");
+					printEchoLine("Application exit!");
 					return;
 				default:
-					printEchoLine("Unknown command.");
 					LOGGER.info("Client unknown command");
+					printEchoLine("Unknown command.");
 				}
 			} catch (Exception e) {
 				LOGGER.throwing("KVClient", "main", e);

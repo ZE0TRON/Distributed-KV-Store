@@ -1,6 +1,5 @@
 package de.tum.i13.shared.ConnectionManager;
 
-import de.tum.i13.server.Main;
 import de.tum.i13.server.exception.CommunicationTerminatedException;
 import de.tum.i13.server.kv.*;
 import de.tum.i13.shared.Util;
