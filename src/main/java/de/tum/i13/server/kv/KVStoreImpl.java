@@ -39,7 +39,12 @@ public class KVStoreImpl implements KVStore {
 	public static Socket replica1Connection = null;
 	public static Socket replica2Connection = null;
 	public static KVStoreImpl instance = null;
+
 	private HashMap<String,ArrayList<Server>> subscriptions;
+
+	public HashMap<String, ArrayList<Server>> getSubscriptions() {
+		return subscriptions;
+	}
 
 	private KVStoreImpl() {
 		kvPersist = Persist.getInstance();

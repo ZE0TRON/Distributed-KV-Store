@@ -40,6 +40,16 @@ public class KVCommandProcessor implements CommandProcessorInterface {
                 }
                 break;
             case "ack_data":
+                res = "send_subs " + parts[1] + " " + parts[2] + " " + kvTransferService.sendSubData(parts[1], parts[2]);
+                break;
+            case "send_subs":
+                if (parts.length == 4) {
+                    res = "ack_subs " + kvTransferService.receiveSubData(parts[1], parts[2], parts[3]);
+                } else {
+                    res = "ack_subs " + parts[1] + " " + parts[2];
+                }
+                break;
+            case "ack_subs":
                 ConnectionManagerInterface ecsConnection = EcsConnectionThread.ECSConnection;
                 EcsConnectionThread.handoverOperationCount = EcsConnectionThread.handoverOperationCount - 1;
                 ecsConnection.send("handover_complete " + parts[1] + " " + parts[2]);

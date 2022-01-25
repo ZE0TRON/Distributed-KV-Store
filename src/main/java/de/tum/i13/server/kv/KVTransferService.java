@@ -1,9 +1,11 @@
 package de.tum.i13.server.kv;
 
+import de.tum.i13.shared.Server;
 import de.tum.i13.shared.Util;
 import de.tum.i13.ecs.keyring.ConsistentHashingService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class KVTransferService {
@@ -38,6 +40,45 @@ public class KVTransferService {
             }
             return null;
         });
+
+        return from + " " + to ;
+    }
+
+    public String sendSubData(String from, String to) {
+        LOGGER.info("KVTransferService.sendSubData called with from: " + from + ", and to: " + to);
+        StringBuilder sb = new StringBuilder();
+        HashMap<String, ArrayList<Server>> subscriptions = kvStore.getSubscriptions();
+        for (String key : subscriptions.keySet()) {
+            if(Util.isKeyInRange(from, to, ConsistentHashingService.findHash(key))){
+                sb.append(key);
+                sb.append(",");
+                ArrayList<Server> list = subscriptions.get(key);
+                for (Server server : list) {
+                    sb.append(server.getAddress());
+                    sb.append(":");
+                    sb.append(server.getPort());
+                    sb.append("-");
+                }
+                sb.deleteCharAt(sb.length()-1); // delete last -
+                sb.append(";");
+            }
+        }
+        return sb.toString();
+    }
+
+    public String receiveSubData(String from, String to, String data) {
+        LOGGER.info("KVTransferService.receiveSubData called with from: " + from + ", and to: " + to + ", and data: " + data);
+
+        String[] parts = data.split(";");
+        for (String keyValue : parts) {
+            parts = keyValue.split(",");
+            String key = parts[0];
+
+            parts = parts[1].split("-");
+            for (String serverInfo : parts) {
+                kvStore.addSubscription(key, serverInfo);
+            }
+        }
 
         return from + " " + to ;
     }
