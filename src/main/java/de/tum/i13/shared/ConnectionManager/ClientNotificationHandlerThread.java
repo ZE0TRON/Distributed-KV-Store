@@ -12,7 +12,7 @@ public class ClientNotificationHandlerThread extends Thread{
     private static final Logger LOGGER = Logger.getLogger(ClientNotificationHandlerThread.class.getName());
     private final ClientConfig cfg;
     ServerSocket notificationThreadServerSocket = null;
-    private boolean exit;
+    private static boolean exit;
 
     public ClientNotificationHandlerThread(ClientConfig cfg) {
         this.cfg = cfg;
@@ -42,7 +42,7 @@ public class ClientNotificationHandlerThread extends Thread{
         }
     }
 
-    public void kill(){
+    public static void kill(){
         exit = true;
     }
 }
