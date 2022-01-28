@@ -38,7 +38,7 @@ public interface KVStore {
 
     HashMap<String, ArrayList<Server>> getSubscriptions();
 
-    void addSubscription(String key, String addr);
+    void addSubscription(String key, String addr) throws Exception;
 
     void deleteSubscription(String key, String addr) throws NoSuchSubscriptionException;
 }

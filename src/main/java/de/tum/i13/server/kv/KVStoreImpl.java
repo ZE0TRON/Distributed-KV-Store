@@ -12,6 +12,7 @@ import de.tum.i13.server.exception.NoSuchSubscriptionException;
 import de.tum.i13.server.kv.KVClientMessage.StatusType;
 import de.tum.i13.server.storageManagment.CacheManager;
 import de.tum.i13.server.storageManagment.PersistType;
+import de.tum.i13.shared.ConnectionManager.ConnectionManager;
 import de.tum.i13.shared.ConnectionManager.NotificationThread;
 import de.tum.i13.shared.Server;
 import de.tum.i13.shared.Util;
@@ -250,11 +251,22 @@ public class KVStoreImpl implements KVStore {
 		return wholeKeyRange;
 	}
 
-	public void addSubscription(String key, String addr) {
+	public void addSubscription(String key, String addr) throws Exception {
 		Server client = Server.fromHashableString(addr);
+		// Try to connect to the client if successful add subscription
+		try {
+			Socket clientSocket = new Socket(client.getAddress(), Integer.parseInt(client.getPort()));
+			ConnectionManager connection = new ConnectionManager(clientSocket);
+			connection.disconnect();
+		} catch (IOException e) {
+			LOGGER.warning("Exception while sending notification to client " + e.getMessage());
+			throw new Exception("Subscription failed with IOExpcetion" + e.getMessage());
+		}
 		if (this.subscriptions.containsKey(key)) {
 			ArrayList<Server> clients = this.subscriptions.get(key);
-			clients.add(client);
+			if (!clients.contains(client)) {
+				clients.add(client);
+			}
 		} else {
 			ArrayList<Server> clients = new ArrayList<>();
 			clients.add(client);
