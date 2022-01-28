@@ -85,7 +85,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
     public String sendSubscribeRequest(String line) throws Exception {
         String[] parts = line.split(" ");
 
-        if (parts.length != 3){
+        if (parts.length != 2){
             return "Error! Invalid format, subscribe command takes only one argument, the key to subscribe." + line;
         }
         line = line + " " + KVClient.LISTEN_PORT;
@@ -96,7 +96,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
     public String sendUnsubscribeRequest(String line) throws Exception {
         String[] parts = line.split(" ");
 
-        if (parts.length != 3){
+        if (parts.length != 2){
             return "Error! Invalid format, unsubscribe command takes only one argument, the key to unsubscribe." + line;
         }
         line = line + " " + KVClient.LISTEN_PORT;
