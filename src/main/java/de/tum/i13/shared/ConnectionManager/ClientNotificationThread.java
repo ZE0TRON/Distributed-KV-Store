@@ -19,6 +19,7 @@ public class ClientNotificationThread extends Thread {
     @Override
     public void run(){
         LOGGER.info("ClientNotificationThread has been started.");
+        System.out.println("EchoClient>");
         try {
             this.connectionManager = new ConnectionManager(CLIENT_NOTIFICATION_SOCKET);
         } catch (IOException e){
@@ -33,10 +34,10 @@ public class ClientNotificationThread extends Thread {
             String[] parts = recv.split(" ");
             if (parts[0].equals(KVClientMessage.StatusType.NOTIFICATION_UPDATE.toString().toLowerCase(Locale.ROOT))) {
                 // notification_update key value
-                System.out.println("EchoClientNotification> UPDATE key: " + parts[1] + " new value: " + parts[2]);
+                System.out.println("EchoClientNotification> NOTIFICATION_UPDATE key: " + parts[1] + " new value: " + parts[2]);
             } else if (parts[0].equals(KVClientMessage.StatusType.NOTIFICATION_DELETE.toString().toLowerCase(Locale.ROOT))) {
                 // notification_delete key value
-                System.out.println("EchoClientNotification> DELETE key: " + parts[1] + " value: " + parts[2]);
+                System.out.println("EchoClientNotification> NOTIFICATION_DELETE key: " + parts[1] + " value: " + parts[2]);
             } else {
                 throw new RuntimeException("Unknown notification type");
             }

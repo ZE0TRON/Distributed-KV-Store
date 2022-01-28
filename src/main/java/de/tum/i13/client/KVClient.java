@@ -37,7 +37,7 @@ public class KVClient {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			System.out.println("Closing thread main KVClient. Shutdown procedure has been started.");
 			try {
-				shutdownProcedure(clientNotificationHandlerThread);
+				shutdownProcedure();
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -46,9 +46,9 @@ public class KVClient {
 		CLI(kvStore);
 	}
 
-	public static void shutdownProcedure(ClientNotificationHandlerThread clientNotificationHandlerThread) throws IOException, InterruptedException {
+	public static void shutdownProcedure() throws IOException, InterruptedException {
 		Thread.sleep(750);
-		clientNotificationHandlerThread.kill();
+		ClientNotificationHandlerThread.kill();
 	}
 
 	public static void CLI(KVStoreClientLibrary kvStore) {
@@ -99,6 +99,7 @@ public class KVClient {
 					case "quit":
 						LOGGER.info("Client exiting");
 						printEchoLine("Application exit!");
+						ClientNotificationHandlerThread.kill();
 						return;
 					default:
 						LOGGER.info("Client unknown command");
