@@ -27,6 +27,9 @@ public class ClientNotificationThread extends Thread {
 
         try {
             String recv = connectionManager.receive();
+            if(recv == null) {
+                return;
+            }
             String[] parts = recv.split(" ");
             if (parts[0].equals(KVClientMessage.StatusType.NOTIFICATION_UPDATE.toString().toLowerCase(Locale.ROOT))) {
                 // notification_update key value
