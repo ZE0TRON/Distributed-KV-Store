@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  ecs:
+    build:
+      context: ../
+      dockerfile: ./docker/ecs/Dockerfile
+    command: "55430"
+
+  kvs:
+    build:
+      context: ../
+      dockerfile: ./docker/kvs/Dockerfile
+    links:
+      - ecs:ecs
+    depends_on:
+      - ecs
+    command: "5157"
