@@ -69,14 +69,13 @@ public class KVTransferService {
     public String receiveSubData(String from, String to, String data) {
         LOGGER.info("KVTransferService.receiveSubData called with from: " + from + ", and to: " + to + ", and data: " + data);
 
-        String[] parts = data.split(";");
-        for (String keyValue : parts) {
-            parts = keyValue.split(",");
-            String key = parts[0];
-
-            parts = parts[1].split("-");
-            for (String serverInfo : parts) {
-                kvStore.addSubscription(key, serverInfo);
+        String[] elems = data.split(";");
+        for (String keyClientPair : elems) {
+            String key = keyClientPair.split(",")[0];
+            String clientsString = keyClientPair.split(",")[1];
+            String[] clients = clientsString.split("-");
+            for (String client : clients) {
+                kvStore.addSubscription(key, client);
             }
         }
 

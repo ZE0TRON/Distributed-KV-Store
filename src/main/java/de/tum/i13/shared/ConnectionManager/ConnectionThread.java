@@ -20,7 +20,7 @@ public class ConnectionThread extends Thread {
     private ConnectionManagerInterface connectionManager;
     private final ArrayList<String> KVServerCommands = new ArrayList<>(Arrays.asList("request_data", "send_data", "ack_data", "handover_data", "handover_ack", "Connection",
             "put_replica", "put_replica_ack", "put_replica_data", "put_replica_data_ack",
-            "delete_replica", "delete_replica_ack", "delete_replica_data", "delete_replica_data_ack"));
+            "delete_replica", "delete_replica_ack", "delete_replica_data", "delete_replica_data_ack", "send_subs", "ack_subs"));
     private final ArrayList<String> SubscriptionCommands = new ArrayList<>(Arrays.asList("subscribe", "unsubscribe"));
     public static boolean CanShutdown;
     private String initialPayload;
@@ -87,6 +87,9 @@ public class ConnectionThread extends Thread {
                     if(res != null) {
                         LOGGER.info("ConnectionThread response being sent.");
                         this.connectionManager.send(res);
+                        if(command.equals("ack_subs")) {
+                            break;
+                        }
                     }
                     res = null;
                 } catch (CommunicationTerminatedException ex) {
