@@ -75,7 +75,11 @@ public class KVTransferService {
             String clientsString = keyClientPair.split(",")[1];
             String[] clients = clientsString.split("-");
             for (String client : clients) {
-                kvStore.addSubscription(key, client);
+                try {
+                    kvStore.addSubscription(key, client);
+                } catch (Exception e ) {
+                    LOGGER.warning("Exception while adding subscription(transfered from other server)" + e.getMessage() );
+                }
             }
         }
 
