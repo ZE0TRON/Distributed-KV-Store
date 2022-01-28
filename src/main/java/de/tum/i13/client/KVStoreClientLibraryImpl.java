@@ -88,6 +88,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
         if (parts.length != 3){
             return "Error! Invalid format, subscribe command takes only one argument, the key to subscribe." + line;
         }
+        line = line + " " + KVClient.LISTEN_PORT;
         return sendRequest(line, false);
     }
 
@@ -98,6 +99,7 @@ public class KVStoreClientLibraryImpl implements KVStoreClientLibrary {
         if (parts.length != 3){
             return "Error! Invalid format, unsubscribe command takes only one argument, the key to unsubscribe." + line;
         }
+        line = line + " " + KVClient.LISTEN_PORT;
         return sendRequest(line, false);
     }
 
