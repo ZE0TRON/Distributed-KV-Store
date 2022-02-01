@@ -23,7 +23,6 @@ public class ECSHeartBeatThread extends Thread {
 
     public ECSHeartBeatThread(Server kvServer) throws IOException {
         this.kvServer = kvServer;
-        // TODO kvServer to socket
         this.kvServerSocket = new Socket(kvServer.getAddress(), Constants.HEARTBEAT_PORT);
     }
 

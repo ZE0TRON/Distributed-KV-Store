@@ -2,8 +2,11 @@ package de.tum.i13.shared;
 
 import de.tum.i13.client.KeyRange;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Util {
     public static String trimCRNL(String str) {
@@ -52,5 +55,43 @@ public class Util {
 
     public static String clientSocketToIpString(Socket clientSocket) {
         return clientSocket.getInetAddress().toString().substring(1);
+    }
+    /**
+     * Checks to see if a specific port is available.
+     * Taken from http://svn.apache.org/viewvc/camel/trunk/components/camel-test/src/main/java/org/apache/camel/test/AvailablePortFinder.java?view=markup#l130
+     * @param port the port to check for availability
+     */
+    public static boolean available(int port) {
+        if (port < 1000 || port > 65536) {
+            throw new IllegalArgumentException("Invalid start port: " + port);
+        }
+
+        ServerSocket ss = null;
+        try {
+            ss = new ServerSocket(port);
+            ss.setReuseAddress(true);
+            return true;
+        } catch (IOException e) {
+        } finally {
+            if (ss != null) {
+                try {
+                    ss.close();
+                } catch (IOException e) {
+                    /* should not be thrown */
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static int getRandomAvailablePort() {
+        int port;
+        do {
+            Random random = new Random();
+            port = random.nextInt(55535) + 1001;
+        }
+        while (!available(port));
+        return port;
     }
 }

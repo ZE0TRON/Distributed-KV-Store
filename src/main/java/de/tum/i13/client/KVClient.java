@@ -2,6 +2,7 @@ package de.tum.i13.client;
 
 import de.tum.i13.shared.ClientConfig;
 import de.tum.i13.shared.ConnectionManager.ClientNotificationHandlerThread;
+import de.tum.i13.shared.Util;
 
 import static de.tum.i13.shared.LogSetup.setupLogging;
 
@@ -16,24 +17,25 @@ import java.util.logging.Logger;
 public class KVClient {
 	private static final Logger LOGGER = Logger.getLogger(KVClient.class.getName());
 	public static int LISTEN_PORT;
-
+	public static boolean IS_CONTAINER;
 	public static void main(String[] args) {
 		ClientConfig cfg = ClientConfig.parseCommandlineArgs(args);
 
 		setupLogging(Paths.get("echo-client.log"), Level.ALL);
 
-		CommandSender.checkValidInternetAddress(cfg.serverAddr.getHostString());
-
-		String serverIp = cfg.serverAddr.getHostName();
-		int serverPort = cfg.serverAddr.getPort();
+		String serverIp = cfg.serverAddr;
+		int serverPort = cfg.serverPort;
+		IS_CONTAINER = cfg.isContainer;
 		LISTEN_PORT = cfg.port;
-		LOGGER.fine("Initial server info host/port: " + serverIp + "/" + serverPort);
+		if(LISTEN_PORT == 0) {
+			LISTEN_PORT = Util.getRandomAvailablePort();
+		}
+		LOGGER.info("Initial server info host/port: " + serverIp + "/" + serverPort);
 
 		KVStoreClientLibrary kvStore = new KVStoreClientLibraryImpl(serverIp, serverPort);
 
-		ClientNotificationHandlerThread clientNotificationHandlerThread = new ClientNotificationHandlerThread(cfg);
+		ClientNotificationHandlerThread clientNotificationHandlerThread = new ClientNotificationHandlerThread(cfg.listenaddr, LISTEN_PORT);
 		clientNotificationHandlerThread.start();
-
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			System.out.println("Closing thread main KVClient. Shutdown procedure has been started.");
 			try {
@@ -53,10 +55,23 @@ public class KVClient {
 
 	public static void CLI(KVStoreClientLibrary kvStore) {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		boolean cliActive = !IS_CONTAINER;
 
 		while (true) {
+			System.out.print("EchoClient> ");
+			while(!cliActive) {
+				try {
+					String line = reader.readLine();
+					if (line.equals("activate")) {
+						cliActive = true;
+						System.out.print("EchoClient> ");
+					}
+					Thread.sleep(100);
+				} catch (Exception ignored) {
+
+				}
+			}
 			try {
-				System.out.print("EchoClient> ");
 				if (reader == null) {
 					System.out.println("line is null");
 					return;

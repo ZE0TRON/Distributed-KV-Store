@@ -15,6 +15,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import de.tum.i13.server.storageManagment.CacheManagerFactory;
+import de.tum.i13.shared.Util;
 
 /**
  * Created by chris on 09.01.15.
@@ -28,6 +29,9 @@ public class Main {
         setupLogging(cfg.logfile, cfg.logLevel);
         serverIp = cfg.listenaddr;
         port = cfg.port;
+        if (port == 0) {
+           port = Util.getRandomAvailablePort();
+        }
 
         final ServerSocket kvServerSocket = new ServerSocket();
         kvServerSocket.bind(new InetSocketAddress(cfg.listenaddr, cfg.port));
@@ -44,7 +48,8 @@ public class Main {
         CommandProcessor logic = new CommandProcessor(KVStoreImpl.getInstance());
         KVCommandProcessor kvTransferLogic = new KVCommandProcessor(new KVTransferService(KVStoreImpl.getInstance()));
 
-        Socket ecsSocket = new Socket(cfg.bootstrap.getAddress(), cfg.bootstrap.getPort());
+        System.out.println("Ecs Addr : " + cfg.ecsAddr + " Ecs Port : " + cfg.ecsPort);
+        Socket ecsSocket = new Socket(cfg.ecsAddr, cfg.ecsPort);
         EcsConnectionThread ecsThread = new EcsConnectionThread(logic, kvTransferLogic, ecsSocket);
         ecsThread.start();
 

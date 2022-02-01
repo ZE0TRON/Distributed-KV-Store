@@ -4,8 +4,16 @@ services:
     build:
       context: ../
       dockerfile: ./docker/ecs/Dockerfile
-    command: "55430"
-
+  kvs-main:
+    build:
+      context: ../
+      dockerfile: ./docker/kvs/Dockerfile
+    links:
+      - ecs:ecs
+    depends_on:
+      - ec
+    command:
+      - "5311"
   kvs:
     build:
       context: ../
@@ -14,4 +22,13 @@ services:
       - ecs:ecs
     depends_on:
       - ecs
-    command: "5157"
+  client:
+    build:
+      context: ../
+      dockerfile: ./docker/client/Dockerfile
+    links:
+      - kvs-main:kvs-main
+    depends_on:
+      - kvs-main
+    stdin_open: true
+    tty: true

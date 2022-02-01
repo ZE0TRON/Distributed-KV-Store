@@ -10,12 +10,14 @@ import java.util.logging.Logger;
 
 public class ClientNotificationHandlerThread extends Thread{
     private static final Logger LOGGER = Logger.getLogger(ClientNotificationHandlerThread.class.getName());
-    private final ClientConfig cfg;
     ServerSocket notificationThreadServerSocket = null;
+    private final int listenPort;
+    private final String listenAddr;
     private static boolean exit;
 
-    public ClientNotificationHandlerThread(ClientConfig cfg) {
-        this.cfg = cfg;
+    public ClientNotificationHandlerThread(String listenAddr , int listenPort) {
+        this.listenAddr = listenAddr;
+        this.listenPort = listenPort;
         exit = false;
     }
 
@@ -25,7 +27,8 @@ public class ClientNotificationHandlerThread extends Thread{
 
         try {
             notificationThreadServerSocket = new ServerSocket();
-            notificationThreadServerSocket.bind(new InetSocketAddress(cfg.listenaddr, cfg.port));
+            notificationThreadServerSocket.bind(new InetSocketAddress(listenAddr, listenPort));
+            LOGGER.info("Listening on port: " + listenPort + " for notifications");
         } catch (IOException e) {
             e.printStackTrace();
         }

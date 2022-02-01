@@ -10,14 +10,17 @@ import de.tum.i13.server.storageManagment.CacheDisplacementStrategy;
 import picocli.CommandLine;
 
 public class ServerConfig {
-    @CommandLine.Option(names = "-p", description = "sets the port of the server", defaultValue = "5153")
+    @CommandLine.Option(names = "-p", description = "sets the port of the server", defaultValue = "0")
     public int port;
 
-    @CommandLine.Option(names = "-a", description = "which address the server should listen to", defaultValue = "127.0.0.1")
+    @CommandLine.Option(names = "-a", description = "which address the server should listen to", defaultValue = "0.0.0.0")
     public String listenaddr;
 
-    @CommandLine.Option(names = "-b", description = "bootstrap broker where clients and other brokers connect first to retrieve configuration, port and ip, e.g., 192.168.1.1:5153", defaultValue = "clouddatabases.i13.in.tum.de:5153")
-    public InetSocketAddress bootstrap;
+    @CommandLine.Option(names = "-bh", description = "address of the bootstrap server", defaultValue = "127.0.0.1")
+    public String ecsAddr;
+
+    @CommandLine.Option(names = "-bp", description = "port of the bootstrap server", defaultValue = "55430")
+    public int ecsPort;
 
     @CommandLine.Option(names = "-d", description = "Directory for files", defaultValue = "data/")
     public Path dataDir;
@@ -25,7 +28,7 @@ public class ServerConfig {
     @CommandLine.Option(names = "-l", description = "Logfile", defaultValue = "echo.log")
     public Path logfile;
     
-    @CommandLine.Option(names = "-ll", description = "LogLevel", defaultValue = "ALL")
+    @CommandLine.Option(names = "-ll", description = "LogLevel", defaultValue = "INFO")
     public Level logLevel;
     
     @CommandLine.Option(names = "-c", description = "Size of the cache,", defaultValue = "100")
@@ -64,7 +67,7 @@ public class ServerConfig {
         return "ServerConfig{" +
                 "port=" + port +
                 ", listenaddr='" + listenaddr + '\'' +
-                ", bootstrap=" + bootstrap +
+                ", bootstrap=" + ecsAddr + ':' + ecsPort +
                 ", dataDir=" + dataDir +
                 ", logfile=" + logfile +
                 ", logLevel=" + logLevel +
