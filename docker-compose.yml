@@ -1,42 +1,47 @@
 version: "3.9"
+
 services:
   ecs:
     build:
-      context: ../
-      dockerfile: ./docker/ecs/Dockerfile
+      dockerfile: Dockerfile
+    entrypoint: ./scripts/ecs.sh
+
   kvs-main:
     build:
-      context: ../
-      dockerfile: ./docker/kvs/Dockerfile
+      dockerfile: Dockerfile
     links:
       - ecs:ecs
     depends_on:
       - ec
     command:
       - "5311"
+    entrypoint: ./scripts/kvs.sh
+
   kvs:
     build:
-      context: ../
-      dockerfile: ./docker/kvs/Dockerfile
+      dockerfile: Dockerfile
     links:
       - ecs:ecs
     depends_on:
       - ecs
+    entrypoint: ./scripts/kvs.sh
+
   client:
     build:
-      context: ../
-      dockerfile: ./docker/client/Dockerfile
+      dockerfile: Dockerfile
     links:
       - kvs-main:kvs-main
     depends_on:
       - kvs-main
     stdin_open: true
     tty: true
+    entrypoint: ./scripts/client.sh
+
   performance-test1:
     build:
-      context: ../
-      dockerfile: ./docker/performance-test/Dockerfile
+      dockerfile: Dockerfile
     links:
       - kvs-main:kvs-main
     depends_on:
       - kvs-main
+    entrypoint: ./scripts/performance-test-1.sh
