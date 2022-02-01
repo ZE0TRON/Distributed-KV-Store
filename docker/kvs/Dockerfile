@@ -1,5 +1,5 @@
 FROM maven:latest
-WORKDIR /kvs
+WORKDIR /project
 ADD ../../ .
 RUN mvn -Dmaven.test.skip=true install
 

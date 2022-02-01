@@ -32,3 +32,11 @@ services:
       - kvs-main
     stdin_open: true
     tty: true
+  performance-test1:
+    build:
+      context: ../
+      dockerfile: ./docker/performance-test/Dockerfile
+    links:
+      - kvs-main:kvs-main
+    depends_on:
+      - kvs-main
