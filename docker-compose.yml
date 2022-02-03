@@ -37,11 +37,12 @@ services:
     tty: true
     entrypoint: ./scripts/client.sh
 
-  performance-test1:
-    build:
-      dockerfile: Dockerfile
-    links:
-      - kvs-main:kvs-main
-    depends_on:
-      - kvs-main
-    entrypoint: ./scripts/performance-test-1.sh
+
+  #performance-test1:
+  #  build:
+  #    dockerfile: Dockerfile
+  #  links:
+  #    - kvs-main:kvs-main
+  #  depends_on:
+  #    - kvs-main
+  #  entrypoint: ./scripts/performance-test-1.sh
