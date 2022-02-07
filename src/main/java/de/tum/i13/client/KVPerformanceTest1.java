@@ -6,6 +6,7 @@ import de.tum.i13.shared.Util;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,8 +44,14 @@ public class KVPerformanceTest1 {
                 e.printStackTrace();
             }
         }));
-        //scenario1(kvStore, 10000);
-         scenario2(kvStore, 10000);
+
+        scenario1(kvStore, 1000);
+        System.out.println("--------------------------");
+        scenario2(kvStore, 1000);
+        System.out.println("--------------------------");
+        scenario1(kvStore, 20000);
+        System.out.println("--------------------------");
+        scenario2(kvStore, 20000);
     }
 
     public static void shutdownProcedure() throws IOException, InterruptedException {
@@ -52,7 +59,18 @@ public class KVPerformanceTest1 {
         ClientNotificationHandlerThread.kill();
     }
 
+    //together
     public static void scenario1(KVStoreClientLibrary kvStore, int numberOfIteration) {
+        String[] numOfIters = new String[(numberOfIteration / 100) + 1];
+        String[] totalPutTimes = new String[(numberOfIteration / 100) + 1];
+        String[] correctPutCounts = new String[(numberOfIteration / 100) + 1];
+        String[] totalGetTimes = new String[(numberOfIteration / 100) + 1];
+        String[] correctGetCounts = new String[(numberOfIteration / 100) + 1];
+        String[] totalUpdateTimes = new String[(numberOfIteration / 100) + 1];
+        String[] correctUpdateCounts = new String[(numberOfIteration / 100) + 1];
+        String[] totalDeleteTimes = new String[(numberOfIteration / 100) + 1];
+        String[] correctDeleteCounts = new String[(numberOfIteration / 100) + 1];
+
         try {
             String[][] keyValueUpdate = createKeyValueUpdateMatrix(numberOfIteration);
             long totalPutTime = 0;
@@ -67,6 +85,8 @@ public class KVPerformanceTest1 {
 
             long start, end;
             String response;
+
+
             for (int i = 0; i < numberOfIteration; i++) {
 
                 // PUT
@@ -113,27 +133,61 @@ public class KVPerformanceTest1 {
                     correctDeleteCount++;
                 }
 
+                if(i % 100 == 0){
+                    numOfIters [i/100] = "" + i;
+                    totalPutTimes [i/100] = "" + totalPutTime;
+                    correctPutCounts [i/100] = "" + correctPutCount;
+                    totalGetTimes [i/100] = "" + totalGetTime;
+                    correctGetCounts [i/100] = "" + correctGetCount;
+                    totalUpdateTimes [i/100] = "" + totalUpdateTime;
+                    correctUpdateCounts [i/100] = "" + correctUpdateCount;
+                    totalDeleteTimes [i/100] = "" + totalDeleteTime;
+                    correctDeleteCounts [i/100] = "" + correctDeleteCount;
+                }
                 // if doesn't work
                 //Thread.sleep(1);
             }
 
-            System.out.println("numberOfIteration: " + numberOfIteration);
-            System.out.println("totalPutTime: " + totalPutTime);
-            System.out.println("correctPutCount: " + correctPutCount);
-            System.out.println("totalGetTime: " + totalGetTime);
-            System.out.println("correctGetCount: " + correctGetCount);
-            System.out.println("totalUpdateTime: " + totalUpdateTime);
-            System.out.println("correctUpdateCount: " + correctUpdateCount);
-            System.out.println("totalDeleteTime: " + totalDeleteTime);
-            System.out.println("correctDeleteCount: " + correctDeleteCount);
+            numOfIters [numberOfIteration/100] = "" + numberOfIteration;
+            totalPutTimes [numberOfIteration/100] = "" + totalPutTime;
+            correctPutCounts [numberOfIteration/100] = "" + correctPutCount;
+            totalGetTimes [numberOfIteration/100] = "" + totalGetTime;
+            correctGetCounts [numberOfIteration/100] = "" + correctGetCount;
+            totalUpdateTimes [numberOfIteration/100] = "" + totalUpdateTime;
+            correctUpdateCounts [numberOfIteration/100] = "" + correctUpdateCount;
+            totalDeleteTimes [numberOfIteration/100] = "" + totalDeleteTime;
+            correctDeleteCounts [numberOfIteration/100] = "" + correctDeleteCount;
+
+
+                System.out.println("Scenario 1 (one loop), numberOfIterations: " + numberOfIteration);
+                System.out.println("numberOfIteration: " + Arrays.toString(numOfIters));
+                System.out.println("totalPutTime: " + Arrays.toString(totalPutTimes));
+                System.out.println("correctPutCount: " + Arrays.toString(correctPutCounts));
+                System.out.println("totalGetTime: " + Arrays.toString(totalGetTimes));
+                System.out.println("correctGetCount: " + Arrays.toString(correctGetCounts));
+                System.out.println("totalUpdateTime: " + Arrays.toString(totalUpdateTimes));
+                System.out.println("correctUpdateCount: " + Arrays.toString(correctUpdateCounts));
+                System.out.println("totalDeleteTime: " + Arrays.toString(totalDeleteTimes));
+                System.out.println("correctDeleteCount: " + Arrays.toString(correctDeleteCounts));
 
         } catch (Exception e) {
             System.out.println("Exception caught " + e.getMessage());
+            System.out.println(e.toString());
         }
     }
 
 
+    //separate
     public static void scenario2(KVStoreClientLibrary kvStore, int numberOfIteration) {
+        String[] numOfIters = new String[(numberOfIteration / 100) + 1];
+        String[] totalPutTimes = new String[(numberOfIteration / 100) + 1];
+        String[] correctPutCounts = new String[(numberOfIteration / 100) + 1];
+        String[] totalGetTimes = new String[(numberOfIteration / 100) + 1];
+        String[] correctGetCounts = new String[(numberOfIteration / 100) + 1];
+        String[] totalUpdateTimes = new String[(numberOfIteration / 100) + 1];
+        String[] correctUpdateCounts = new String[(numberOfIteration / 100) + 1];
+        String[] totalDeleteTimes = new String[(numberOfIteration / 100) + 1];
+        String[] correctDeleteCounts = new String[(numberOfIteration / 100) + 1];
         try {
             String[][] keyValueUpdate = createKeyValueUpdateMatrix(numberOfIteration);
             long totalPutTime = 0;
@@ -160,6 +214,12 @@ public class KVPerformanceTest1 {
                 if (response.startsWith("put_success")) {
                     correctPutCount++;
                 }
+
+                if(i % 100 == 0){
+                    numOfIters [i/100] = "" + i;
+                    totalPutTimes [i/100] = "" + totalPutTime;
+                    correctPutCounts [i/100] = "" + correctPutCount;
+                }
             }
 
             for (int i = 0; i < numberOfIteration; i++) {
@@ -172,6 +232,10 @@ public class KVPerformanceTest1 {
                 totalGetTime += (end - start);
                 if (response.startsWith("get_success")) {
                     correctGetCount++;
+                }
+                if(i % 100 == 0){
+                    totalGetTimes [i/100] = "" + totalGetTime;
+                    correctGetCounts [i/100] = "" + correctGetCount;
                 }
             }
 
@@ -187,6 +251,11 @@ public class KVPerformanceTest1 {
                 if (response.startsWith("put_update")) {
                     correctUpdateCount++;
                 }
+
+                if(i % 100 == 0){
+                    totalUpdateTimes [i/100] = "" + totalUpdateTime;
+                    correctUpdateCounts [i/100] = "" + correctUpdateCount;
+                }
             }
 
             for (int i = 0; i < numberOfIteration; i++) {
@@ -201,19 +270,35 @@ public class KVPerformanceTest1 {
                     correctDeleteCount++;
                 }
 
+                if(i % 100 == 0){
+                    totalDeleteTimes [i/100] = "" + totalDeleteTime;
+                    correctDeleteCounts [i/100] = "" + correctDeleteCount;
+                }
+
                 // if doesn't work
                 //Thread.sleep(1);
             }
 
-            System.out.println("numberOfIteration: " + numberOfIteration);
-            System.out.println("totalPutTime: " + totalPutTime);
-            System.out.println("correctPutCount: " + correctPutCount);
-            System.out.println("totalGetTime: " + totalGetTime);
-            System.out.println("correctGetCount: " + correctGetCount);
-            System.out.println("totalUpdateTime: " + totalUpdateTime);
-            System.out.println("correctUpdateCount: " + correctUpdateCount);
-            System.out.println("totalDeleteTime: " + totalDeleteTime);
-            System.out.println("correctDeleteCount: " + correctDeleteCount);
+            numOfIters [numberOfIteration/100] = "" + numberOfIteration;
+            totalPutTimes [numberOfIteration/100] = "" + totalPutTime;
+            correctPutCounts [numberOfIteration/100] = "" + correctPutCount;
+            totalGetTimes [numberOfIteration/100] = "" + totalGetTime;
+            correctGetCounts [numberOfIteration/100] = "" + correctGetCount;
+            totalUpdateTimes [numberOfIteration/100] = "" + totalUpdateTime;
+            correctUpdateCounts [numberOfIteration/100] = "" + correctUpdateCount;
+            totalDeleteTimes [numberOfIteration/100] = "" + totalDeleteTime;
+            correctDeleteCounts [numberOfIteration/100] = "" + correctDeleteCount;
+
+            System.out.println("Scenario 2 (separate loops), numberOfIterations: " + numberOfIteration);
+            System.out.println("numberOfIteration: " + Arrays.toString(numOfIters));
+            System.out.println("totalPutTime: " + Arrays.toString(totalPutTimes));
+            System.out.println("correctPutCount: " + Arrays.toString(correctPutCounts));
+            System.out.println("totalGetTime: " + Arrays.toString(totalGetTimes));
+            System.out.println("correctGetCount: " + Arrays.toString(correctGetCounts));
+            System.out.println("totalUpdateTime: " + Arrays.toString(totalUpdateTimes));
+            System.out.println("correctUpdateCount: " + Arrays.toString(correctUpdateCounts));
+            System.out.println("totalDeleteTime: " + Arrays.toString(totalDeleteTimes));
+            System.out.println("correctDeleteCount: " + Arrays.toString(correctDeleteCounts));
 
         } catch (Exception e) {
             System.out.println("Exception caught " + e.getMessage());
@@ -231,6 +316,7 @@ public class KVPerformanceTest1 {
         }
         return keyValueUpdate;
     }
+
 
     // Taken from https://www.baeldung.com/java-random-string
     public static String randomString() {
