@@ -29,6 +29,7 @@ public class ECSHeartBeatThread extends Thread {
     @Override
     public void run() {
         try {
+            System.out.println("test");
             this.connectionManager = new ConnectionManager(kvServerSocket);
             String recv, res;
             // 700 ms timeout
