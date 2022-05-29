@@ -1,4 +1,4 @@
-# KV-Persisted DB Server and Client
+# Distributed Persistent Key-Value Store
 A distributed persistent key-value store that uses consistent hashing and data replication.
 The system consist of three main elements:
 - External Configuration Service (ECS)
